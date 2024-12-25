@@ -1,12 +1,39 @@
 import { Button, Image, StyleSheet } from "react-native";
+import { CameraView, Camera } from "expo-camera";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { ScanNow } from "@/components/ScanNow";
 import LottieView from "lottie-react-native";
+import { useEffect, useState } from "react";
 
 export default function HomeScreen() {
+  const [hasPermission, setHasPermission] = useState<null | boolean>(null);
+  const [scanned, setScanned] = useState(false);
+  const [firstScan, setFirstScan] = useState(true);
+
+  useEffect(() => {
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
+    };
+
+    getCameraPermissions();
+  }, []);
+
+  const handleBarcodeScanned = ({ type, data }: { type: any; data: any }) => {
+    setScanned(true);
+    setFirstScan(true);
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  };
+
+  if (hasPermission === null) {
+    return <ThemedText>Requesting for camera permission</ThemedText>;
+  }
+  if (hasPermission === false) {
+    return <ThemedText>No access to camera</ThemedText>;
+  }
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -20,24 +47,34 @@ export default function HomeScreen() {
       <ThemedView style={styles.container}>
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Scan Now!</ThemedText>
-          <ScanNow />
         </ThemedView>
-        <ThemedView>
-          <LottieView
-            source={require("@/assets/animations/scanner.json")}
-            autoPlay
-            loop
-            style={styles.animation}
-          />
+        <ThemedView style={styles.cameraContainer}>
+          {scanned ? (
+            <LottieView
+              source={require("@/assets/animations/scanner.json")}
+              autoPlay
+              loop
+              style={styles.animation}
+            />
+          ) : (
+            <CameraView
+              onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+              barcodeScannerSettings={{
+                barcodeTypes: ["qr", "pdf417"],
+              }}
+              style={styles.animation}
+            />
+          )}
         </ThemedView>
         <ThemedView style={styles.scanBtnContainer}>
-          <Button
-            title="Scan"
-            // onPress={() => {
-            //   setScanned(false);
-            //   setShowScanner(false);
-            // }}
-          />
+          {firstScan ? undefined : (
+            <Button
+              title="Tap to Scan Again"
+              onPress={() => {
+                setScanned(false);
+              }}
+            />
+          )}
         </ThemedView>
       </ThemedView>
     </ParallaxScrollView>
@@ -46,18 +83,22 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
+    flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
+    gap: 16,
   },
   titleContainer: {
-    flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
+  },
+  cameraContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   scanBtnContainer: {
-    flex: 1,
+    height: 100,
     marginBottom: 8,
   },
   reactLogo: {
