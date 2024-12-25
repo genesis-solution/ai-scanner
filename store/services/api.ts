@@ -61,7 +61,17 @@ export const api = createApi({
         };
       },
     }),
+    postAskAI: builder.mutation({
+      query: (prompt) => {
+        scanLogger.log("call api - ask-AI:", prompt);
+        return {
+          url: "api/v1/ask_ai",
+          method: "POST",
+          body: prompt,
+        };
+      },
+    }),
   }),
 });
 
-export const { usePostParseBarcodeMutation } = api;
+export const { usePostParseBarcodeMutation, usePostAskAIMutation } = api;

@@ -6,11 +6,28 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
+import {
+  usePostAskAIMutation,
+  usePostParseBarcodeMutation,
+} from "@/store/services/api";
+import scanLogger from "@/utils/scanLogger";
+import { setContent } from "@/store/slices/scanSlice";
+import { useDispatch } from "react-redux";
+
+const BEGIN = "begin";
+const SCANNING = "scanning";
+const PARSING = "parsing";
+const READYTOASK = "readyToAsk";
+const ASKINGAI = "asking";
+const FINAL = "final";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [scanned, setScanned] = useState(false);
-  const [firstScan, setFirstScan] = useState(true);
+  const [status, setStatus] = useState<string>("begin");
+  const [postParseBarcode, { isLoading: isParsing }] =
+    usePostParseBarcodeMutation();
+  const [postAskAI, { isLoading: isAskingAI }] = usePostAskAIMutation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -21,10 +38,44 @@ export default function HomeScreen() {
     getCameraPermissions();
   }, []);
 
-  const handleBarcodeScanned = ({ type, data }: { type: any; data: any }) => {
-    setScanned(true);
-    setFirstScan(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  const handleBarcodeScanned = async ({
+    type,
+    data,
+  }: {
+    type: string;
+    data: string;
+  }) => {
+    try {
+      setStatus(PARSING);
+      alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+      const parsedContent = await postParseBarcode({
+        type,
+        data,
+      });
+      setStatus(READYTOASK);
+      dispatch(setContent(parsedContent));
+    } catch (error) {
+      scanLogger.error(
+        `Parsing Barcode Error: ${
+          (error as Error).message || "An unexpected error"
+        }`
+      );
+    }
+  };
+
+  const handleAskAI = async () => {
+    try {
+      setStatus(ASKINGAI);
+      const result = await postAskAI({
+        // Prompt will come here
+      });
+      setStatus(FINAL);
+      return result;
+    } catch (error) {
+      scanLogger.error(
+        `Asking AI Error: ${(error as Error).message || "An Unexpected Error"}`
+      );
+    }
   };
 
   if (hasPermission === null) {
@@ -49,29 +100,77 @@ export default function HomeScreen() {
           <ThemedText type="title">Scan Now!</ThemedText>
         </ThemedView>
         <ThemedView style={styles.cameraContainer}>
-          {scanned ? (
+          {status === BEGIN && (
             <LottieView
               source={require("@/assets/animations/scanner.json")}
               autoPlay
               loop
               style={styles.animation}
             />
-          ) : (
+          )}
+          {status === SCANNING && (
             <CameraView
-              onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
+              onBarcodeScanned={handleBarcodeScanned}
               barcodeScannerSettings={{
                 barcodeTypes: ["qr", "pdf417"],
               }}
               style={styles.animation}
             />
           )}
+          {status === PARSING && <ThemedText>Parsing Barcode</ThemedText>}
+          {status === READYTOASK && <ThemedText>Ask AI</ThemedText>}
+          {status === ASKINGAI && <ThemedText>Asking AI</ThemedText>}
+          {status === FINAL && <ThemedText>Here's the result</ThemedText>}
         </ThemedView>
         <ThemedView style={styles.scanBtnContainer}>
-          {firstScan ? undefined : (
+          {status === BEGIN && (
             <Button
-              title="Tap to Scan Again"
+              title="Tap to Scan"
               onPress={() => {
-                setScanned(false);
+                setStatus(SCANNING);
+              }}
+            />
+          )}
+          {status === SCANNING && (
+            <Button
+              title="Scanning the Barcode..."
+              onPress={() => {}}
+              disabled
+            />
+          )}
+          {status === PARSING && (
+            <Button
+              title="Parsing the Barcode..."
+              onPress={() => {}}
+              disabled
+            />
+          )}
+          {status === READYTOASK && (
+            <Button
+              title="Tap to Ask AI"
+              onPress={() => {
+                handleAskAI();
+              }}
+            />
+          )}
+          {status === ASKINGAI && (
+            <Button title="Asking AI..." onPress={() => {}} disabled />
+          )}
+          {status === FINAL && (
+            <Button
+              title="Tap to Ask Agin"
+              onPress={() => {
+                setStatus(BEGIN);
+              }}
+            />
+          )}
+
+          {/* Dev Purpose Only */}
+          {status === SCANNING && (
+            <Button
+              title="Dev - Skip scanning"
+              onPress={() => {
+                handleBarcodeScanned({ type: "QR", data: "Lorem Loreal...." });
               }}
             />
           )}
