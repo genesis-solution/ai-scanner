@@ -1,24 +1,18 @@
-import {
-  Button,
-  Image,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   usePostAskAIMutation,
   usePostParseBarcodeMutation,
 } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
 import { setContent } from "@/store/slices/scanSlice";
-import { useDispatch } from "react-redux";
+import { useThemeColor } from "@/hooks/useThemeColor";
+import Button from "@/components/Button";
 
 const BEGIN = "begin";
 const SCANNING = "scanning";
@@ -30,10 +24,11 @@ const FINAL = "final";
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [status, setStatus] = useState<string>("begin");
-  const [postParseBarcode, { isLoading: isParsing }] =
-    usePostParseBarcodeMutation();
-  const [postAskAI, { isLoading: isAskingAI }] = usePostAskAIMutation();
+  const [code, setCode] = useState<string>("");
+  const [postParseBarcode] = usePostParseBarcodeMutation();
+  const [postAskAI] = usePostAskAIMutation();
   const dispatch = useDispatch();
+  const borderColor = useThemeColor({}, "text");
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -53,7 +48,8 @@ export default function HomeScreen() {
   }) => {
     try {
       setStatus(PARSING);
-      alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+      setCode(data);
+      // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       const parsedContent = await postParseBarcode({
         type,
         data,
@@ -91,38 +87,80 @@ export default function HomeScreen() {
     return <ThemedText>No access to camera</ThemedText>;
   }
 
-  const image = require("@/assets/images/scan-bg.png");
+  // const image = require("@/assets/images/scan-bg.png");
+  const image = require("@/assets/images/yellow_bg.jpg");
+
+  const styles = StyleSheet.create({
+    image: {
+      flex: 1,
+      justifyContent: "center",
+    },
+    container: {
+      flex: 1,
+      flexDirection: "column",
+      justifyContent: "space-between",
+      gap: 16,
+      paddingHorizontal: 8,
+    },
+    titleContainer: {
+      paddingTop: 64,
+      paddingHorizontal: 12,
+      paddingBottom: 6,
+      marginHorizontal: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      borderColor: borderColor,
+      borderBottomWidth: 2,
+    },
+    barcodeContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    cameraContainer: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    scanBtnContainer: {
+      height: 64,
+      marginBottom: 8,
+    },
+    reactLogo: {
+      height: 178,
+      width: 290,
+      bottom: 0,
+      left: 0,
+      position: "absolute",
+    },
+    animation: {
+      width: 300,
+      height: 300,
+      alignSelf: "center",
+    },
+  });
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
         <View style={styles.titleContainer}>
-          <ThemedText type="title">Scan Now!</ThemedText>
+          <ThemedText type="title">Scan a Barcode</ThemedText>
         </View>
-        <View style={styles.cameraContainer}>
-          {status === BEGIN && (
+        <View style={styles.barcodeContainer}>
+          {status === BEGIN || status === SCANNING || status === PARSING ? (
             <LottieView
-              source={require("@/assets/animations/scanner.json")}
+              source={require("@/assets/animations/barcode.json")}
               autoPlay
               loop
               style={styles.animation}
             />
+          ) : (
+            <ThemedText type="subtitle" style={{ textAlign: "center" }}>
+              {code}
+            </ThemedText>
           )}
-          {status === SCANNING && (
-            <CameraView
-              onBarcodeScanned={handleBarcodeScanned}
-              barcodeScannerSettings={{
-                barcodeTypes: ["qr", "pdf417"],
-              }}
-              style={styles.animation}
-            />
-          )}
-          {status === PARSING && <ThemedText>Parsing Barcode</ThemedText>}
-          {status === READYTOASK && <ThemedText>Ask AI</ThemedText>}
-          {status === ASKINGAI && <ThemedText>Asking AI</ThemedText>}
-          {status === FINAL && <ThemedText>Here's the result</ThemedText>}
         </View>
-        <View style={styles.scanBtnContainer}>
+        <View style={styles.cameraContainer}>
           {status === BEGIN && (
             <Button
               title="Tap to Scan"
@@ -132,10 +170,21 @@ export default function HomeScreen() {
             />
           )}
           {status === SCANNING && (
-            <Button
-              title="Scanning the Barcode..."
-              onPress={() => {}}
-              disabled
+            <CameraView
+              onBarcodeScanned={handleBarcodeScanned}
+              barcodeScannerSettings={{
+                barcodeTypes: [
+                  "ean13",
+                  "ean8",
+                  "upc_e",
+                  "code39",
+                  "code93",
+                  "itf14",
+                  "code128",
+                  "upc_a",
+                ],
+              }}
+              style={styles.animation}
             />
           )}
           {status === PARSING && (
@@ -156,21 +205,16 @@ export default function HomeScreen() {
           {status === ASKINGAI && (
             <Button title="Asking AI..." onPress={() => {}} disabled />
           )}
-          {status === FINAL && (
-            <Button
-              title="Tap to Ask Agin"
-              onPress={() => {
-                setStatus(BEGIN);
-              }}
-            />
-          )}
-
+          {status === FINAL && <ThemedText>Here's the result</ThemedText>}
           {/* Dev Purpose Only */}
           {status === SCANNING && (
             <Button
               title="Dev - Skip scanning"
               onPress={() => {
-                handleBarcodeScanned({ type: "QR", data: "Lorem Loreal...." });
+                handleBarcodeScanned({
+                  type: "barcode",
+                  data: "Here's the parsed barcode content. It comes from the website.",
+                });
               }}
             />
           )}
@@ -179,43 +223,3 @@ export default function HomeScreen() {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  container: {
-    flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-between",
-    gap: 16,
-    paddingHorizontal: 8,
-  },
-  titleContainer: {
-    paddingTop: 64,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  cameraContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  scanBtnContainer: {
-    height: 64,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
-  },
-  animation: {
-    width: 300,
-    height: 300,
-    alignSelf: "center",
-  },
-});

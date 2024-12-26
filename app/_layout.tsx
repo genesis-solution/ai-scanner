@@ -24,7 +24,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    setColorScheme("dark");
+    setColorScheme("light");
   }, []);
 
   useEffect(() => {
