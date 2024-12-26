@@ -10,7 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
-import { useColorScheme } from "@/hooks/useColorScheme";
+import { setColorScheme, useColorScheme } from "@/hooks/useColorScheme";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
 
@@ -22,6 +22,10 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+
+  useEffect(() => {
+    setColorScheme("dark");
+  }, []);
 
   useEffect(() => {
     if (loaded) {

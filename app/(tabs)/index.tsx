@@ -1,9 +1,15 @@
-import { Button, Image, StyleSheet } from "react-native";
+import {
+  Button,
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
 import LottieView from "lottie-react-native";
 import { useEffect, useState } from "react";
 import {
@@ -85,21 +91,15 @@ export default function HomeScreen() {
     return <ThemedText>No access to camera</ThemedText>;
   }
 
+  const image = require("@/assets/images/scan-bg.png");
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <ThemedView style={styles.container}>
-        <ThemedView style={styles.titleContainer}>
+    <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.titleContainer}>
           <ThemedText type="title">Scan Now!</ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.cameraContainer}>
+        </View>
+        <View style={styles.cameraContainer}>
           {status === BEGIN && (
             <LottieView
               source={require("@/assets/animations/scanner.json")}
@@ -121,8 +121,8 @@ export default function HomeScreen() {
           {status === READYTOASK && <ThemedText>Ask AI</ThemedText>}
           {status === ASKINGAI && <ThemedText>Asking AI</ThemedText>}
           {status === FINAL && <ThemedText>Here's the result</ThemedText>}
-        </ThemedView>
-        <ThemedView style={styles.scanBtnContainer}>
+        </View>
+        <View style={styles.scanBtnContainer}>
           {status === BEGIN && (
             <Button
               title="Tap to Scan"
@@ -174,20 +174,26 @@ export default function HomeScreen() {
               }}
             />
           )}
-        </ThemedView>
-      </ThemedView>
-    </ParallaxScrollView>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  image: {
+    flex: 1,
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
     gap: 16,
+    paddingHorizontal: 8,
   },
   titleContainer: {
+    paddingTop: 64,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -197,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   scanBtnContainer: {
-    height: 100,
+    height: 64,
     marginBottom: 8,
   },
   reactLogo: {
