@@ -1,4 +1,10 @@
-import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  Button,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -12,7 +18,7 @@ import {
 import scanLogger from "@/utils/scanLogger";
 import { setContent } from "@/store/slices/scanSlice";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import Button from "@/components/Button";
+import BigButton from "@/components/BigButton";
 
 const BEGIN = "begin";
 const SCANNING = "scanning";
@@ -162,7 +168,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.cameraContainer}>
           {status === BEGIN && (
-            <Button
+            <BigButton
               title="Tap to Scan"
               onPress={() => {
                 setStatus(SCANNING);
@@ -188,14 +194,14 @@ export default function HomeScreen() {
             />
           )}
           {status === PARSING && (
-            <Button
+            <BigButton
               title="Parsing the Barcode..."
               onPress={() => {}}
               disabled
             />
           )}
           {status === READYTOASK && (
-            <Button
+            <BigButton
               title="Tap to Ask AI"
               onPress={() => {
                 handleAskAI();
@@ -203,12 +209,20 @@ export default function HomeScreen() {
             />
           )}
           {status === ASKINGAI && (
-            <Button title="Asking AI..." onPress={() => {}} disabled />
+            <BigButton title="Asking AI..." onPress={() => {}} disabled />
           )}
           {status === FINAL && <ThemedText>Here's the result</ThemedText>}
+          {status === FINAL && (
+            <Button
+              title="Scan Again"
+              onPress={() => {
+                setStatus(BEGIN);
+              }}
+            />
+          )}
           {/* Dev Purpose Only */}
           {status === SCANNING && (
-            <Button
+            <BigButton
               title="Dev - Skip scanning"
               onPress={() => {
                 handleBarcodeScanned({

@@ -1,10 +1,23 @@
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-const Button = ({ onPress, title }: { onPress: () => void; title: string }) => (
-  <TouchableOpacity onPress={onPress} style={styles.appButtonContainer}>
-    <Text style={styles.appButtonText}>{title}</Text>
-  </TouchableOpacity>
-);
+const BigButton = ({
+  onPress,
+  title,
+  disabled,
+}: {
+  onPress: () => void;
+  title: string;
+  disabled?: boolean;
+}) => {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.appButtonContainer, disabled && styles.appButtonDisabled]}
+    >
+      <Text style={styles.appButtonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   appButtonContainer: {
@@ -26,6 +39,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textTransform: "uppercase",
   },
+  appButtonDisabled: {
+    backgroundColor: "#000",
+  },
 });
 
-export default Button;
+export default BigButton;
