@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   usePostAskAIMutation,
-  usePostParseBarcodeMutation,
+  useGetParseBarcodeMutation,
 } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
 import { setContent } from "@/store/slices/scanSlice";
@@ -23,7 +23,6 @@ import BigButton from "@/components/BigButton";
 const BEGIN = "begin";
 const SCANNING = "scanning";
 const PARSING = "parsing";
-const READYTOASK = "readyToAsk";
 const ASKINGAI = "asking";
 const FINAL = "final";
 
@@ -31,7 +30,7 @@ export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [status, setStatus] = useState<string>("begin");
   const [code, setCode] = useState<string>("");
-  const [postParseBarcode] = usePostParseBarcodeMutation();
+  const [getParseBarcode] = useGetParseBarcodeMutation();
   const [postAskAI] = usePostAskAIMutation();
   const dispatch = useDispatch();
   const borderColor = useThemeColor({}, "text");
@@ -54,13 +53,19 @@ export default function HomeScreen() {
   }) => {
     try {
       setStatus(PARSING);
-      setCode(data);
       // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-      const parsedContent = await postParseBarcode({
-        type,
-        data,
-      });
-      setStatus(READYTOASK);
+      const parsedContent = await getParseBarcode(data).unwrap();
+      scanLogger.log(parsedContent);
+      setStatus(ASKINGAI);
+      setCode(
+        JSON.stringify({
+          code: parsedContent.code,
+          status_verbose: parsedContent.status_verbose,
+          status: parsedContent.status,
+          product: parsedContent.product,
+        })
+      );
+      handleAskAI();
       dispatch(setContent(parsedContent));
     } catch (error) {
       scanLogger.error(
@@ -200,14 +205,6 @@ export default function HomeScreen() {
               disabled
             />
           )}
-          {status === READYTOASK && (
-            <BigButton
-              title="Tap to Ask AI"
-              onPress={() => {
-                handleAskAI();
-              }}
-            />
-          )}
           {status === ASKINGAI && (
             <BigButton title="Asking AI..." onPress={() => {}} disabled />
           )}
@@ -227,7 +224,7 @@ export default function HomeScreen() {
               onPress={() => {
                 handleBarcodeScanned({
                   type: "barcode",
-                  data: "Here's the parsed barcode content. It comes from the website.",
+                  data: "01223004",
                 });
               }}
             />
