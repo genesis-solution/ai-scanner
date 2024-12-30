@@ -26,8 +26,10 @@ export default function HomeScreen() {
   const [scanResult, setScanResult] = useState<string>("");
   const [keywords, setKeywords] = useState<IKeyword[]>([]);
   const [productInfo, setProductInfo] = useState<any>({});
+  const [splashTimeout, setSplashTimeout] = useState(false);
   const [getParseBarcode] = useGetParseBarcodeMutation();
-  const [getKeywords] = useGetKeywordsMutation();
+  const [getKeywords, { isLoading: isGettingKeywords }] =
+    useGetKeywordsMutation();
   const borderColor = useThemeColor({}, "text");
 
   useEffect(() => {
@@ -36,6 +38,14 @@ export default function HomeScreen() {
       setHasPermission(status === "granted");
     };
 
+    setTimeout(() => {
+      setSplashTimeout(true);
+    }, 2500);
+
+    getCameraPermissions();
+  }, []);
+
+  useEffect(() => {
     const getAllKeywords = async () => {
       try {
         const allKeywords = await getKeywords({}).unwrap();
@@ -50,7 +60,6 @@ export default function HomeScreen() {
       }
     };
 
-    getCameraPermissions();
     getAllKeywords();
   }, [getKeywords]);
 
@@ -197,86 +206,108 @@ export default function HomeScreen() {
     );
   };
 
-  return (
+  const LoadingComponent = () => {
+    return (
+      <SafeAreaView
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "white",
+        }}
+      >
+        <LottieView
+          source={require("@/assets/animations/loading.json")}
+          autoPlay
+          style={styles.animation}
+        />
+      </SafeAreaView>
+    );
+  };
+
+  return !splashTimeout || isGettingKeywords ? (
+    <LoadingComponent />
+  ) : (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.titleContainer}>
-          <ThemedText type="title">Scan a Barcode</ThemedText>
-        </View>
-        <View style={styles.barcodeContainer}>
-          {status === BEGIN && (
-            <LottieView
-              source={require("@/assets/animations/barcode.json")}
-              autoPlay
-              loop
-              style={styles.animation}
-            />
-          )}
-          {status === SCANNING && (
-            <CameraView
-              onBarcodeScanned={handleBarcodeScanned}
-              barcodeScannerSettings={{
-                barcodeTypes: [
-                  "ean13",
-                  "ean8",
-                  "upc_e",
-                  "code39",
-                  "code93",
-                  "itf14",
-                  "code128",
-                  "upc_a",
-                ],
-              }}
-              style={styles.animation}
-            />
-          )}
-          {status === FINAL && <ScanResultComponent />}
-        </View>
-        <View style={styles.scanBtnContainer}>
-          {status === BEGIN && (
-            <BigButton
-              title="Tap to Scan"
-              onPress={() => {
-                setStatus(SCANNING);
-              }}
-            />
-          )}
-          {status === PARSING && (
-            <BigButton
-              title="Parsing the Barcode..."
-              onPress={() => {}}
-              disabled
-            />
-          )}
-          {status === CHECKING_KEYWORDS && (
-            <BigButton
-              title="Chekcing Keywords..."
-              onPress={() => {}}
-              disabled
-            />
-          )}
-          {status === FINAL && (
-            <BigButton
-              title="Scan Again"
-              onPress={() => {
-                setScanResult("");
-                setStatus(BEGIN);
-              }}
-            />
-          )}
-          {/* Dev Purpose Only */}
-          {status === SCANNING && (
-            <BigButton
-              title="Dev - Skip scanning"
-              onPress={() => {
-                handleBarcodeScanned({
-                  type: "barcode",
-                  data: "5413548283128",
-                });
-              }}
-            />
-          )}
-        </View>
+        <Fragment>
+          <View style={styles.titleContainer}>
+            <ThemedText type="title">Scan a Barcode</ThemedText>
+          </View>
+          <View style={styles.barcodeContainer}>
+            {status === BEGIN && (
+              <LottieView
+                source={require("@/assets/animations/barcode.json")}
+                autoPlay
+                style={styles.animation}
+              />
+            )}
+            {status === SCANNING && (
+              <CameraView
+                onBarcodeScanned={handleBarcodeScanned}
+                barcodeScannerSettings={{
+                  barcodeTypes: [
+                    "ean13",
+                    "ean8",
+                    "upc_e",
+                    "code39",
+                    "code93",
+                    "itf14",
+                    "code128",
+                    "upc_a",
+                  ],
+                }}
+                style={styles.animation}
+              />
+            )}
+            {status === FINAL && <ScanResultComponent />}
+          </View>
+          <View style={styles.scanBtnContainer}>
+            {status === BEGIN && (
+              <BigButton
+                title="Tap to Scan"
+                onPress={() => {
+                  setStatus(SCANNING);
+                }}
+              />
+            )}
+            {status === PARSING && (
+              <BigButton
+                title="Parsing the Barcode..."
+                onPress={() => {}}
+                disabled
+              />
+            )}
+            {status === CHECKING_KEYWORDS && (
+              <BigButton
+                title="Chekcing Keywords..."
+                onPress={() => {}}
+                disabled
+              />
+            )}
+            {status === FINAL && (
+              <BigButton
+                title="Scan Again"
+                onPress={() => {
+                  setScanResult("");
+                  setStatus(SCANNING);
+                }}
+              />
+            )}
+            {/* Dev Purpose Only */}
+            {status === SCANNING && (
+              <BigButton
+                title="Dev - Skip scanning"
+                onPress={() => {
+                  handleBarcodeScanned({
+                    type: "barcode",
+                    data: "5413548283128",
+                  });
+                }}
+              />
+            )}
+          </View>
+        </Fragment>
       </SafeAreaView>
     </ImageBackground>
   );

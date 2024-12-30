@@ -67,7 +67,7 @@ export const api = createApi({
       query: (_) => {
         scanLogger.log("call api - get-all-keywords:");
         return {
-          url: `http://192.168.145.145:3000/api/keywords`,
+          url: `http://18.227.81.189:3000/api/keywords`,
           method: "GET",
         };
       },
