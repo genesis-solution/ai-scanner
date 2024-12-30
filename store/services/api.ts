@@ -2,9 +2,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import { appConfig } from "../../configs/config";
 import scanLogger from "../../utils/scanLogger";
+import { Platform } from "react-native";
 
 const customBaseQuery = fetchBaseQuery({
-  baseUrl: appConfig.baseURL,
   prepareHeaders: (headers, { getState }) => {
     try {
       headers.set("Accept", "application/json");
@@ -51,13 +51,24 @@ export const api = createApi({
     }
   },
   endpoints: (builder) => ({
-    postParseBarcode: builder.mutation({
+    getParseBarcode: builder.mutation({
       query: (barcode) => {
         scanLogger.log("call api - parse-barcode:", barcode);
         return {
-          url: "api/v1/parse_barcode",
-          method: "POST",
-          body: barcode,
+          url: `https://us.openfoodfacts.org/api/v0/product/${barcode}`,
+          method: "GET",
+          headers: {
+            "User-Agent": `HealthyFoodChoices - ${Platform.OS} - Version 1.0`,
+          },
+        };
+      },
+    }),
+    getKeywords: builder.mutation({
+      query: (_) => {
+        scanLogger.log("call api - get-all-keywords:");
+        return {
+          url: `http://192.168.145.145:3000/api/keywords`,
+          method: "GET",
         };
       },
     }),
@@ -74,4 +85,8 @@ export const api = createApi({
   }),
 });
 
-export const { usePostParseBarcodeMutation, usePostAskAIMutation } = api;
+export const {
+  useGetParseBarcodeMutation,
+  useGetKeywordsMutation,
+  usePostAskAIMutation,
+} = api;

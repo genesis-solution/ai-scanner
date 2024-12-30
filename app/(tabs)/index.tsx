@@ -1,38 +1,33 @@
-import {
-  Button,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState, Fragment } from "react";
 import {
-  usePostAskAIMutation,
   useGetParseBarcodeMutation,
+  useGetKeywordsMutation,
 } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
-import { setContent } from "@/store/slices/scanSlice";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
+import { IKeyword } from "@/constants/types";
 
 const BEGIN = "begin";
 const SCANNING = "scanning";
 const PARSING = "parsing";
-const ASKINGAI = "asking";
+const CHECKING_KEYWORDS = "asking";
 const FINAL = "final";
 
 export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [status, setStatus] = useState<string>("begin");
   const [code, setCode] = useState<string>("");
+  const [scanResult, setScanResult] = useState<string>("");
+  const [keywords, setKeywords] = useState<IKeyword[]>([]);
+  const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
-  const [postAskAI] = usePostAskAIMutation();
-  const dispatch = useDispatch();
+  const [getKeywords] = useGetKeywordsMutation();
   const borderColor = useThemeColor({}, "text");
 
   useEffect(() => {
@@ -41,8 +36,23 @@ export default function HomeScreen() {
       setHasPermission(status === "granted");
     };
 
+    const getAllKeywords = async () => {
+      try {
+        const allKeywords = await getKeywords({}).unwrap();
+        setKeywords(allKeywords);
+        scanLogger.log(`keywords: `, allKeywords);
+      } catch (error) {
+        scanLogger.error(
+          `Getting All Keywords Error: ${
+            (error as Error).message || "An unexpected error"
+          }`
+        );
+      }
+    };
+
     getCameraPermissions();
-  }, []);
+    getAllKeywords();
+  }, [getKeywords]);
 
   const handleBarcodeScanned = async ({
     type,
@@ -55,18 +65,15 @@ export default function HomeScreen() {
       setStatus(PARSING);
       // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       const parsedContent = await getParseBarcode(data).unwrap();
-      scanLogger.log(parsedContent);
-      setStatus(ASKINGAI);
-      setCode(
-        JSON.stringify({
-          code: parsedContent.code,
-          status_verbose: parsedContent.status_verbose,
-          status: parsedContent.status,
-          product: parsedContent.product,
-        })
-      );
-      handleAskAI();
-      dispatch(setContent(parsedContent));
+      scanLogger.log(`Parsed Content Status: `, parsedContent.status);
+      if (parsedContent?.status) {
+        setCode(parsedContent?.code);
+        setProductInfo(parsedContent?.product);
+        handleCheckKeywords();
+      } else {
+        setScanResult("");
+        setStatus(FINAL);
+      }
     } catch (error) {
       scanLogger.error(
         `Parsing Barcode Error: ${
@@ -76,14 +83,21 @@ export default function HomeScreen() {
     }
   };
 
-  const handleAskAI = async () => {
+  const handleCheckKeywords = async () => {
     try {
-      setStatus(ASKINGAI);
-      const result = await postAskAI({
-        // Prompt will come here
-      });
+      setStatus(CHECKING_KEYWORDS);
+      if (
+        keywords.some((keyword) => {
+          if (JSON.stringify(productInfo).includes(keyword.name)) {
+            scanLogger.log(`This product includes ${keyword.name}`);
+            return true;
+          }
+          return false;
+        })
+      ) {
+        setScanResult("red");
+      } else setScanResult("green");
       setStatus(FINAL);
-      return result;
     } catch (error) {
       scanLogger.error(
         `Asking AI Error: ${(error as Error).message || "An Unexpected Error"}`
@@ -127,6 +141,7 @@ export default function HomeScreen() {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
+      gap: 48,
     },
     cameraContainer: {
       flex: 1,
@@ -134,7 +149,9 @@ export default function HomeScreen() {
       alignItems: "center",
     },
     scanBtnContainer: {
-      height: 64,
+      justifyContent: "center",
+      alignItems: "center",
+      height: 128,
       marginBottom: 8,
     },
     reactLogo: {
@@ -151,6 +168,35 @@ export default function HomeScreen() {
     },
   });
 
+  const ScanResultComponent = () => {
+    return (
+      <Fragment>
+        <ThemedText type="subtitle">{code}</ThemedText>
+        {scanResult === "green" && (
+          <LottieView
+            source={require("@/assets/animations/green-tick.json")}
+            autoPlay
+            style={styles.animation}
+          />
+        )}
+        {scanResult === "red" && (
+          <LottieView
+            source={require("@/assets/animations/red-cross.json")}
+            autoPlay
+            style={styles.animation}
+          />
+        )}
+        {scanResult === "" && (
+          <LottieView
+            source={require("@/assets/animations/no-data.json")}
+            autoPlay
+            style={styles.animation}
+          />
+        )}
+      </Fragment>
+    );
+  };
+
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
@@ -158,26 +204,12 @@ export default function HomeScreen() {
           <ThemedText type="title">Scan a Barcode</ThemedText>
         </View>
         <View style={styles.barcodeContainer}>
-          {status === BEGIN || status === SCANNING || status === PARSING ? (
+          {status === BEGIN && (
             <LottieView
               source={require("@/assets/animations/barcode.json")}
               autoPlay
               loop
               style={styles.animation}
-            />
-          ) : (
-            <ThemedText type="subtitle" style={{ textAlign: "center" }}>
-              {code}
-            </ThemedText>
-          )}
-        </View>
-        <View style={styles.cameraContainer}>
-          {status === BEGIN && (
-            <BigButton
-              title="Tap to Scan"
-              onPress={() => {
-                setStatus(SCANNING);
-              }}
             />
           )}
           {status === SCANNING && (
@@ -198,6 +230,17 @@ export default function HomeScreen() {
               style={styles.animation}
             />
           )}
+          {status === FINAL && <ScanResultComponent />}
+        </View>
+        <View style={styles.scanBtnContainer}>
+          {status === BEGIN && (
+            <BigButton
+              title="Tap to Scan"
+              onPress={() => {
+                setStatus(SCANNING);
+              }}
+            />
+          )}
           {status === PARSING && (
             <BigButton
               title="Parsing the Barcode..."
@@ -205,14 +248,18 @@ export default function HomeScreen() {
               disabled
             />
           )}
-          {status === ASKINGAI && (
-            <BigButton title="Asking AI..." onPress={() => {}} disabled />
+          {status === CHECKING_KEYWORDS && (
+            <BigButton
+              title="Chekcing Keywords..."
+              onPress={() => {}}
+              disabled
+            />
           )}
-          {status === FINAL && <ThemedText>Here's the result</ThemedText>}
           {status === FINAL && (
-            <Button
+            <BigButton
               title="Scan Again"
               onPress={() => {
+                setScanResult("");
                 setStatus(BEGIN);
               }}
             />
@@ -224,7 +271,7 @@ export default function HomeScreen() {
               onPress={() => {
                 handleBarcodeScanned({
                   type: "barcode",
-                  data: "01223004",
+                  data: "5413548283128",
                 });
               }}
             />
