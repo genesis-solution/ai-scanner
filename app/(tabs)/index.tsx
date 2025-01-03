@@ -1,4 +1,10 @@
-import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  Image,
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { CameraView, Camera } from "expo-camera";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -12,6 +18,7 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { IKeyword } from "@/constants/types";
+import CameraScanner from "@/components/CameraScanner";
 
 const BEGIN = "begin";
 const SCANNING = "scanning";
@@ -72,11 +79,11 @@ export default function HomeScreen() {
   }) => {
     try {
       setStatus(PARSING);
+      setCode(`${type} - ${data}`);
       // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       const parsedContent = await getParseBarcode(data).unwrap();
       scanLogger.log(`Parsed Content Status: `, parsedContent.status);
       if (parsedContent?.status) {
-        setCode(parsedContent?.code);
         setProductInfo(parsedContent?.product);
         handleCheckKeywords();
       } else {
@@ -89,6 +96,8 @@ export default function HomeScreen() {
           (error as Error).message || "An unexpected error"
         }`
       );
+      setScanResult("parse-error");
+      setStatus(FINAL);
     }
   };
 
@@ -153,9 +162,11 @@ export default function HomeScreen() {
       gap: 48,
     },
     cameraContainer: {
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      bottom: 0, 
+      right: 0,
     },
     scanBtnContainer: {
       justifyContent: "center",
@@ -173,6 +184,11 @@ export default function HomeScreen() {
     animation: {
       width: 300,
       height: 300,
+      alignSelf: "center",
+    },
+    splashIcon: {
+      width: 200,
+      height: 200,
       alignSelf: "center",
     },
   });
@@ -197,7 +213,14 @@ export default function HomeScreen() {
         )}
         {scanResult === "" && (
           <LottieView
-            source={require("@/assets/animations/no-data.json")}
+            source={require("@/assets/animations/unknown-product.json")}
+            autoPlay
+            style={styles.animation}
+          />
+        )}
+        {scanResult === "parse-error" && (
+          <LottieView
+            source={require("@/assets/animations/parse-error.json")}
             autoPlay
             style={styles.animation}
           />
@@ -216,10 +239,9 @@ export default function HomeScreen() {
           backgroundColor: "white",
         }}
       >
-        <LottieView
-          source={require("@/assets/animations/loading.json")}
-          autoPlay
-          style={styles.animation}
+        <Image
+          source={require("@/assets/images/icon.png")}
+          style={styles.splashIcon}
         />
       </SafeAreaView>
     );
@@ -243,22 +265,12 @@ export default function HomeScreen() {
               />
             )}
             {status === SCANNING && (
-              <CameraView
-                onBarcodeScanned={handleBarcodeScanned}
-                barcodeScannerSettings={{
-                  barcodeTypes: [
-                    "ean13",
-                    "ean8",
-                    "upc_e",
-                    "code39",
-                    "code93",
-                    "itf14",
-                    "code128",
-                    "upc_a",
-                  ],
-                }}
-                style={styles.animation}
-              />
+              <View style={styles.cameraContainer}>
+                <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
+              </View>
+            )}
+            {status === PARSING && (
+              <ThemedText type="subtitle">{`Test Purpose Only\n${code}`}</ThemedText>
             )}
             {status === FINAL && <ScanResultComponent />}
           </View>
@@ -268,6 +280,14 @@ export default function HomeScreen() {
                 title="Tap to Scan"
                 onPress={() => {
                   setStatus(SCANNING);
+                }}
+              />
+            )}
+            {status === SCANNING && (
+              <BigButton
+                title="Go Home"
+                onPress={() => {
+                  setStatus(BEGIN);
                 }}
               />
             )}
@@ -295,7 +315,7 @@ export default function HomeScreen() {
               />
             )}
             {/* Dev Purpose Only */}
-            {status === SCANNING && (
+            {/* {status === SCANNING && (
               <BigButton
                 title="Dev - Skip scanning"
                 onPress={() => {
@@ -305,7 +325,7 @@ export default function HomeScreen() {
                   });
                 }}
               />
-            )}
+            )} */}
           </View>
         </Fragment>
       </SafeAreaView>
