@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { CameraView } from "expo-camera";
+import { CameraView, FlashMode, FocusMode } from "expo-camera";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
-import { appConfig } from "@/configs/config";
 import scanLogger from "@/utils/scanLogger";
+import { showAlert } from "@/utils/scanAlert";
 
 type ICameraScannerProps = {
   handleBarcodeScanned: ({
@@ -17,8 +17,8 @@ type ICameraScannerProps = {
 export default function CameraScanner({
   handleBarcodeScanned,
 }: ICameraScannerProps) {
-  const [autoFocus, setAutoFocus] = useState("off");
-  const [flashMode, setFlashMode] = useState("off");
+  const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
+  const [flashMode, setFlashMode] = useState<FlashMode>("off");
 
   const styles = StyleSheet.create({
     container: {
@@ -50,6 +50,13 @@ export default function CameraScanner({
       width: 30,
       height: 30,
     },
+    buttonFlash: {
+      alignItems: "center",
+    },
+    flashImage: {
+      width: 30,
+      height: 30,
+    },
     cameraView: {
       position: "absolute",
       top: 0,
@@ -62,12 +69,30 @@ export default function CameraScanner({
 
   const toggleAutoFocus = () => {
     try {
-      let newFocus = autoFocus === "on" ? "off" : "on";
+      let newFocus: FocusMode = autoFocus === "on" ? "off" : "on";
       setAutoFocus(newFocus);
-      //   showAlert(`Auto Focus: ${newFocus.toUpperCase()}`, "success");
+      showAlert(`Auto Focus: ${newFocus.toUpperCase()}`, "success");
     } catch (error) {
       scanLogger.log(
         "toggleAutoFocus error:",
+        (error as Error).message || "An unexpected error"
+      );
+    }
+  };
+
+  const toggleFlash = () => {
+    try {
+      let newMode: FlashMode = "off";
+      if (flashMode === "off") {
+        newMode = "on";
+      } else if (flashMode === "on") {
+        newMode = "auto";
+      }
+      setFlashMode(newMode);
+      showAlert(`Flash Mode: ${newMode.toUpperCase()}`, "success");
+    } catch (error) {
+      scanLogger.log(
+        "toggleFlash error:",
         (error as Error).message || "An unexpected error"
       );
     }
@@ -93,6 +118,24 @@ export default function CameraScanner({
               />
             )}
           </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonFlash} onPress={toggleFlash}>
+            {flashMode === "on" ? (
+              <Image
+                style={styles.flashImage}
+                source={require("@/assets/images/flash-on-icon.png")}
+              />
+            ) : flashMode === "auto" ? (
+              <Image
+                style={styles.flashImage}
+                source={require("@/assets/images/flash-auto-icon.png")}
+              />
+            ) : (
+              <Image
+                style={styles.flashImage}
+                source={require("@/assets/images/flash-off-icon.png")}
+              />
+            )}
+          </TouchableOpacity>
         </View>
 
         <CameraView
@@ -109,6 +152,9 @@ export default function CameraScanner({
               "upc_a",
             ],
           }}
+          facing="back"
+          autofocus={autoFocus}
+          flash={flashMode}
           style={styles.cameraView}
         />
       </View>
