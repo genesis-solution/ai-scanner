@@ -1,11 +1,13 @@
 import {
+  Button,
   Image,
   ImageBackground,
   SafeAreaView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
-import { CameraView, Camera } from "expo-camera";
+import { Camera } from "expo-camera";
 
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
@@ -19,6 +21,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { IKeyword } from "@/constants/types";
 import CameraScanner from "@/components/CameraScanner";
+import ScanResultShow from "@/components/ScanResultShow";
 
 const BEGIN = "begin";
 const SCANNING = "scanning";
@@ -30,7 +33,7 @@ export default function HomeScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const [status, setStatus] = useState<string>("begin");
   const [code, setCode] = useState<string>("");
-  const [scanResult, setScanResult] = useState<string>("");
+  const [scanResult, setScanResult] = useState<string>("unknown");
   const [keywords, setKeywords] = useState<IKeyword[]>([]);
   const [productInfo, setProductInfo] = useState<any>({});
   const [splashTimeout, setSplashTimeout] = useState(false);
@@ -87,7 +90,7 @@ export default function HomeScreen() {
         setProductInfo(parsedContent?.product);
         handleCheckKeywords();
       } else {
-        setScanResult("");
+        setScanResult("unknown");
         setStatus(FINAL);
       }
     } catch (error) {
@@ -159,13 +162,13 @@ export default function HomeScreen() {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      gap: 48,
+      gap: 12,
     },
     cameraContainer: {
       position: "absolute",
       top: 0,
       left: 0,
-      bottom: 0, 
+      bottom: 0,
       right: 0,
     },
     scanBtnContainer: {
@@ -192,42 +195,6 @@ export default function HomeScreen() {
       alignSelf: "center",
     },
   });
-
-  const ScanResultComponent = () => {
-    return (
-      <Fragment>
-        <ThemedText type="subtitle">{code}</ThemedText>
-        {scanResult === "green" && (
-          <LottieView
-            source={require("@/assets/animations/green-tick.json")}
-            autoPlay
-            style={styles.animation}
-          />
-        )}
-        {scanResult === "red" && (
-          <LottieView
-            source={require("@/assets/animations/red-cross.json")}
-            autoPlay
-            style={styles.animation}
-          />
-        )}
-        {scanResult === "" && (
-          <LottieView
-            source={require("@/assets/animations/unknown-product.json")}
-            autoPlay
-            style={styles.animation}
-          />
-        )}
-        {scanResult === "parse-error" && (
-          <LottieView
-            source={require("@/assets/animations/parse-error.json")}
-            autoPlay
-            style={styles.animation}
-          />
-        )}
-      </Fragment>
-    );
-  };
 
   const LoadingComponent = () => {
     return (
@@ -272,7 +239,13 @@ export default function HomeScreen() {
             {status === PARSING && (
               <ThemedText type="subtitle">{`Test Purpose Only\n${code}`}</ThemedText>
             )}
-            {status === FINAL && <ScanResultComponent />}
+            {status === FINAL && (
+              <ScanResultShow
+                handleBarcodeScanned={handleBarcodeScanned}
+                scanResult={scanResult}
+                code={code}
+              />
+            )}
           </View>
           <View style={styles.scanBtnContainer}>
             {status === BEGIN && (
@@ -293,7 +266,7 @@ export default function HomeScreen() {
             )}
             {status === PARSING && (
               <BigButton
-                title="Parsing the Barcode..."
+                title="Parsing..."
                 onPress={() => {}}
                 disabled
               />
@@ -309,23 +282,23 @@ export default function HomeScreen() {
               <BigButton
                 title="Scan Again"
                 onPress={() => {
-                  setScanResult("");
+                  setScanResult("unknown");
                   setStatus(SCANNING);
                 }}
               />
             )}
             {/* Dev Purpose Only */}
-            {/* {status === SCANNING && (
+            {status === SCANNING && (
               <BigButton
                 title="Dev - Skip scanning"
                 onPress={() => {
                   handleBarcodeScanned({
                     type: "barcode",
-                    data: "5413548283128",
+                    data: "54135483128",
                   });
                 }}
               />
-            )} */}
+            )}
           </View>
         </Fragment>
       </SafeAreaView>

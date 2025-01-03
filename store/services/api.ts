@@ -1,8 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-import { appConfig } from "../../configs/config";
-import scanLogger from "../../utils/scanLogger";
 import { Platform } from "react-native";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import scanLogger from "../../utils/scanLogger";
 
 const customBaseQuery = fetchBaseQuery({
   prepareHeaders: (headers, { getState }) => {
@@ -58,7 +56,7 @@ export const api = createApi({
           url: `https://us.openfoodfacts.org/api/v0/product/${barcode}`,
           method: "GET",
           headers: {
-            "User-Agent": `HealthyFoodChoices - ${Platform.OS} - Version 1.0`,
+            "User-Agent": `FoodScanner - ${Platform.OS} - Version 1.0`,
           },
         };
       },
