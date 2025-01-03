@@ -82,7 +82,7 @@ export default function HomeScreen() {
   }) => {
     try {
       setStatus(PARSING);
-      setCode(`${type} - ${data}`);
+      setCode(`${type}-${data}`);
       // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
       const parsedContent = await getParseBarcode(data).unwrap();
       scanLogger.log(`Parsed Content Status: `, parsedContent.status);
@@ -237,7 +237,11 @@ export default function HomeScreen() {
               </View>
             )}
             {status === PARSING && (
-              <ThemedText type="subtitle">{`Test Purpose Only\n${code}`}</ThemedText>
+              <LottieView
+                source={require("@/assets/animations/parsing.json")}
+                autoPlay
+                style={styles.animation}
+              />
             )}
             {status === FINAL && (
               <ScanResultShow
@@ -265,11 +269,7 @@ export default function HomeScreen() {
               />
             )}
             {status === PARSING && (
-              <BigButton
-                title="Parsing..."
-                onPress={() => {}}
-                disabled
-              />
+              <BigButton title="Parsing..." onPress={() => {}} disabled />
             )}
             {status === CHECKING_KEYWORDS && (
               <BigButton
@@ -288,17 +288,17 @@ export default function HomeScreen() {
               />
             )}
             {/* Dev Purpose Only */}
-            {status === SCANNING && (
+            {/* {status === SCANNING && (
               <BigButton
                 title="Dev - Skip scanning"
                 onPress={() => {
                   handleBarcodeScanned({
                     type: "barcode",
-                    data: "54135483128",
+                    data: "5413548283128",
                   });
                 }}
               />
-            )}
+            )} */}
           </View>
         </Fragment>
       </SafeAreaView>
