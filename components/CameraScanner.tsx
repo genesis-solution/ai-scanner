@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CameraView, FlashMode, FocusMode } from "expo-camera";
+import { CameraType, CameraView, FlashMode, FocusMode } from "expo-camera";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
@@ -19,6 +19,7 @@ export default function CameraScanner({
 }: ICameraScannerProps) {
   const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
+  const [facingMode, setFacingMode] = useState<CameraType>("back");
 
   const styles = StyleSheet.create({
     container: {
@@ -54,6 +55,13 @@ export default function CameraScanner({
       alignItems: "center",
     },
     flashImage: {
+      width: 30,
+      height: 30,
+    },
+    buttonFacing: {
+      alignItems: "center",
+    },
+    facingImage: {
       width: 30,
       height: 30,
     },
@@ -98,6 +106,18 @@ export default function CameraScanner({
     }
   };
 
+  const toggleFacing = () => {
+    try {
+      let newMode: CameraType = facingMode === "back" ? "front" : "back";
+      setFacingMode(newMode);
+    } catch (error) {
+      scanLogger.log(
+        "toggleFacing error:",
+        (error as Error).message || "An unexpected error"
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.cameraViewWrap}>
@@ -136,6 +156,12 @@ export default function CameraScanner({
               />
             )}
           </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonFacing} onPress={toggleFacing}>
+            <Image
+              style={styles.facingImage}
+              source={require("@/assets/images/camera-switch-front-back.png")}
+            />
+          </TouchableOpacity>
         </View>
 
         <CameraView
@@ -152,7 +178,7 @@ export default function CameraScanner({
               "upc_a",
             ],
           }}
-          facing="back"
+          facing={facingMode}
           autofocus={autoFocus}
           flash={flashMode}
           style={styles.cameraView}
