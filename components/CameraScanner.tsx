@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CameraType, CameraView, FlashMode, FocusMode } from "expo-camera";
+import { CameraType, CameraView, FlashMode } from "expo-camera";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
@@ -17,7 +17,6 @@ type ICameraScannerProps = {
 export default function CameraScanner({
   handleBarcodeScanned,
 }: ICameraScannerProps) {
-  const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [facingMode, setFacingMode] = useState<CameraType>("back");
 
@@ -75,19 +74,6 @@ export default function CameraScanner({
     },
   });
 
-  const toggleAutoFocus = () => {
-    try {
-      let newFocus: FocusMode = autoFocus === "on" ? "off" : "on";
-      setAutoFocus(newFocus);
-      showAlert(`Auto Focus: ${newFocus.toUpperCase()}`, "success");
-    } catch (error) {
-      scanLogger.log(
-        "toggleAutoFocus error:",
-        (error as Error).message || "An unexpected error"
-      );
-    }
-  };
-
   const toggleFlash = () => {
     try {
       let newMode: FlashMode = "off";
@@ -122,22 +108,6 @@ export default function CameraScanner({
     <View style={styles.container}>
       <View style={styles.cameraViewWrap}>
         <View style={styles.panelTop}>
-          <TouchableOpacity
-            style={styles.buttonFocus}
-            onPress={toggleAutoFocus}
-          >
-            {autoFocus === "on" ? (
-              <Image
-                style={styles.focusImage}
-                source={require("@/assets/images/shutter-icon-a.png")}
-              />
-            ) : (
-              <Image
-                style={styles.focusImage}
-                source={require("@/assets/images/shutter-icon-w.png")}
-              />
-            )}
-          </TouchableOpacity>
           <TouchableOpacity style={styles.buttonFlash} onPress={toggleFlash}>
             {flashMode === "on" ? (
               <Image
@@ -179,7 +149,7 @@ export default function CameraScanner({
             ],
           }}
           facing={facingMode}
-          autofocus={autoFocus}
+          autofocus="on"
           flash={flashMode}
           style={styles.cameraView}
         />
