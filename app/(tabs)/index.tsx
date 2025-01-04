@@ -221,7 +221,7 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.container}>
         <Fragment>
           <View style={styles.titleContainer}>
-            <ThemedText type="title">Scan a Barcode</ThemedText>
+            <ThemedText type="title">Food Bug Scanner</ThemedText>
           </View>
           <View style={styles.barcodeContainer}>
             {status === BEGIN && (
