@@ -39,7 +39,6 @@ const ScanResultShow = ({ handleBarcodeScanned, scanResult, code }: any) => {
 
   return (
     <Fragment>
-      <ThemedText type="subtitle">{code}</ThemedText>
       {scanResult === "green" && (
         <LottieView
           source={require("@/assets/animations/green-tick.json")}
