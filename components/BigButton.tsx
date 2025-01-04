@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
   appButtonContainer: {
     elevation: 8,
     backgroundColor: "#009688",
-    height: "40%",
-    width: "70%",
+    height: "100%",
+    width: "100%",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

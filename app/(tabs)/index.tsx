@@ -5,6 +5,7 @@ import LottieView from "lottie-react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { router } from "expo-router";
+import ManualInput from "@/components/ManualInput";
 
 export default function HomeScreen() {
   const borderColor = useThemeColor({}, "text");
@@ -39,14 +40,26 @@ export default function HomeScreen() {
       justifyContent: "center",
       alignItems: "center",
       gap: 12,
+      paddingVertical: 24,
     },
     scanBtnContainer: {
+      height: 120,
+      width: "100%",
+      paddingBottom: 48,
+      paddingHorizontal: 48,
       justifyContent: "center",
       alignItems: "center",
-      height: 128,
-      marginBottom: 8,
+    },
+    manualInputContainer: {
+      flexDirection: "column",
+      justifyContent: "flex-start",
+      alignItems: "center",
+      height: 160,
+      paddingTop: 12,
+      paddingBottom: 12,
     },
     animation: {
+      flex: 1,
       width: 300,
       height: 300,
       alignSelf: "center",
@@ -65,14 +78,17 @@ export default function HomeScreen() {
             autoPlay
             style={styles.animation}
           />
+          <View style={styles.scanBtnContainer}>
+            <BigButton
+              title="Tap to Scan"
+              onPress={() => {
+                router.replace("/scan");
+              }}
+            />
+          </View>
         </View>
-        <View style={styles.scanBtnContainer}>
-          <BigButton
-            title="Tap to Scan"
-            onPress={() => {
-              router.replace("/scan");
-            }}
-          />
+        <View style={styles.manualInputContainer}>
+          <ManualInput />
         </View>
       </SafeAreaView>
     </ImageBackground>
