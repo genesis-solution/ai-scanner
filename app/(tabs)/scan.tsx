@@ -1,27 +1,19 @@
-import {
-  Image,
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  View,
-} from "react-native";
+import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
 
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
 import { useEffect, useState, Fragment } from "react";
-import {
-  useGetParseBarcodeMutation,
-  useGetKeywordsMutation,
-} from "@/store/services/api";
+import { useGetParseBarcodeMutation } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { IKeyword } from "@/constants/types";
 import CameraScanner from "@/components/CameraScanner";
 import ScanResultShow from "@/components/ScanResultShow";
+import { useSelector } from "react-redux";
+import ManualInput from "@/components/ManualInput";
 
-const BEGIN = "begin";
 const SCANNING = "scanning";
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "asking";
@@ -29,16 +21,14 @@ const FINAL = "final";
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [status, setStatus] = useState<string>("begin");
+  const [status, setStatus] = useState<string>(SCANNING);
   const [code, setCode] = useState<string>("");
   const [scanResult, setScanResult] = useState<string>("unknown");
-  const [keywords, setKeywords] = useState<IKeyword[]>([]);
   const [productInfo, setProductInfo] = useState<any>({});
-  const [splashTimeout, setSplashTimeout] = useState(false);
   const [getParseBarcode] = useGetParseBarcodeMutation();
-  const [getKeywords, { isLoading: isGettingKeywords }] =
-    useGetKeywordsMutation();
   const borderColor = useThemeColor({}, "text");
+
+  const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -46,30 +36,8 @@ export default function ScanScreen() {
       setHasPermission(status === "granted");
     };
 
-    setTimeout(() => {
-      setSplashTimeout(true);
-    }, 2500);
-
     getCameraPermissions();
   }, []);
-
-  useEffect(() => {
-    const getAllKeywords = async () => {
-      try {
-        const allKeywords = await getKeywords({}).unwrap();
-        setKeywords(allKeywords);
-        scanLogger.log(`keywords: `, allKeywords);
-      } catch (error) {
-        scanLogger.error(
-          `Getting All Keywords Error: ${
-            (error as Error).message || "An unexpected error"
-          }`
-        );
-      }
-    };
-
-    getAllKeywords();
-  }, [getKeywords]);
 
   const handleBarcodeScanned = async ({
     type,
@@ -194,27 +162,7 @@ export default function ScanScreen() {
     },
   });
 
-  const LoadingComponent = () => {
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <Image
-          source={require("@/assets/images/icon.png")}
-          style={styles.splashIcon}
-        />
-      </SafeAreaView>
-    );
-  };
-
-  return !splashTimeout || isGettingKeywords ? (
-    <LoadingComponent />
-  ) : (
+  return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
         <Fragment>
@@ -222,13 +170,6 @@ export default function ScanScreen() {
             <ThemedText type="title">Food Bug Scanner</ThemedText>
           </View>
           <View style={styles.barcodeContainer}>
-            {status === BEGIN && (
-              <LottieView
-                source={require("@/assets/animations/barcode.json")}
-                autoPlay
-                style={styles.animation}
-              />
-            )}
             {status === SCANNING && (
               <View style={styles.cameraContainer}>
                 <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
@@ -250,22 +191,7 @@ export default function ScanScreen() {
             )}
           </View>
           <View style={styles.scanBtnContainer}>
-            {status === BEGIN && (
-              <BigButton
-                title="Tap to Scan"
-                onPress={() => {
-                  setStatus(SCANNING);
-                }}
-              />
-            )}
-            {status === SCANNING && (
-              <BigButton
-                title="Go Home"
-                onPress={() => {
-                  setStatus(BEGIN);
-                }}
-              />
-            )}
+            {status === SCANNING && <ManualInput />}
             {status === PARSING && (
               <BigButton title="Parsing..." onPress={() => {}} disabled />
             )}
