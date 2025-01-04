@@ -15,40 +15,48 @@ import { Provider } from "react-redux";
 import { store } from "@/store/store";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/configs/toastConfig";
+import { useKeywords } from "@/hooks/useKeywords";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function App() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
+  const [fontLoaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const [keywordsLoaded] = useKeywords();
 
   useEffect(() => {
     setColorScheme("light");
   }, []);
 
   useEffect(() => {
-    if (loaded) {
+    if (fontLoaded && keywordsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [fontLoaded, keywordsLoaded]);
 
-  if (!loaded) {
+  if (!fontLoaded || !keywordsLoaded) {
     return null;
   }
 
   return (
+    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="auto" />
+      <Toast config={toastConfig} />
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <Provider store={store}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-        <StatusBar style="auto" />
-        <Toast config={toastConfig} />
-      </ThemeProvider>
+      <App />
     </Provider>
   );
 }
