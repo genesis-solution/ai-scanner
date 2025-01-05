@@ -20,8 +20,5 @@ export function ThemedPicker({
 }
 
 const styles = StyleSheet.create({
-  picker: {
-    height: 50,
-    // Add any additional default styles for the picker here
-  },
+  picker: {},
 });
