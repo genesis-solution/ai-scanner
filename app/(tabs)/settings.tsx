@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedPicker } from "@/components/ThemedPicker";
 import { ItemValue } from "@react-native-picker/picker/typings/Picker";
+import { router } from "expo-router";
 
 export default function SettingsScreen() {
   const { language, theme } = useSelector((state: any) => state.settings);
@@ -71,7 +72,9 @@ export default function SettingsScreen() {
         <ThemedText style={styles.label}>{t("privacyPolicy")}</ThemedText>
         <Button
           title={t("view")}
-          onPress={() => console.log("Navigate to privacy policy")}
+          onPress={() => {
+            router.push("/privacy");
+          }}
         />
       </View>
 
