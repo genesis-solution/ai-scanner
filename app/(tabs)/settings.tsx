@@ -110,7 +110,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   picker: {
-    flex: 2,
+    flex: 1,
     height: 50,
+    width: 50,
+    borderColor: "red",
+    borderWidth: 1,
   },
 });
