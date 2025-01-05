@@ -17,6 +17,7 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
+import { FontAwesome } from "@expo/vector-icons";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -173,22 +174,13 @@ export default function ScanScreen() {
               {status === FINAL && <ScanResultShow scanResult={scanResult} />}
             </View>
             <View style={styles.scanBtnContainer}>
-              {status === PARSING && (
-                <BigButton title={t("parsing")} onPress={() => {}} disabled />
-              )}
-              {status === CHECKING_KEYWORDS && (
-                <BigButton
-                  title={t("checkingKeywords")}
-                  onPress={() => {}}
-                  disabled
-                />
-              )}
               {status === FINAL && (
                 <BigButton
                   title={t("scanAgain")}
                   onPress={() => {
                     router.replace("/(tabs)/scan");
                   }}
+                  icon={<FontAwesome name="repeat" size={48} color="white" />}
                 />
               )}
             </View>

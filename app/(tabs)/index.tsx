@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import ManualInput from "@/components/ManualInput";
 import { useTranslation } from "react-i18next";
 import { useColorScheme } from "@/hooks/useColorScheme"; // Import your custom hook or use React Native's useColorScheme
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -92,6 +93,7 @@ export default function HomeScreen() {
               onPress={() => {
                 router.replace("/scan");
               }}
+              icon={<Ionicons name="scan" size={48} color="white" />}
             />
           </View>
         </View>

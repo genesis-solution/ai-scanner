@@ -1,19 +1,24 @@
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ReactNode } from "react";
 
 const BigButton = ({
   onPress,
   title,
   disabled,
+  icon,
 }: {
   onPress: () => void;
   title: string;
   disabled?: boolean;
+  icon?: ReactNode; // Accepts a ReactNode for the icon
 }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[styles.appButtonContainer, disabled && styles.appButtonDisabled]}
+      disabled={disabled}
     >
+      <View style={styles.iconContainer}>{icon}</View>
       <Text style={styles.appButtonText}>{title}</Text>
     </TouchableOpacity>
   );
@@ -41,6 +46,9 @@ const styles = StyleSheet.create({
   },
   appButtonDisabled: {
     backgroundColor: "#000",
+  },
+  iconContainer: {
+    marginRight: 8, // Add some space between the icon and the text
   },
 });
 
