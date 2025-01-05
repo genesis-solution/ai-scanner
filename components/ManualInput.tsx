@@ -1,14 +1,16 @@
-import { Button, StyleSheet, TextInput, View } from "react-native";
+import { Button, StyleSheet, View } from "react-native";
 import { ThemedText } from "./ThemedText";
+import { ThemedTextInput } from "./ThemedTextInput"; // Import the new component
 import { useState } from "react";
 import { isBlankOrNull } from "@/utils/string";
 import { showAlert } from "@/utils/scanAlert";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { useTranslation } from "react-i18next";
 
 export default function ManualInput() {
   const [manualInput, setManualInput] = useState<string>("");
   const { t } = useTranslation();
+  const pathname = usePathname();
 
   const styles = StyleSheet.create({
     container: {
@@ -29,10 +31,7 @@ export default function ManualInput() {
     },
     manualInput: {
       flex: 1,
-      height: 40,
       margin: 12,
-      borderWidth: 1,
-      padding: 10,
     },
   });
 
@@ -42,11 +41,13 @@ export default function ManualInput() {
         {t("orInputManually")}
       </ThemedText>
       <View style={styles.inputContainer}>
-        <TextInput
+        <ThemedTextInput
           value={manualInput}
           onChangeText={setManualInput}
           style={styles.manualInput}
           placeholder={t("enterCode")}
+          lightColor="#000" // Example light color
+          darkColor="#fff" // Example dark color
         />
         <Button
           title={t("submit")}
@@ -55,7 +56,13 @@ export default function ManualInput() {
               showAlert(t("invalidCode"), "error");
               return;
             }
-            router.push(`/result?type=manual&data=${manualInput}`);
+
+            // Check if the current route is not /result before navigating
+            if (pathname !== "/result") {
+              router.push(`/result?type=manual&data=${manualInput}`);
+            } else {
+              router.replace(`/result?type=manual&data=${manualInput}`);
+            }
           }}
         />
       </View>

@@ -1,5 +1,11 @@
 import { useEffect, useState, Fragment, useCallback } from "react";
-import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -26,6 +32,7 @@ export default function ScanScreen() {
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
   const { type, data } = useLocalSearchParams();
+  const colorScheme = useColorScheme(); // Get the current theme
 
   useEffect(() => {
     if (!type || !data) {
@@ -77,7 +84,11 @@ export default function ScanScreen() {
     parseCode();
   }, [data, getParseBarcode, handleCheckKeywords]);
 
-  const image = require("@/assets/images/yellow_bg.jpg");
+  // Select the background image based on the theme
+  const image =
+    colorScheme === "dark"
+      ? require("@/assets/images/dark-bg.jpg")
+      : require("@/assets/images/light-bg.jpg");
 
   const styles = StyleSheet.create({
     image: {

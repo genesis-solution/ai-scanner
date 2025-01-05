@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
+import {
+  ImageBackground,
+  SafeAreaView,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from "react-native";
 import { Camera } from "expo-camera";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -13,6 +19,7 @@ export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
+  const colorScheme = useColorScheme(); // Get the current theme
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -48,8 +55,11 @@ export default function ScanScreen() {
     return <ThemedText>{t("noCameraAccess")}</ThemedText>;
   }
 
-  // const image = require("@/assets/images/scan-bg.png");
-  const image = require("@/assets/images/yellow_bg.jpg");
+  // Select the background image based on the theme
+  const image =
+    colorScheme === "dark"
+      ? require("@/assets/images/dark-bg.jpg")
+      : require("@/assets/images/light-bg.jpg");
 
   const styles = StyleSheet.create({
     image: {

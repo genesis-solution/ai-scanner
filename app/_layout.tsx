@@ -30,7 +30,7 @@ function App() {
   });
   const [keywordsLoaded] = useKeywords();
   const { i18n } = useTranslation();
-  const language = useSelector((state: any) => state.settings.language);
+  const { language, theme } = useSelector((state: any) => state.settings);
 
   useEffect(() => {
     if (language) {
@@ -39,8 +39,8 @@ function App() {
   }, [language, i18n]);
 
   useEffect(() => {
-    setColorScheme("light");
-  }, []);
+    setColorScheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     if (fontLoaded && keywordsLoaded) {

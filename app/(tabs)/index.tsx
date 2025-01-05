@@ -6,13 +6,18 @@ import BigButton from "@/components/BigButton";
 import { router } from "expo-router";
 import ManualInput from "@/components/ManualInput";
 import { useTranslation } from "react-i18next";
+import { useColorScheme } from "@/hooks/useColorScheme"; // Import your custom hook or use React Native's useColorScheme
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const borderColor = useThemeColor({}, "text");
+  const colorScheme = useColorScheme(); // Get the current theme
 
-  // const image = require("@/assets/images/scan-bg.png");
-  const image = require("@/assets/images/yellow_bg.jpg");
+  // Select the background image based on the theme
+  const image =
+    colorScheme === "dark"
+      ? require("@/assets/images/dark-bg.jpg")
+      : require("@/assets/images/light-bg.jpg");
 
   const styles = StyleSheet.create({
     image: {
