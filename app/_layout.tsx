@@ -11,12 +11,14 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { setColorScheme, useColorScheme } from "@/hooks/useColorScheme";
-import { Provider } from "react-redux";
-import { store } from "@/store/store";
+import { Provider, useSelector } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistor, store } from "@/store/store";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/configs/toastConfig";
 import { useKeywords } from "@/hooks/useKeywords";
 import "@/i18n";
+import { useTranslation } from "react-i18next";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -27,6 +29,14 @@ function App() {
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [keywordsLoaded] = useKeywords();
+  const { i18n } = useTranslation();
+  const language = useSelector((state: any) => state.settings.language);
+
+  useEffect(() => {
+    if (language) {
+      i18n.changeLanguage(language);
+    }
+  }, [language, i18n]);
 
   useEffect(() => {
     setColorScheme("light");
@@ -58,7 +68,9 @@ function App() {
 export default function RootLayout() {
   return (
     <Provider store={store}>
-      <App />
+      <PersistGate loading={null} persistor={persistor}>
+        <App />
+      </PersistGate>
     </Provider>
   );
 }
