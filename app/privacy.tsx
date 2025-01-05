@@ -1,13 +1,16 @@
 import { Stack } from "expo-router";
 import React, { Fragment } from "react";
+import { useTranslation } from "react-i18next";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 
 export default function PrivacyPolicyScreen() {
+  const { t } = useTranslation();
+
   return (
     <Fragment>
       <Stack.Screen
         options={{
-          title: "Privacy Policy",
+          title: t("privacyPolicy"),
         }}
       />
       <View style={styles.container}>

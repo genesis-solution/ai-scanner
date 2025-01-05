@@ -16,6 +16,8 @@ export const Colors = {
     tabIconSelected: tintColorLight,
     picker: "#11181C",
     textInput: "#11181C",
+    accordionTitle: "rgba(128, 128, 128, 0.4)",
+    accordionContent: "rgba(128, 128, 128, 0.2)",
   },
   dark: {
     text: "#ECEDEE",
@@ -26,5 +28,7 @@ export const Colors = {
     tabIconSelected: tintColorDark,
     picker: "#ECEDEE",
     textInput: "#ECEDEE",
+    accordionTitle: "rgba(128, 128, 128, 0.4)",
+    accordionContent: "rgba(128, 128, 128, 0.2)",
   },
 };

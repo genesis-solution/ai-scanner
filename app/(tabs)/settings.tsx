@@ -117,6 +117,15 @@ export default function SettingsScreen() {
           >
             <Picker.Item label={t("english")} value="en" />
             <Picker.Item label={t("german")} value="de" />
+            <Picker.Item label={t("spanish")} value="es" />
+            <Picker.Item label={t("french")} value="fr" />
+            <Picker.Item label={t("chinese")} value="zh" />
+            <Picker.Item label={t("arabic")} value="ar" />
+            <Picker.Item label={t("hindi")} value="hi" />
+            <Picker.Item label={t("portuguese")} value="pt" />
+            <Picker.Item label={t("russian")} value="ru" />
+            <Picker.Item label={t("japanese")} value="ja" />
+            <Picker.Item label={t("italian")} value="it" />
           </ThemedPicker>
         </View>
 
@@ -140,9 +149,11 @@ export default function SettingsScreen() {
 
       {/* Contact Section */}
       <View style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>{t("contact")}</ThemedText>
+        <ThemedText style={styles.sectionTitle}>
+          {t("contact.title")}
+        </ThemedText>
 
-        {renderOptionRow("contact-mail", t("contact"), () => {
+        {renderOptionRow("contact-mail", t("contact.title"), () => {
           router.push("/contact");
         })}
 
@@ -159,7 +170,7 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <ThemedText style={styles.sectionTitle}>{t("app")}</ThemedText>
 
-        {renderOptionRow("question-answer", t("faq"), () => {
+        {renderOptionRow("question-answer", t("faq.title"), () => {
           router.push("/faq");
         })}
 

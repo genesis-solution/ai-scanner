@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
-import { View, StyleSheet, Platform, UIManager } from "react-native";
-import { AccordionList } from "react-native-accordion-list-view";
-import { ThemedText } from "@/components/ThemedText";
+import React, { Fragment } from "react";
+import { View, StyleSheet } from "react-native";
+import ThemedAccordion from "@/components/ThemedAccordion";
+import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 const faqData = [
   {
@@ -19,42 +20,20 @@ const faqData = [
 ];
 
 export default function FAQScreen() {
-  useEffect(() => {
-    if (Platform.OS === "android") {
-      if (UIManager.setLayoutAnimationEnabledExperimental) {
-        UIManager.setLayoutAnimationEnabledExperimental(true);
-      }
-    }
-  }, []);
+  const { t } = useTranslation();
 
   return (
-    <View style={styles.container}>
-      <AccordionList
-        data={faqData}
-        customTitle={(item) => (
-          <ThemedText style={styles.title}>{item.title}</ThemedText>
-        )}
-        customBody={(item) => (
-          <ThemedText style={styles.content}>{item.content}</ThemedText>
-        )}
-        animationDuration={400}
-        expandMultiple={true}
-      />
-    </View>
+    <Fragment>
+      <Stack.Screen options={{ title: t("faq.title") }} />
+      <View style={styles.container}>
+        <ThemedAccordion data={faqData} />
+      </View>
+    </Fragment>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  content: {
-    fontSize: 16,
-    marginBottom: 16,
   },
 });

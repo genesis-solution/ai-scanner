@@ -2,7 +2,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface SettingsState {
-  language: "en" | "de";
+  language:
+    | "en"
+    | "de"
+    | "es"
+    | "fr"
+    | "zh"
+    | "ar"
+    | "hi"
+    | "pt"
+    | "ru"
+    | "ja"
+    | "it";
   theme: "light" | "dark";
 }
 
