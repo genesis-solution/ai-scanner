@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": " Food Bug Scanner",
-    "slug": " FoodBugScanner",
+    "name": "Food Bug Scanner",
+    "slug": "food-bug-scanner",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -20,7 +20,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.jrann.Scanner"
+      "package": "com.jrann.scanner"
     },
     "web": {
       "bundler": "metro",
@@ -53,8 +53,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "4ed3f9cf-a8e3-4ee8-827e-c81acad8a3ed"
+        "projectId": "5b794b18-f8a4-49c0-a5c3-5263e95f8072"
       }
-    }
+    },
+    "owner": "jrann"
   }
 }
