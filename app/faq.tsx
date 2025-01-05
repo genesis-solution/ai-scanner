@@ -1,14 +1,16 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Platform, UIManager } from "react-native";
 import { AccordionList } from "react-native-accordion-list-view";
 import { ThemedText } from "@/components/ThemedText";
 
 const faqData = [
   {
+    id: 0,
     title: "What is this app?",
     content: "This app is a demo for managing settings in a React Native app.",
   },
   {
+    id: 1,
     title: "How do I change the language?",
     content:
       "You can change the language in the settings under the General section.",
@@ -17,6 +19,14 @@ const faqData = [
 ];
 
 export default function FAQScreen() {
+  useEffect(() => {
+    if (Platform.OS === "android") {
+      if (UIManager.setLayoutAnimationEnabledExperimental) {
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+      }
+    }
+  }, []);
+
   return (
     <View style={styles.container}>
       <AccordionList
@@ -28,6 +38,7 @@ export default function FAQScreen() {
           <ThemedText style={styles.content}>{item.content}</ThemedText>
         )}
         animationDuration={400}
+        expandMultiple={true}
       />
     </View>
   );
