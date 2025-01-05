@@ -19,7 +19,7 @@ interface SettingsState {
 
 const initialState: SettingsState = {
   language: "en",
-  theme: "light",
+  theme: "dark",
 };
 
 const settingsSlice = createSlice({
