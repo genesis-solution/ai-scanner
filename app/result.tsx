@@ -5,6 +5,7 @@ import {
   StyleSheet,
   useColorScheme,
   View,
+  TouchableOpacity,
 } from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
@@ -18,6 +19,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
+import { ThemedIcon } from "@/components/ThemedIcon";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -58,7 +60,7 @@ export default function ScanScreen() {
       setScanResult("green");
     }
     setStatus(FINAL);
-  }, [keywords, productInfo]);
+  }, []);
 
   useEffect(() => {
     const parseCode = async () => {
@@ -83,7 +85,7 @@ export default function ScanScreen() {
       }
     };
     parseCode();
-  }, [data, getParseBarcode, handleCheckKeywords]);
+  }, []);
 
   // Select the background image based on the theme
   const image =
@@ -104,16 +106,15 @@ export default function ScanScreen() {
       paddingHorizontal: 8,
     },
     titleContainer: {
-      paddingTop: 66,
-      paddingHorizontal: 12,
-      paddingBottom: 6,
-      marginHorizontal: 12,
+      width: "100%",
       flexDirection: "row",
       alignItems: "center",
+      paddingBottom: 8,
       borderColor: borderColor,
       borderBottomWidth: 2,
     },
     resultContainer: {
+      marginTop: 100,
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
@@ -150,41 +151,44 @@ export default function ScanScreen() {
     <Fragment>
       <Stack.Screen
         options={{
-          title: "",
+          headerShown: true,
           headerTransparent: true,
+          headerLeft: () => (
+            <View style={styles.titleContainer}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <ThemedIcon name="arrow-left" size={18} type="fontawesome" />
+              </TouchableOpacity>
+              <ThemedText style={{ marginLeft: 16 }} type="title">
+                {t("foodBugScanner")}
+              </ThemedText>
+            </View>
+          ),
+          headerTitle: "",
         }}
       />
       <ImageBackground source={image} resizeMode="cover" style={styles.image}>
         <SafeAreaView style={styles.container}>
-          <Fragment>
-            <View style={styles.titleContainer}>
-              <ThemedText type="title">
-                {"  "}
-                {t("foodBugScanner")}
-              </ThemedText>
-            </View>
-            <View style={styles.resultContainer}>
-              {status === PARSING && (
-                <LottieView
-                  source={require("@/assets/animations/parsing.json")}
-                  autoPlay
-                  style={styles.animation}
-                />
-              )}
-              {status === FINAL && <ScanResultShow scanResult={scanResult} />}
-            </View>
-            <View style={styles.scanBtnContainer}>
-              {status === FINAL && (
-                <BigButton
-                  title={t("scanAgain")}
-                  onPress={() => {
-                    router.replace("/(tabs)/scan");
-                  }}
-                  icon={<FontAwesome name="repeat" size={48} color="white" />}
-                />
-              )}
-            </View>
-          </Fragment>
+          <View style={styles.resultContainer}>
+            {status === PARSING && (
+              <LottieView
+                source={require("@/assets/animations/parsing.json")}
+                autoPlay
+                style={styles.animation}
+              />
+            )}
+            {status === FINAL && <ScanResultShow scanResult={scanResult} />}
+          </View>
+          <View style={styles.scanBtnContainer}>
+            {status === FINAL && (
+              <BigButton
+                title={t("scanAgain")}
+                onPress={() => {
+                  router.replace("/(tabs)/scan");
+                }}
+                icon={<FontAwesome name="repeat" size={48} color="white" />}
+              />
+            )}
+          </View>
         </SafeAreaView>
       </ImageBackground>
     </Fragment>
