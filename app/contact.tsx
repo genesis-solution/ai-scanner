@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet } from "react-native";
+import { View, Button, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
+import { ThemedTextInput } from "@/components/ThemedTextInput";
+import { useTranslation } from "react-i18next";
 
 export default function ContactScreen() {
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -16,33 +19,33 @@ export default function ContactScreen() {
 
   return (
     <View style={styles.container}>
-      <ThemedText style={styles.label}>Your Name</ThemedText>
-      <TextInput
+      <ThemedText style={styles.label}>{t("contact.yourName")}</ThemedText>
+      <ThemedTextInput
         style={styles.input}
         value={name}
         onChangeText={setName}
-        placeholder="Enter your name"
+        placeholder={t("contact.enterYourName")}
       />
 
-      <ThemedText style={styles.label}>Your Email</ThemedText>
-      <TextInput
+      <ThemedText style={styles.label}>{t("contact.yourEmail")}</ThemedText>
+      <ThemedTextInput
         style={styles.input}
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter your email"
+        placeholder={t("contact.enterYourEmail")}
         keyboardType="email-address"
       />
 
-      <ThemedText style={styles.label}>Your Message</ThemedText>
-      <TextInput
+      <ThemedText style={styles.label}>{t("contact.yourMessage")}</ThemedText>
+      <ThemedTextInput
         style={[styles.input, styles.textArea]}
         value={message}
         onChangeText={setMessage}
-        placeholder="Enter your message"
+        placeholder={t("contact.enterYourMessage")}
         multiline
       />
 
-      <Button title="Send" onPress={handleSend} />
+      <Button title={t("contact.send")} onPress={handleSend} />
     </View>
   );
 }
