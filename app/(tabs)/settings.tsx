@@ -5,10 +5,17 @@ import { setLanguage, setTheme } from "@/store/slices/settingsSlice";
 import { Picker } from "@react-native-picker/picker";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { useTranslation } from "react-i18next";
 
 export default function SettingsScreen() {
   const { language, theme } = useSelector((state: any) => state.settings);
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (value: string) => {
+    i18n.changeLanguage(value);
+    dispatch(setLanguage(value));
+  };
 
   return (
     <ParallaxScrollView
@@ -22,48 +29,48 @@ export default function SettingsScreen() {
         />
       }
     >
-      <Text style={styles.title}>Settings</Text>
+      <Text style={styles.title}>{t("settings")}</Text>
 
       {/* Language Selection */}
       <View style={styles.settingRow}>
-        <Text style={styles.label}>Language</Text>
+        <Text style={styles.label}>{t("language")}</Text>
         <Picker
           selectedValue={language}
           style={styles.picker}
-          onValueChange={(value) => dispatch(setLanguage(value))}
+          onValueChange={changeLanguage}
           mode="dropdown"
         >
-          <Picker.Item label="English" value="English" />
-          <Picker.Item label="German" value="German" />
+          <Picker.Item label={t("english")} value="en" />
+          <Picker.Item label={t("german")} value="de" />
         </Picker>
       </View>
 
       {/* Theme Selection */}
       <View style={styles.settingRow}>
-        <Text style={styles.label}>Theme</Text>
+        <Text style={styles.label}>{t("theme")}</Text>
         <Picker
           selectedValue={theme}
           style={styles.picker}
           onValueChange={(value) => dispatch(setTheme(value))}
           mode="dropdown"
         >
-          <Picker.Item label="Dark" value="dark" />
-          <Picker.Item label="Light" value="light" />
+          <Picker.Item label={t("dark")} value="dark" />
+          <Picker.Item label={t("light")} value="light" />
         </Picker>
       </View>
 
       {/* Privacy Policy */}
       <View style={styles.settingRow}>
-        <Text style={styles.label}>Privacy Policy</Text>
+        <Text style={styles.label}>{t("privacyPolicy")}</Text>
         <Button
-          title="View"
+          title={t("view")}
           onPress={() => console.log("Navigate to privacy policy")}
         />
       </View>
 
       {/* App Version */}
       <View style={styles.settingRow}>
-        <Text style={styles.label}>Version</Text>
+        <Text style={styles.label}>{t("version")}</Text>
         <Text>1.0.0</Text>
       </View>
     </ParallaxScrollView>

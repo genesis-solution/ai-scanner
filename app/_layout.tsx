@@ -16,6 +16,7 @@ import { store } from "@/store/store";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/configs/toastConfig";
 import { useKeywords } from "@/hooks/useKeywords";
+import "@/i18n";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

@@ -2,12 +2,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface SettingsState {
-  language: "English" | "German";
+  language: "en" | "de";
   theme: "light" | "dark";
 }
 
 const initialState: SettingsState = {
-  language: "English",
+  language: "en",
   theme: "light",
 };
 
