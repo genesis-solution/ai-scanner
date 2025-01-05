@@ -3,6 +3,7 @@ import { ThemedText } from "./ThemedText";
 import { useState } from "react";
 import { isBlankOrNull } from "@/utils/string";
 import { showAlert } from "@/utils/scanAlert";
+import { router } from "expo-router";
 
 export default function ManualInput() {
   const [manualInput, setManualInput] = useState<string>("");
@@ -50,7 +51,7 @@ export default function ManualInput() {
               showAlert(`Not a valid code`, "error");
               return;
             }
-            // handleBarcodeScanned({ type: "manual", data: manualInput });
+            router.push(`/result?type=manual&data=${manualInput}`);
           }}
         />
       </View>

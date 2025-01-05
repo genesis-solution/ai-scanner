@@ -1,12 +1,9 @@
-import { Fragment, useState } from "react";
-import { ThemedText } from "./ThemedText";
+import { Fragment } from "react";
 import LottieView from "lottie-react-native";
-import { Button, StyleSheet, TextInput, View } from "react-native";
-import { isBlankOrNull } from "@/utils/string";
-import { showAlert } from "@/utils/scanAlert";
+import { StyleSheet } from "react-native";
+import ManualInput from "./ManualInput";
 
-const ScanResultShow = ({ handleBarcodeScanned, scanResult, code }: any) => {
-  const [manualInput, setManualInput] = useState<string>("");
+const ScanResultShow = ({ scanResult }: any) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -68,26 +65,7 @@ const ScanResultShow = ({ handleBarcodeScanned, scanResult, code }: any) => {
         />
       )}
       {(scanResult === "unknown" || scanResult === "parse-error") && (
-        <Fragment>
-          <ThemedText type="subtitle">Input Manually</ThemedText>
-          <View style={styles.inputContainer}>
-            <TextInput
-              value={manualInput}
-              onChangeText={setManualInput}
-              style={styles.manualInput}
-            />
-            <Button
-              title="Submit"
-              onPress={() => {
-                if (isBlankOrNull(manualInput)) {
-                  showAlert(`Not a valid code`, "error");
-                  return;
-                }
-                handleBarcodeScanned({ type: "manual", data: manualInput });
-              }}
-            />
-          </View>
-        </Fragment>
+        <ManualInput />
       )}
     </Fragment>
   );

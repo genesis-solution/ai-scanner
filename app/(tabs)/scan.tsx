@@ -1,34 +1,16 @@
+import { useEffect, useState } from "react";
 import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
-
+import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
-import LottieView from "lottie-react-native";
-import { useEffect, useState, Fragment } from "react";
-import { useGetParseBarcodeMutation } from "@/store/services/api";
+import CameraScanner from "@/components/CameraScanner";
+import ManualInput from "@/components/ManualInput";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
-import BigButton from "@/components/BigButton";
-import { IKeyword } from "@/constants/types";
-import CameraScanner from "@/components/CameraScanner";
-import ScanResultShow from "@/components/ScanResultShow";
-import { useSelector } from "react-redux";
-import ManualInput from "@/components/ManualInput";
-
-const SCANNING = "scanning";
-const PARSING = "parsing";
-const CHECKING_KEYWORDS = "asking";
-const FINAL = "final";
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const [status, setStatus] = useState<string>(SCANNING);
-  const [code, setCode] = useState<string>("");
-  const [scanResult, setScanResult] = useState<string>("unknown");
-  const [productInfo, setProductInfo] = useState<any>({});
-  const [getParseBarcode] = useGetParseBarcodeMutation();
   const borderColor = useThemeColor({}, "text");
-
-  const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -47,47 +29,12 @@ export default function ScanScreen() {
     data: string;
   }) => {
     try {
-      setStatus(PARSING);
-      setCode(`${type}-${data}`);
-      // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-      const parsedContent = await getParseBarcode(data).unwrap();
-      scanLogger.log(`Parsed Content Status: `, parsedContent.status);
-      if (parsedContent?.status) {
-        setProductInfo(parsedContent?.product);
-        handleCheckKeywords();
-      } else {
-        setScanResult("unknown");
-        setStatus(FINAL);
-      }
+      router.push(`/result?type=${type}&data=${data}`);
     } catch (error) {
       scanLogger.error(
-        `Parsing Barcode Error: ${
+        `Barcode Scan Error: ${
           (error as Error).message || "An unexpected error"
         }`
-      );
-      setScanResult("parse-error");
-      setStatus(FINAL);
-    }
-  };
-
-  const handleCheckKeywords = async () => {
-    try {
-      setStatus(CHECKING_KEYWORDS);
-      if (
-        keywords.some((keyword) => {
-          if (JSON.stringify(productInfo).includes(keyword.name)) {
-            scanLogger.log(`This product includes ${keyword.name}`);
-            return true;
-          }
-          return false;
-        })
-      ) {
-        setScanResult("red");
-      } else setScanResult("green");
-      setStatus(FINAL);
-    } catch (error) {
-      scanLogger.error(
-        `Asking AI Error: ${(error as Error).message || "An Unexpected Error"}`
       );
     }
   };
@@ -165,66 +112,17 @@ export default function ScanScreen() {
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
-        <Fragment>
-          <View style={styles.titleContainer}>
-            <ThemedText type="title">Food Bug Scanner</ThemedText>
+        <View style={styles.titleContainer}>
+          <ThemedText type="title">Food Bug Scanner</ThemedText>
+        </View>
+        <View style={styles.barcodeContainer}>
+          <View style={styles.cameraContainer}>
+            <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
           </View>
-          <View style={styles.barcodeContainer}>
-            {status === SCANNING && (
-              <View style={styles.cameraContainer}>
-                <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
-              </View>
-            )}
-            {status === PARSING && (
-              <LottieView
-                source={require("@/assets/animations/parsing.json")}
-                autoPlay
-                style={styles.animation}
-              />
-            )}
-            {status === FINAL && (
-              <ScanResultShow
-                handleBarcodeScanned={handleBarcodeScanned}
-                scanResult={scanResult}
-                code={code}
-              />
-            )}
-          </View>
-          <View style={styles.scanBtnContainer}>
-            {status === SCANNING && <ManualInput />}
-            {status === PARSING && (
-              <BigButton title="Parsing..." onPress={() => {}} disabled />
-            )}
-            {status === CHECKING_KEYWORDS && (
-              <BigButton
-                title="Chekcing Keywords..."
-                onPress={() => {}}
-                disabled
-              />
-            )}
-            {status === FINAL && (
-              <BigButton
-                title="Scan Again"
-                onPress={() => {
-                  setScanResult("unknown");
-                  setStatus(SCANNING);
-                }}
-              />
-            )}
-            {/* Dev Purpose Only */}
-            {/* {status === SCANNING && (
-              <BigButton
-                title="Dev - Skip scanning"
-                onPress={() => {
-                  handleBarcodeScanned({
-                    type: "barcode",
-                    data: "5413548283128",
-                  });
-                }}
-              />
-            )} */}
-          </View>
-        </Fragment>
+        </View>
+        <View style={styles.scanBtnContainer}>
+          <ManualInput />
+        </View>
       </SafeAreaView>
     </ImageBackground>
   );
