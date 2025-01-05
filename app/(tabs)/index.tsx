@@ -1,13 +1,14 @@
 import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
-
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { router } from "expo-router";
 import ManualInput from "@/components/ManualInput";
+import { useTranslation } from "react-i18next";
 
 export default function HomeScreen() {
+  const { t } = useTranslation();
   const borderColor = useThemeColor({}, "text");
 
   // const image = require("@/assets/images/scan-bg.png");
@@ -70,7 +71,7 @@ export default function HomeScreen() {
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
         <View style={styles.titleContainer}>
-          <ThemedText type="title">Food Bug Scanner</ThemedText>
+          <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
         </View>
         <View style={styles.barcodeContainer}>
           <LottieView
@@ -80,7 +81,7 @@ export default function HomeScreen() {
           />
           <View style={styles.scanBtnContainer}>
             <BigButton
-              title="Tap to Scan"
+              title={t("tapToScan")}
               onPress={() => {
                 router.replace("/scan");
               }}

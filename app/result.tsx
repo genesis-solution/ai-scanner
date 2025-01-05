@@ -10,9 +10,10 @@ import { useGetParseBarcodeMutation } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
+import { useTranslation } from "react-i18next";
 
 const PARSING = "parsing";
-const CHECKING_KEYWORDS = "asking";
+const CHECKING_KEYWORDS = "checkingKeywords";
 const FINAL = "final";
 
 export default function ScanScreen() {
@@ -21,6 +22,7 @@ export default function ScanScreen() {
   const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
   const borderColor = useThemeColor({}, "text");
+  const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
   const { type, data } = useLocalSearchParams();
@@ -48,7 +50,7 @@ export default function ScanScreen() {
       setScanResult("green");
     }
     setStatus(FINAL);
-  }, []);
+  }, [keywords, productInfo]);
 
   useEffect(() => {
     const parseCode = async () => {
@@ -73,7 +75,7 @@ export default function ScanScreen() {
       }
     };
     parseCode();
-  }, []);
+  }, [data, getParseBarcode, handleCheckKeywords]);
 
   const image = require("@/assets/images/yellow_bg.jpg");
 
@@ -144,7 +146,10 @@ export default function ScanScreen() {
         <SafeAreaView style={styles.container}>
           <Fragment>
             <View style={styles.titleContainer}>
-              <ThemedText type="title">{"  "}Food Bug Scanner</ThemedText>
+              <ThemedText type="title">
+                {"  "}
+                {t("foodBugScanner")}
+              </ThemedText>
             </View>
             <View style={styles.resultContainer}>
               {status === PARSING && (
@@ -158,18 +163,18 @@ export default function ScanScreen() {
             </View>
             <View style={styles.scanBtnContainer}>
               {status === PARSING && (
-                <BigButton title="Parsing..." onPress={() => {}} disabled />
+                <BigButton title={t("parsing")} onPress={() => {}} disabled />
               )}
               {status === CHECKING_KEYWORDS && (
                 <BigButton
-                  title="Chekcing Keywords..."
+                  title={t("checkingKeywords")}
                   onPress={() => {}}
                   disabled
                 />
               )}
               {status === FINAL && (
                 <BigButton
-                  title="Scan Again"
+                  title={t("scanAgain")}
                   onPress={() => {
                     router.replace("/(tabs)/scan");
                   }}

@@ -7,10 +7,12 @@ import CameraScanner from "@/components/CameraScanner";
 import ManualInput from "@/components/ManualInput";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { useTranslation } from "react-i18next";
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const borderColor = useThemeColor({}, "text");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -40,10 +42,10 @@ export default function ScanScreen() {
   };
 
   if (hasPermission === null) {
-    return <ThemedText>Requesting for camera permission</ThemedText>;
+    return <ThemedText>{t("requestingCameraPermission")}</ThemedText>;
   }
   if (hasPermission === false) {
-    return <ThemedText>No access to camera</ThemedText>;
+    return <ThemedText>{t("noCameraAccess")}</ThemedText>;
   }
 
   // const image = require("@/assets/images/scan-bg.png");
@@ -113,7 +115,7 @@ export default function ScanScreen() {
     <ImageBackground source={image} resizeMode="cover" style={styles.image}>
       <SafeAreaView style={styles.container}>
         <View style={styles.titleContainer}>
-          <ThemedText type="title">Food Bug Scanner</ThemedText>
+          <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
         </View>
         <View style={styles.barcodeContainer}>
           <View style={styles.cameraContainer}>

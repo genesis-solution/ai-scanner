@@ -4,9 +4,12 @@ import { useState } from "react";
 import { isBlankOrNull } from "@/utils/string";
 import { showAlert } from "@/utils/scanAlert";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export default function ManualInput() {
   const [manualInput, setManualInput] = useState<string>("");
+  const { t } = useTranslation();
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -36,19 +39,20 @@ export default function ManualInput() {
   return (
     <View>
       <ThemedText type="subtitle" style={{ textAlign: "center" }}>
-        Or Input Manually
+        {t("orInputManually")}
       </ThemedText>
       <View style={styles.inputContainer}>
         <TextInput
           value={manualInput}
           onChangeText={setManualInput}
           style={styles.manualInput}
+          placeholder={t("enterCode")}
         />
         <Button
-          title="Submit"
+          title={t("submit")}
           onPress={() => {
             if (isBlankOrNull(manualInput)) {
-              showAlert(`Not a valid code`, "error");
+              showAlert(t("invalidCode"), "error");
               return;
             }
             router.push(`/result?type=manual&data=${manualInput}`);
