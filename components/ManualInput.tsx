@@ -6,6 +6,7 @@ import { isBlankOrNull } from "@/utils/string";
 import { showAlert } from "@/utils/scanAlert";
 import { router, usePathname } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function ManualInput() {
   const [manualInput, setManualInput] = useState<string>("");
@@ -51,6 +52,7 @@ export default function ManualInput() {
         />
         <Button
           title={t("submit")}
+          color={useThemeColor({}, "button")}
           onPress={() => {
             if (isBlankOrNull(manualInput)) {
               showAlert(t("invalidCode"), "error");

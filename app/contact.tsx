@@ -75,7 +75,11 @@ export default function ContactScreen() {
           multiline
         />
 
-        <Button title={t("contact.send")} onPress={handleSend} />
+        <Button
+          title={t("contact.send")}
+          color={useThemeColor({}, "button")}
+          onPress={handleSend}
+        />
       </View>
     </Fragment>
   );
