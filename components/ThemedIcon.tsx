@@ -17,7 +17,7 @@ export function ThemedIcon({
   darkColor,
   type,
 }: ThemedIconProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  const color = useThemeColor({}, "text");
 
   if (type === "fontawesome") {
     return <FontAwesome name={name} size={size} color={color} />;

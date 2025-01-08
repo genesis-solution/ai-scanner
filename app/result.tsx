@@ -1,12 +1,5 @@
 import { useEffect, useState, Fragment, useCallback } from "react";
-import {
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  useColorScheme,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { SafeAreaView, StyleSheet, View, TouchableOpacity } from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -35,7 +28,7 @@ export default function ScanScreen() {
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
   const { type, data } = useLocalSearchParams();
-  const colorScheme = useColorScheme(); // Get the current theme
+  const backgroundColor = useThemeColor({}, "background");
 
   useEffect(() => {
     if (!type || !data) {
@@ -87,12 +80,6 @@ export default function ScanScreen() {
     parseCode();
   }, []);
 
-  // Select the background image based on the theme
-  const image =
-    colorScheme === "dark"
-      ? require("@/assets/images/dark-bg.jpg")
-      : require("@/assets/images/light-bg.jpg");
-
   const styles = StyleSheet.create({
     image: {
       flex: 1,
@@ -104,11 +91,13 @@ export default function ScanScreen() {
       justifyContent: "space-between",
       gap: 16,
       paddingHorizontal: 8,
+      backgroundColor: backgroundColor,
     },
     titleContainer: {
       width: "100%",
       flexDirection: "row",
       alignItems: "center",
+      paddingTop: 24,
       paddingBottom: 8,
       borderColor: borderColor,
       borderBottomWidth: 2,
@@ -166,31 +155,29 @@ export default function ScanScreen() {
           headerTitle: "",
         }}
       />
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.resultContainer}>
-            {status === PARSING && (
-              <LottieView
-                source={require("@/assets/animations/parsing.json")}
-                autoPlay
-                style={styles.animation}
-              />
-            )}
-            {status === FINAL && <ScanResultShow scanResult={scanResult} />}
-          </View>
-          <View style={styles.scanBtnContainer}>
-            {status === FINAL && (
-              <BigButton
-                title={t("scanAgain")}
-                onPress={() => {
-                  router.replace("/(tabs)/scan");
-                }}
-                icon={<FontAwesome name="repeat" size={48} color="white" />}
-              />
-            )}
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.resultContainer}>
+          {status === PARSING && (
+            <LottieView
+              source={require("@/assets/animations/parsing.json")}
+              autoPlay
+              style={styles.animation}
+            />
+          )}
+          {status === FINAL && <ScanResultShow scanResult={scanResult} />}
+        </View>
+        <View style={styles.scanBtnContainer}>
+          {status === FINAL && (
+            <BigButton
+              title={t("scanAgain")}
+              onPress={() => {
+                router.replace("/(tabs)/scan");
+              }}
+              icon={<FontAwesome name="repeat" size={48} color="white" />}
+            />
+          )}
+        </View>
+      </SafeAreaView>
     </Fragment>
   );
 }

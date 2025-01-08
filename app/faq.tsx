@@ -3,6 +3,7 @@ import { View, StyleSheet } from "react-native";
 import ThemedAccordion from "@/components/ThemedAccordion";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 const faqData = [
   {
@@ -22,18 +23,23 @@ const faqData = [
 export default function FAQScreen() {
   const { t } = useTranslation();
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 16,
+      paddingTop: 96,
+      backgroundColor: useThemeColor({}, "background"),
+    },
+  });
+
   return (
     <Fragment>
-      <Stack.Screen options={{ title: t("faq.title") }} />
+      <Stack.Screen
+        options={{ title: t("faq.title"), headerTransparent: true }}
+      />
       <View style={styles.container}>
         <ThemedAccordion data={faqData} />
       </View>
     </Fragment>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
-});

@@ -12,11 +12,9 @@ import { ItemValue } from "@react-native-picker/picker/typings/Picker";
 import { router } from "expo-router";
 import * as Linking from "expo-linking";
 import { ThemedIcon } from "@/components/ThemedIcon";
-import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function SettingsScreen() {
   const { language, theme } = useSelector((state: any) => state.settings);
-  const borderColor = useThemeColor({}, "text");
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
 
@@ -141,8 +139,14 @@ export default function SettingsScreen() {
             lightColor="#000"
             darkColor="#fff"
           >
-            <Picker.Item label={t("dark")} value="dark" />
-            <Picker.Item label={t("light")} value="light" />
+            <Picker.Item label={t("white")} value="white" />
+            <Picker.Item
+              label={t("lightGrayishBlue")}
+              value="lightGrayishBlue"
+            />
+            <Picker.Item label={t("lightBlue")} value="lightBlue" />
+            <Picker.Item label={t("pastelGreen")} value="pastelGreen" />
+            <Picker.Item label={t("softBlue")} value="softBlue" />
           </ThemedPicker>
         </View>
       </View>

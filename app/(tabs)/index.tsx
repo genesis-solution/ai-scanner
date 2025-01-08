@@ -1,4 +1,4 @@
-import { ImageBackground, SafeAreaView, StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import LottieView from "lottie-react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
@@ -6,19 +6,11 @@ import BigButton from "@/components/BigButton";
 import { router } from "expo-router";
 import ManualInput from "@/components/ManualInput";
 import { useTranslation } from "react-i18next";
-import { useColorScheme } from "@/hooks/useColorScheme"; // Import your custom hook or use React Native's useColorScheme
 import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
   const borderColor = useThemeColor({}, "text");
-  const colorScheme = useColorScheme(); // Get the current theme
-
-  // Select the background image based on the theme
-  const image =
-    colorScheme === "dark"
-      ? require("@/assets/images/dark-bg.jpg")
-      : require("@/assets/images/light-bg.jpg");
 
   const styles = StyleSheet.create({
     image: {
@@ -31,6 +23,7 @@ export default function HomeScreen() {
       justifyContent: "space-between",
       gap: 16,
       paddingHorizontal: 8,
+      backgroundColor: useThemeColor({}, "background"),
     },
     titleContainer: {
       paddingTop: 64,
@@ -76,31 +69,29 @@ export default function HomeScreen() {
   });
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.titleContainer}>
-          <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
-        </View>
-        <View style={styles.barcodeContainer}>
-          <LottieView
-            source={require("@/assets/animations/barcode.json")}
-            autoPlay
-            style={styles.animation}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.titleContainer}>
+        <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
+      </View>
+      <View style={styles.barcodeContainer}>
+        <LottieView
+          source={require("@/assets/animations/barcode.json")}
+          autoPlay
+          style={styles.animation}
+        />
+        <View style={styles.scanBtnContainer}>
+          <BigButton
+            title={t("tapToScan")}
+            onPress={() => {
+              router.replace("/scan");
+            }}
+            icon={<Ionicons name="scan" size={48} color="white" />}
           />
-          <View style={styles.scanBtnContainer}>
-            <BigButton
-              title={t("tapToScan")}
-              onPress={() => {
-                router.replace("/scan");
-              }}
-              icon={<Ionicons name="scan" size={48} color="white" />}
-            />
-          </View>
         </View>
-        <View style={styles.manualInputContainer}>
-          <ManualInput />
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+      </View>
+      <View style={styles.manualInputContainer}>
+        <ManualInput />
+      </View>
+    </SafeAreaView>
   );
 }

@@ -14,12 +14,12 @@ interface SettingsState {
     | "ru"
     | "ja"
     | "it";
-  theme: "light" | "dark";
+  theme: "white" | "lightGrayishBlue" | "lightBlue" | "pastelGreen" | "softBlue";
 }
 
 const initialState: SettingsState = {
   language: "en",
-  theme: "dark",
+  theme: "white",
 };
 
 const settingsSlice = createSlice({

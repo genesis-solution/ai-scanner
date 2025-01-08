@@ -14,7 +14,7 @@ export function ThemedPicker({
   darkColor,
   ...rest
 }: ThemedPickerProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "picker");
+  const color = useThemeColor({}, "text");
 
   return <Picker style={[{ color }, styles.picker, style]} {...rest} />;
 }

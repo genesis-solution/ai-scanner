@@ -13,14 +13,8 @@ export function ThemedTextInput({
   darkColor,
   ...rest
 }: ThemedTextInputProps) {
-  const color = useThemeColor(
-    { light: lightColor, dark: darkColor },
-    "textInput"
-  );
-  const backgroundColor = useThemeColor(
-    { light: "#fff", dark: "#333" },
-    "background"
-  );
+  const color = useThemeColor({}, "text");
+  const backgroundColor = useThemeColor({}, "background");
 
   return (
     <TextInput

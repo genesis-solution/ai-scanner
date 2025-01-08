@@ -1,11 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ImageBackground,
-  SafeAreaView,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -19,7 +13,7 @@ export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
   const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
-  const colorScheme = useColorScheme(); // Get the current theme
+  const backgroundColor = useThemeColor({}, "background");
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -55,12 +49,6 @@ export default function ScanScreen() {
     return <ThemedText>{t("noCameraAccess")}</ThemedText>;
   }
 
-  // Select the background image based on the theme
-  const image =
-    colorScheme === "dark"
-      ? require("@/assets/images/dark-bg.jpg")
-      : require("@/assets/images/light-bg.jpg");
-
   const styles = StyleSheet.create({
     image: {
       flex: 1,
@@ -72,6 +60,7 @@ export default function ScanScreen() {
       justifyContent: "space-between",
       gap: 16,
       paddingHorizontal: 8,
+      backgroundColor: backgroundColor,
     },
     titleContainer: {
       paddingTop: 64,
@@ -122,20 +111,18 @@ export default function ScanScreen() {
   });
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-      <SafeAreaView style={styles.container}>
-        <View style={styles.titleContainer}>
-          <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.titleContainer}>
+        <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
+      </View>
+      <View style={styles.barcodeContainer}>
+        <View style={styles.cameraContainer}>
+          <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
         </View>
-        <View style={styles.barcodeContainer}>
-          <View style={styles.cameraContainer}>
-            <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
-          </View>
-        </View>
-        <View style={styles.scanBtnContainer}>
-          <ManualInput />
-        </View>
-      </SafeAreaView>
-    </ImageBackground>
+      </View>
+      <View style={styles.scanBtnContainer}>
+        <ManualInput />
+      </View>
+    </SafeAreaView>
   );
 }
