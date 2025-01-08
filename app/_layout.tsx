@@ -8,6 +8,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
+import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 import "react-native-reanimated";
 
 import { setColorScheme, useColorScheme } from "@/hooks/useColorScheme";
@@ -19,6 +20,7 @@ import { toastConfig } from "@/configs/toastConfig";
 import { useKeywords } from "@/hooks/useKeywords";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
+import MobileAds from "react-native-google-mobile-ads";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -47,6 +49,21 @@ function App() {
       SplashScreen.hideAsync();
     }
   }, [fontLoaded, keywordsLoaded]);
+
+  // Initialize Google Mobile Ads SDK
+  useEffect(() => {
+    (async () => {
+      // Google AdMob will show any messages here that you just set up on the AdMob Privacy & Messaging page
+      const { status: trackingStatus } =
+        await requestTrackingPermissionsAsync();
+      if (trackingStatus !== "granted") {
+        // Do something here such as turn off Sentry tracking, store in context/redux to allow for personalized ads, etc.
+      }
+
+      // Initialize the ads
+      await MobileAds().initialize();
+    })();
+  }, []);
 
   if (!fontLoaded || !keywordsLoaded) {
     return null;
