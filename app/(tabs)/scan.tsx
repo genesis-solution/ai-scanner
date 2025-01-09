@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { Alert, Linking, SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
 import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -16,12 +16,59 @@ export default function ScanScreen() {
   const backgroundColor = useThemeColor({}, "background");
 
   useEffect(() => {
-    const getCameraPermissions = async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === "granted");
+    const checkCameraPermission = async () => {
+      const { status, canAskAgain, granted } =
+        await Camera.getCameraPermissionsAsync();
+      setHasPermission(granted);
+
+      if (status === "granted") {
+        // Permission granted, proceed with scanning
+        scanLogger.log("Camera permission granted.");
+      } else if (status === "denied" && canAskAgain) {
+        // Permission denied, but can re-prompt
+        const { status: newStatus } =
+          await Camera.requestCameraPermissionsAsync();
+        if (newStatus !== "granted") {
+          showPermissionDeniedAlert();
+        }
+      } else {
+        // Permission permanently denied or canAskAgain is false
+        showSettingsAlert();
+      }
     };
 
-    getCameraPermissions();
+    const showPermissionDeniedAlert = () => {
+      Alert.alert(
+        "Camera Permission Required",
+        "Please grant camera permission to use this feature.",
+        [
+          {
+            text: "OK",
+            onPress: () => router.push("/"),
+          },
+        ]
+      );
+    };
+
+    const showSettingsAlert = () => {
+      Alert.alert(
+        "Permission Denied",
+        "Camera permission has been permanently denied. To enable it, go to your device settings.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => router.push("/"),
+          },
+          {
+            text: "Go to Settings",
+            onPress: () => Linking.openSettings(), // Open app settings
+          },
+        ]
+      );
+    };
+
+    checkCameraPermission();
   }, []);
 
   const handleBarcodeScanned = async ({
