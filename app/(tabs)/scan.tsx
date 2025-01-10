@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Linking, SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
-import { router } from "expo-router";
+import { router, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
 import ManualInput from "@/components/ManualInput";
@@ -14,26 +14,28 @@ export default function ScanScreen() {
   const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
+  const pathname = usePathname();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    if (pathname !== "/scan") return;
     const checkCameraPermission = async () => {
       const { status, canAskAgain, granted } =
         await Camera.getCameraPermissionsAsync();
+      scanLogger.log(`camera permission: ${status} ${granted} ${canAskAgain}`);
       setHasPermission(granted);
 
       if (status === "granted") {
         // Permission granted, proceed with scanning
         scanLogger.log("Camera permission granted.");
-      } else if (status === "denied" && canAskAgain) {
-        // Permission denied, but can re-prompt
+      } else {
+        // Re-prompt
+        setHasPermission(null);
         const { status: newStatus } =
           await Camera.requestCameraPermissionsAsync();
+        setHasPermission(newStatus === "granted");
         if (newStatus !== "granted") {
           showPermissionDeniedAlert();
         }
-      } else {
-        // Permission permanently denied or canAskAgain is false
-        showSettingsAlert();
       }
     };
 
@@ -43,6 +45,13 @@ export default function ScanScreen() {
         "Please grant camera permission to use this feature.",
         [
           {
+            text: "Go to Settings",
+            onPress: () => {
+              router.push("/");
+              Linking.openSettings(); // Open app settings
+            },
+          },
+          {
             text: "OK",
             onPress: () => router.push("/"),
           },
@@ -50,26 +59,8 @@ export default function ScanScreen() {
       );
     };
 
-    const showSettingsAlert = () => {
-      Alert.alert(
-        "Permission Denied",
-        "Camera permission has been permanently denied. To enable it, go to your device settings.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-            onPress: () => router.push("/"),
-          },
-          {
-            text: "Go to Settings",
-            onPress: () => Linking.openSettings(), // Open app settings
-          },
-        ]
-      );
-    };
-
     checkCameraPermission();
-  }, []);
+  }, [pathname]);
 
   const handleBarcodeScanned = async ({
     type,
