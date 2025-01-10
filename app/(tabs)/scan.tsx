@@ -17,25 +17,32 @@ export default function ScanScreen() {
   const pathname = usePathname();
 
   useLayoutEffect(() => {
+    console.log(pathname);
     if (pathname !== "/scan") return;
     const checkCameraPermission = async () => {
       const { status, canAskAgain, granted } =
         await Camera.getCameraPermissionsAsync();
-      scanLogger.log(`camera permission: ${status} ${granted} ${canAskAgain}`);
+      scanLogger.log(`camera permission: ${status} ${canAskAgain} ${granted}`);
       setHasPermission(granted);
 
       if (status === "granted") {
         // Permission granted, proceed with scanning
         scanLogger.log("Camera permission granted.");
-      } else {
-        // Re-prompt
+      } else if (
+        status === "undetermined" ||
+        (status === "denied" && canAskAgain)
+      ) {
+        // Permission denied, but can re-prompt
         setHasPermission(null);
-        const { status: newStatus } =
+        const { status: newStatus, granted: newGranted } =
           await Camera.requestCameraPermissionsAsync();
-        setHasPermission(newStatus === "granted");
+        setHasPermission(newGranted);
         if (newStatus !== "granted") {
           showPermissionDeniedAlert();
         }
+      } else {
+        // Permission permanently denied or canAskAgain is false
+        showSettingsAlert();
       }
     };
 
@@ -45,15 +52,29 @@ export default function ScanScreen() {
         "Please grant camera permission to use this feature.",
         [
           {
-            text: "Go to Settings",
-            onPress: () => {
-              router.push("/");
-              Linking.openSettings(); // Open app settings
-            },
-          },
-          {
             text: "OK",
             onPress: () => router.push("/"),
+          },
+        ]
+      );
+    };
+
+    const showSettingsAlert = () => {
+      Alert.alert(
+        "Permission Denied",
+        "Camera permission has been permanently denied. To enable it, go to your device settings.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+            onPress: () => router.push("/"),
+          },
+          {
+            text: "Go to Settings",
+            onPress: () => {
+              Linking.openSettings(); // Open app settings
+              router.push("/");
+            },
           },
         ]
       );
