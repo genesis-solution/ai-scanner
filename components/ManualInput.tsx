@@ -38,7 +38,10 @@ export default function ManualInput() {
 
   return (
     <View>
-      <ThemedText type="subtitle" style={{ textAlign: "center" }}>
+      <ThemedText
+        type="subtitle"
+        style={{ textAlign: "center", letterSpacing: 1.5 }}
+      >
         {t("orInputManually")}
       </ThemedText>
       <View style={styles.inputContainer}>

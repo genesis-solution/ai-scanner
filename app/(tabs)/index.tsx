@@ -21,7 +21,7 @@ export default function HomeScreen() {
       flex: 1,
       flexDirection: "column",
       justifyContent: "space-between",
-      gap: 16,
+      gap: 0,
       paddingHorizontal: 8,
       backgroundColor: useThemeColor({}, "background"),
     },
@@ -36,24 +36,24 @@ export default function HomeScreen() {
     },
     barcodeContainer: {
       flex: 1,
-      justifyContent: "center",
+      flexDirection: "column",
+      justifyContent: "space-between",
       alignItems: "center",
       gap: 0,
-      paddingVertical: 12,
+      paddingTop: 0,
+      paddingBottom: 12,
     },
     scanBtnContainer: {
       height: 160,
       width: "100%",
-      paddingTop: 48,
+      paddingTop: 24,
       paddingHorizontal: 48,
       justifyContent: "center",
       alignItems: "center",
-      // borderColor: "red",
-      // borderWidth: 1,
     },
     manualInputContainer: {
       flexDirection: "column",
-      justifyContent: "flex-start",
+      justifyContent: "center",
       alignItems: "center",
       height: 160,
       paddingTop: 12,
@@ -85,6 +85,9 @@ export default function HomeScreen() {
           autoPlay
           style={styles.animation}
         />
+        <ThemedText type="defaultSemiBold" style={{ letterSpacing: 1.5 }}>
+          {t("scanAFoodBarcode")}
+        </ThemedText>
         <View style={styles.scanBtnContainer}>
           <BigButton
             title={t("tapToScan")}
