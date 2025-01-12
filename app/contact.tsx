@@ -1,10 +1,13 @@
 import React, { Fragment, useState } from "react";
-import { View, Button, StyleSheet } from "react-native";
+import { View, Button, StyleSheet, Alert } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { useTranslation } from "react-i18next";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import * as MailComposer from "expo-mail-composer";
+import scanLogger from "@/utils/scanLogger";
+import { showAlert } from "@/utils/scanAlert";
 
 export default function ContactScreen() {
   const { t } = useTranslation();
@@ -35,11 +38,36 @@ export default function ContactScreen() {
     },
   });
 
-  const handleSend = () => {
-    // Handle form submission
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Message:", message);
+  const handleSend = async () => {
+    try {
+      const isAvailable = await MailComposer.isAvailableAsync();
+      if (isAvailable) {
+        const result = await MailComposer.composeAsync({
+          recipients: ["sam.abdollahi20@gmail.com"],
+          subject: "Feedback on Food Bug Scanner",
+          body: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+        });
+        if (result.status === MailComposer.MailComposerStatus.SENT) {
+          showAlert(`Email sent successfully`, "success");
+        } else if (result.status === MailComposer.MailComposerStatus.SAVED) {
+          showAlert(`Email saved successfully`, "success");
+        } else if (
+          result.status === MailComposer.MailComposerStatus.UNDETERMINED
+        ) {
+          showAlert(`Email undetermined`, "success");
+        } else {
+          showAlert(`Failed to send the Email`, "error");
+        }
+        router.back();
+      } else {
+        showAlert("Email is not available on this device", "error");
+      }
+    } catch (error) {
+      scanLogger.error(
+        `Error while sending the email: ${(error as Error).message}`
+      );
+      showAlert((error as Error).message, "error");
+    }
   };
 
   return (
