@@ -14,7 +14,7 @@ export function useCustomTheme() {
 
   useEffect(() => {
     const colorScheme = Appearance.getColorScheme();
-    setTheme(colorScheme === "dark" ? "white" : currentTheme); // Default to "white" theme if dark mode
+    setTheme(colorScheme === "dark" ? "lightBlue" : currentTheme); // Default to "white" theme if dark mode
   }, [currentTheme]);
 
   const setCustomTheme = (themeName: ThemeName) => {
