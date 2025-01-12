@@ -99,8 +99,7 @@ export default function ScanScreen() {
       alignItems: "center",
       paddingTop: 24,
       paddingBottom: 8,
-      borderColor: borderColor,
-      borderBottomWidth: 2,
+      alignSelf: "center",
     },
     resultContainer: {
       marginTop: 100,
@@ -147,7 +146,13 @@ export default function ScanScreen() {
               <TouchableOpacity onPress={() => router.back()}>
                 <ThemedIcon name="arrow-left" size={18} type="fontawesome" />
               </TouchableOpacity>
-              <ThemedText style={{ marginLeft: 16 }} type="title">
+              <ThemedText
+                type="subtitle"
+                style={{
+                  letterSpacing: 2,
+                  marginLeft: 16,
+                }}
+              >
                 {t("foodBugScanner")}
               </ThemedText>
             </View>

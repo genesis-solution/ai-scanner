@@ -128,8 +128,7 @@ export default function ScanScreen() {
       marginHorizontal: 12,
       flexDirection: "row",
       alignItems: "center",
-      borderColor: borderColor,
-      borderBottomWidth: 2,
+      alignSelf: "center",
     },
     barcodeContainer: {
       flex: 1,
@@ -172,7 +171,14 @@ export default function ScanScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.titleContainer}>
-        <ThemedText type="title">{t("foodBugScanner")}</ThemedText>
+        <ThemedText
+          type="subtitle"
+          style={{
+            letterSpacing: 2,
+          }}
+        >
+          {t("foodBugScanner")}
+        </ThemedText>
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
