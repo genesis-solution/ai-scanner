@@ -3,6 +3,7 @@ import React from "react";
 import {
   Linking,
   Platform,
+  Share,
   StyleSheet,
   TouchableOpacity,
   TouchableOpacityProps,
@@ -16,6 +17,8 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import InlineAd from "@/components/InlineAd";
 import { Entypo } from "@expo/vector-icons";
+import scanLogger from "@/utils/scanLogger";
+import { showAlert } from "@/utils/scanAlert";
 
 export default function TabLayout() {
   const { t } = useTranslation();
@@ -35,12 +38,28 @@ export default function TabLayout() {
   const shareText =
     "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
 
-  // Function to share text via WhatsApp
-  const shareViaWhatsApp = () => {
-    const url = `whatsapp://send?text=${encodeURIComponent(shareText)}`;
-    Linking.openURL(url).catch(() => {
-      alert("Make sure WhatsApp is installed on your device");
-    });
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: shareText,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+          showAlert(
+            `Successfully shared via ${result.activityType}`,
+            "success"
+          );
+        } else {
+          // shared
+          // showAlert(`Successfully shared`, "success");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {
+      showAlert(error.message, "error");
+    }
   };
 
   return (
@@ -86,12 +105,12 @@ export default function TabLayout() {
             options={{
               title: t("share"),
               tabBarIcon: ({ color }) => (
-                <Entypo name="slideshare" size={28} color={color} />
+                <Entypo name="share" size={28} color={color} />
               ),
               tabBarButton: (props) => (
                 <TouchableOpacity
                   {...(props as TouchableOpacityProps)}
-                  onPress={shareViaWhatsApp}
+                  onPress={onShare}
                 />
               ),
             }}
