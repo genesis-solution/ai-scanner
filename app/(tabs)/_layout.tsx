@@ -32,7 +32,8 @@ export default function TabLayout() {
     },
   });
 
-  const shareText = "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
+  const shareText =
+    "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
 
   // Function to share text via WhatsApp
   const shareViaWhatsApp = () => {
@@ -79,15 +80,6 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name="settings"
-            options={{
-              title: t("settings"),
-              tabBarIcon: ({ color }) => (
-                <IconSymbol size={28} name="gearshape.fill" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
             name="share"
             options={{
               title: t("share"),
@@ -99,6 +91,15 @@ export default function TabLayout() {
                   {...(props as TouchableOpacityProps)}
                   onPress={shareViaWhatsApp}
                 />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="settings"
+            options={{
+              title: t("settings"),
+              tabBarIcon: ({ color }) => (
+                <IconSymbol size={28} name="gearshape.fill" color={color} />
               ),
             }}
           />
