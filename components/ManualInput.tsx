@@ -1,4 +1,4 @@
-import { Button, StyleSheet, View } from "react-native";
+import { Button, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "./ThemedText";
 import { ThemedTextInput } from "./ThemedTextInput"; // Import the new component
 import { useState } from "react";
@@ -7,6 +7,8 @@ import { showAlert } from "@/utils/scanAlert";
 import { router, usePathname } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { FontAwesome } from "@expo/vector-icons";
+import { ThemedTextInputIcon } from "./ThemedTextInputIcon";
 
 export default function ManualInput() {
   const [manualInput, setManualInput] = useState<string>("");
@@ -20,7 +22,7 @@ export default function ManualInput() {
       justifyContent: "center",
       alignItems: "center",
       gap: 16,
-      paddingHorizontal: 8,
+      paddingHorizontal: 16,
     },
     inputContainer: {
       width: "100%",
@@ -31,20 +33,35 @@ export default function ManualInput() {
       paddingHorizontal: 12,
     },
     manualInput: {
-      flex: 1,
       margin: 12,
+      width: "100%",
+      paddingVertical: 10,
+      paddingHorizontal: 10,
     },
   });
 
   return (
-    <View>
+    <View style={styles.container}>
       <ThemedText
-        type="subtitle"
+        type="defaultSemiBold"
         style={{ textAlign: "center", letterSpacing: 1.5 }}
       >
         {t("orInputManually")}
       </ThemedText>
-      <View style={styles.inputContainer}>
+      <ThemedTextInputIcon
+        value={manualInput}
+        onChangeText={setManualInput}
+        style={styles.manualInput}
+        placeholder={t("enterCode")}
+        lightColor="#000" // Example light color
+        darkColor="#fff" // Example dark color
+        icon={<FontAwesome name="search" size={24} color="black" />}
+        onPress={() => {
+          router.push("/search");
+        }}
+      />
+
+      {/* <View style={styles.inputContainer}>
         <ThemedTextInput
           value={manualInput}
           onChangeText={setManualInput}
@@ -70,7 +87,7 @@ export default function ManualInput() {
             }
           }}
         />
-      </View>
+      </View> */}
     </View>
   );
 }

@@ -74,6 +74,7 @@ function App() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="result" />
+        <Stack.Screen name="search" />
         <Stack.Screen name="privacy" />
         <Stack.Screen name="contact" />
         <Stack.Screen name="faq" />
