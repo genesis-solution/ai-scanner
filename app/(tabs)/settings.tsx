@@ -12,6 +12,7 @@ import { ItemValue } from "@react-native-picker/picker/typings/Picker";
 import { router } from "expo-router";
 import * as Linking from "expo-linking";
 import { ThemedIcon } from "@/components/ThemedIcon";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function SettingsScreen() {
   const { language, theme } = useSelector((state: any) => state.settings);
@@ -19,6 +20,14 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
 
   const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      flexDirection: "column",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingTop: 64,
+      backgroundColor: useThemeColor({}, "background"),
+    },
     headerImage: {
       color: "#808080",
       bottom: -90,
@@ -31,11 +40,12 @@ export default function SettingsScreen() {
       marginBottom: 36,
     },
     section: {
-      marginBottom: 24,
+      width: "100%",
+      marginBottom: 12,
+      padding: 8,
     },
     sectionTitle: {
-      fontSize: 20,
-      fontWeight: "bold",
+      fontSize: 14,
       marginBottom: 8,
       textAlign: "center",
       // borderColor: borderColor,
@@ -86,19 +96,12 @@ export default function SettingsScreen() {
   );
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="gearshape.fill"
-          style={styles.headerImage}
-        />
-      }
-    >
+    <View style={styles.container}>
+      <ThemedText type="subtitle" style={{ letterSpacing: 2 }}>
+        {t("settings")}
+      </ThemedText>
       {/* General Section */}
-      <View style={[styles.section, { marginTop: 24 }]}>
+      <View style={styles.section}>
         <ThemedText style={styles.sectionTitle}>{t("general")}</ThemedText>
 
         {/* Language Selection */}
@@ -184,6 +187,6 @@ export default function SettingsScreen() {
 
         {renderOptionRow("info", `${t("version")}: 1.0.0`, () => {})}
       </View>
-    </ParallaxScrollView>
+    </View>
   );
 }
