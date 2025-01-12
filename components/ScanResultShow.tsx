@@ -3,7 +3,12 @@ import LottieView from "lottie-react-native";
 import { StyleSheet } from "react-native";
 import ManualInput from "./ManualInput";
 
-const ScanResultShow = ({ scanResult }: any) => {
+type IScreenResultProps = {
+  scanResult: string;
+  manualInput?: boolean;
+};
+
+const ScanResultShow = ({ scanResult, manualInput }: IScreenResultProps) => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -64,9 +69,10 @@ const ScanResultShow = ({ scanResult }: any) => {
           style={styles.animation}
         />
       )}
-      {(scanResult === "unknown" || scanResult === "parse-error") && (
-        <ManualInput />
-      )}
+      {manualInput &&
+        (scanResult === "unknown" || scanResult === "parse-error") && (
+          <ManualInput />
+        )}
     </Fragment>
   );
 };

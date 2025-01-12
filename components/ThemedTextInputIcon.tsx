@@ -3,6 +3,7 @@ import {
   StyleProp,
   StyleSheet,
   TextInput,
+  TouchableOpacity,
   View,
   ViewStyle,
   type TextInputProps,
@@ -14,6 +15,9 @@ export type ThemedTextInputProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
   icon?: React.ReactNode;
+  submit?: boolean;
+  submitIcon?: React.ReactNode;
+  onSubmit?: () => void;
 };
 
 export function ThemedTextInputIcon({
@@ -21,6 +25,9 @@ export function ThemedTextInputIcon({
   lightColor,
   darkColor,
   icon,
+  submit,
+  onSubmit,
+  submitIcon,
   ...rest
 }: ThemedTextInputProps) {
   const color = useThemeColor({}, "text");
@@ -34,6 +41,11 @@ export function ThemedTextInputIcon({
         placeholderTextColor={color}
         {...rest}
       />
+      {submit && (
+        <TouchableOpacity onPress={onSubmit}>
+          <View style={styles.iconContainer}>{submitIcon}</View>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -54,6 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 0,
     padding: 0,
-    // borderColor: 
+    // borderColor:
   },
 });

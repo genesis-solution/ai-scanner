@@ -11,15 +11,18 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { ThemedIcon } from "@/components/ThemedIcon";
+import { ThemedTextInputIcon } from "@/components/ThemedTextInputIcon";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
 const FINAL = "final";
 
 export default function SearchScreen() {
-  const [status, setStatus] = useState<string>(PARSING);
+  const [manualInput, setManualInput] = useState<string>("");
+
+  const [status, setStatus] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<string>("unknown");
   const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
@@ -27,20 +30,9 @@ export default function SearchScreen() {
   const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
-  const { type, data } = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, "background");
 
-  useEffect(() => {
-    if (!type || !data) {
-      scanLogger.warn(
-        `Navigated to result screen with wrong type and data: ${type} - ${data}`
-      );
-      router.back();
-    }
-    scanLogger.log(`Navigated to result screen: ${type} - ${data}`);
-  }, []);
-
-  const handleCheckKeywords = useCallback(() => {
+  const handleCheckKeywords = () => {
     setStatus(CHECKING_KEYWORDS);
     const hasKeyword = keywords.some((keyword) =>
       JSON.stringify(productInfo).includes(keyword.name)
@@ -53,32 +45,30 @@ export default function SearchScreen() {
       setScanResult("green");
     }
     setStatus(FINAL);
-  }, []);
+  };
 
-  useEffect(() => {
-    const parseCode = async () => {
-      try {
-        const parsedContent = await getParseBarcode(data).unwrap();
-        scanLogger.log(`Parsed Content Status: `, parsedContent.status);
-        if (parsedContent?.status) {
-          setProductInfo(parsedContent?.product);
-          handleCheckKeywords();
-        } else {
-          setScanResult("unknown");
-          setStatus(FINAL);
-        }
-      } catch (error) {
-        scanLogger.error(
-          `Parsing Barcode Error: ${
-            (error as Error).message || "An unexpected error"
-          }`
-        );
-        setScanResult("parse-error");
+  const parseCode = async () => {
+    try {
+      setStatus(PARSING);
+      const parsedContent = await getParseBarcode(manualInput).unwrap();
+      scanLogger.log(`Parsed Content Status: `, parsedContent.status);
+      if (parsedContent?.status) {
+        setProductInfo(parsedContent?.product);
+        handleCheckKeywords();
+      } else {
+        setScanResult("unknown");
         setStatus(FINAL);
       }
-    };
-    parseCode();
-  }, []);
+    } catch (error) {
+      scanLogger.error(
+        `Parsing Barcode Error: ${
+          (error as Error).message || "An unexpected error"
+        }`
+      );
+      setScanResult("parse-error");
+      setStatus(FINAL);
+    }
+  };
 
   const styles = StyleSheet.create({
     image: {
@@ -88,21 +78,33 @@ export default function SearchScreen() {
     container: {
       flex: 1,
       flexDirection: "column",
-      justifyContent: "space-between",
-      gap: 16,
+      justifyContent: "center",
       paddingHorizontal: 8,
+      paddingTop: 96,
       backgroundColor: backgroundColor,
     },
     titleContainer: {
-      width: "100%",
+      flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      paddingTop: 24,
+      paddingTop: 8,
       paddingBottom: 8,
-      alignSelf: "center",
+    },
+    searchBarContainer: {
+      height: 72,
+      flexDirection: "row",
+      justifyContent: "center",
+      // width: "100%",
+    },
+    manualInput: {
+      flex: 1,
+      margin: 12,
+      // width: "100%",
+      paddingVertical: 10,
+      paddingHorizontal: 10,
     },
     resultContainer: {
-      marginTop: 100,
+      marginBottom: 168,
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
@@ -149,6 +151,7 @@ export default function SearchScreen() {
               <ThemedText
                 type="subtitle"
                 style={{
+                  flex: 1,
                   letterSpacing: 2,
                   marginLeft: 16,
                   alignSelf: "center",
@@ -162,6 +165,20 @@ export default function SearchScreen() {
         }}
       />
       <SafeAreaView style={styles.container}>
+        <View style={styles.searchBarContainer}>
+          <ThemedTextInputIcon
+            value={manualInput}
+            onChangeText={setManualInput}
+            style={styles.manualInput}
+            placeholder={t("enterCode")}
+            lightColor="#000" // Example light color
+            darkColor="#fff" // Example dark color
+            icon={<FontAwesome name="search" size={24} color="black" />}
+            submit={manualInput.length !== 0}
+            submitIcon={<AntDesign name="arrowright" size={24} color="black" />}
+            onSubmit={parseCode}
+          />
+        </View>
         <View style={styles.resultContainer}>
           {status === PARSING && (
             <LottieView
@@ -170,7 +187,9 @@ export default function SearchScreen() {
               style={styles.animation}
             />
           )}
-          {status === FINAL && <ScanResultShow scanResult={scanResult} />}
+          {status === FINAL && (
+            <ScanResultShow scanResult={scanResult} manualInput={false} />
+          )}
         </View>
       </SafeAreaView>
     </Fragment>

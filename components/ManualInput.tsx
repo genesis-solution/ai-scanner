@@ -48,18 +48,20 @@ export default function ManualInput() {
       >
         {t("orInputManually")}
       </ThemedText>
-      <ThemedTextInputIcon
-        value={manualInput}
-        onChangeText={setManualInput}
-        style={styles.manualInput}
-        placeholder={t("enterCode")}
-        lightColor="#000" // Example light color
-        darkColor="#fff" // Example dark color
-        icon={<FontAwesome name="search" size={24} color="black" />}
+      <TouchableOpacity
         onPress={() => {
           router.push("/search");
         }}
-      />
+      >
+        <ThemedTextInputIcon
+          style={styles.manualInput}
+          placeholder={t("search")}
+          icon={<FontAwesome name="search" size={24} color="black" />}
+          onPress={() => {
+            router.push("/search");
+          }}
+        />
+      </TouchableOpacity>
 
       {/* <View style={styles.inputContainer}>
         <ThemedTextInput
