@@ -10,7 +10,6 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const borderColor = useThemeColor({}, "text");
 
   const styles = StyleSheet.create({
     image: {
@@ -26,9 +25,8 @@ export default function HomeScreen() {
       backgroundColor: useThemeColor({}, "background"),
     },
     titleContainer: {
-      paddingTop: 64,
+      paddingTop: 96,
       paddingHorizontal: 12,
-      paddingBottom: 6,
       marginHorizontal: 12,
       flexDirection: "row",
       alignItems: "center",
@@ -40,6 +38,7 @@ export default function HomeScreen() {
       justifyContent: "space-between",
       alignItems: "center",
       gap: 0,
+      marginTop: -20,
       paddingTop: 0,
       paddingBottom: 12,
     },
