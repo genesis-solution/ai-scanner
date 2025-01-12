@@ -185,7 +185,7 @@ export default function SettingsScreen() {
           router.push("/privacy");
         })}
 
-        {renderOptionRow("info", `${t("version")}: 1.0.0`, () => {})}
+        {renderOptionRow("info", `${t("version")}: 2.0.0`, () => {})}
       </View>
     </View>
   );
