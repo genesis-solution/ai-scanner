@@ -18,7 +18,7 @@ const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
 const FINAL = "final";
 
-export default function ScanScreen() {
+export default function ResultScreen() {
   const [status, setStatus] = useState<string>(PARSING);
   const [scanResult, setScanResult] = useState<string>("unknown");
   const [productInfo, setProductInfo] = useState<any>({});
