@@ -165,11 +165,11 @@ export default function SettingsScreen() {
         })}
 
         {renderOptionRow("telegram", t("telegram"), () => {
-          Linking.openURL("https://t.me/your_telegram_channel");
+          Linking.openURL("https://t.me/FoodBugScanner");
         })}
 
         {renderOptionRow("language", t("website"), () => {
-          Linking.openURL("https://yourwebsite.com");
+          Linking.openURL("https://google.com");
         })}
       </View>
 

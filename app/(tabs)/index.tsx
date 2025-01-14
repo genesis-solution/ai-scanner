@@ -31,22 +31,19 @@ export default function HomeScreen() {
       flexDirection: "row",
       alignItems: "center",
       alignSelf: "center",
+      letterSpacing: 2,
     },
     barcodeContainer: {
       flex: 1,
       flexDirection: "column",
-      justifyContent: "space-between",
+      justifyContent: "center",
       alignItems: "center",
-      gap: 0,
-      marginTop: -20,
-      paddingTop: 0,
-      paddingBottom: 12,
+      gap: 24,
+      padding: 0,
     },
     scanBtnContainer: {
-      height: 160,
-      width: "100%",
-      paddingTop: 24,
-      paddingHorizontal: 48,
+      height: 80,
+      width: "60%",
       justifyContent: "center",
       alignItems: "center",
     },
@@ -55,35 +52,26 @@ export default function HomeScreen() {
       justifyContent: "center",
       alignItems: "center",
       height: 160,
-      paddingTop: 12,
-      paddingBottom: 12,
+      paddingHorizontal: 24,
     },
     animation: {
-      flex: 1,
-      width: 300,
-      height: 300,
+      width: 350,
+      height: 350,
       alignSelf: "center",
     },
   });
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.titleContainer}>
-        <ThemedText
-          type="subtitle"
-          style={{
-            letterSpacing: 2,
-          }}
-        >
-          {t("foodBugScanner")}
-        </ThemedText>
-      </View>
+      <ThemedText type="subtitle" style={styles.titleContainer}>
+        {t("foodBugScanner")}
+      </ThemedText>
+      <LottieView
+        source={require("@/assets/animations/barcode.json")}
+        autoPlay
+        style={styles.animation}
+      />
       <View style={styles.barcodeContainer}>
-        <LottieView
-          source={require("@/assets/animations/barcode.json")}
-          autoPlay
-          style={styles.animation}
-        />
         <ThemedText type="defaultSemiBold" style={{ letterSpacing: 1.5 }}>
           {t("scanAFoodBarcode")}
         </ThemedText>

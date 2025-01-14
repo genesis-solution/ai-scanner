@@ -1,10 +1,16 @@
-import { useEffect, useState, Fragment, useCallback } from "react";
-import { SafeAreaView, StyleSheet, View, TouchableOpacity } from "react-native";
+import { useState, Fragment } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { useSelector } from "react-redux";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack } from "expo-router";
 import LottieView from "lottie-react-native";
 import { ThemedText } from "@/components/ThemedText";
-import BigButton from "@/components/BigButton";
 import ScanResultShow from "@/components/ScanResultShow";
 import { useGetParseBarcodeMutation } from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
@@ -164,34 +170,41 @@ export default function SearchScreen() {
           headerTitle: "",
         }}
       />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.searchBarContainer}>
-          <ThemedTextInputIcon
-            value={manualInput}
-            onChangeText={setManualInput}
-            style={styles.manualInput}
-            placeholder={t("enterCode")}
-            lightColor="#000" // Example light color
-            darkColor="#fff" // Example dark color
-            icon={<FontAwesome name="search" size={24} color="black" />}
-            submit={manualInput.length !== 0}
-            submitIcon={<AntDesign name="arrowright" size={24} color="black" />}
-            onSubmit={parseCode}
-          />
-        </View>
-        <View style={styles.resultContainer}>
-          {status === PARSING && (
-            <LottieView
-              source={require("@/assets/animations/parsing.json")}
-              autoPlay
-              style={styles.animation}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <SafeAreaView style={styles.container}>
+          <View style={styles.searchBarContainer}>
+            <ThemedTextInputIcon
+              value={manualInput}
+              onChangeText={setManualInput}
+              style={styles.manualInput}
+              placeholder={t("enterCode")}
+              lightColor="#000" // Example light color
+              darkColor="#fff" // Example dark color
+              icon={<FontAwesome name="search" size={24} color="black" />}
+              submit={manualInput.length !== 0}
+              submitIcon={
+                <AntDesign name="arrowright" size={24} color="black" />
+              }
+              onSubmit={parseCode}
             />
-          )}
-          {status === FINAL && (
-            <ScanResultShow scanResult={scanResult} manualInput={false} />
-          )}
-        </View>
-      </SafeAreaView>
+          </View>
+          <View style={styles.resultContainer}>
+            {status === PARSING && (
+              <LottieView
+                source={require("@/assets/animations/parsing.json")}
+                autoPlay
+                style={styles.animation}
+              />
+            )}
+            {status === FINAL && (
+              <ScanResultShow scanResult={scanResult} manualInput={false} />
+            )}
+          </View>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </Fragment>
   );
 }

@@ -27,11 +27,14 @@ const BigButton = ({
       paddingHorizontal: 12,
     },
     appButtonText: {
+      flex: 1,
       fontSize: 24,
       color: useThemeColor({}, "buttonText"),
       fontWeight: "bold",
       alignSelf: "center",
+      textAlign: "center",
       textTransform: "uppercase",
+      ellipsizeMode: "tail", // Add ellipsis at the end if overflow
     },
     appButtonDisabled: {
       backgroundColor: "#000",
@@ -48,7 +51,9 @@ const BigButton = ({
       disabled={disabled}
     >
       <View style={styles.iconContainer}>{icon}</View>
-      <Text style={styles.appButtonText}>{title}</Text>
+      <Text style={styles.appButtonText} numberOfLines={1} ellipsizeMode="tail">
+        {title}
+      </Text>
     </TouchableOpacity>
   );
 };
