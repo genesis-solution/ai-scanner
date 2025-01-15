@@ -167,10 +167,6 @@ export default function SettingsScreen() {
         {renderOptionRow("telegram", t("telegram"), () => {
           Linking.openURL("https://t.me/FoodBugScanner");
         })}
-
-        {renderOptionRow("language", t("website"), () => {
-          Linking.openURL("https://google.com");
-        })}
       </View>
 
       {/* App Section */}
