@@ -43,7 +43,7 @@ export default function ContactScreen() {
       const isAvailable = await MailComposer.isAvailableAsync();
       if (isAvailable) {
         const result = await MailComposer.composeAsync({
-          recipients: ["sam.abdollahi20@gmail.com"],
+          recipients: ["sam.schmidt2021@gmail.com"],
           subject: "Feedback on Food Bug Scanner",
           body: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
         });
