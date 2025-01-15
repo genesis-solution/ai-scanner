@@ -25,7 +25,7 @@ export default function HomeScreen() {
       backgroundColor: useThemeColor({}, "background"),
     },
     titleContainer: {
-      paddingTop: 96,
+      paddingTop: 64,
       paddingHorizontal: 12,
       marginHorizontal: 12,
       flexDirection: "row",
@@ -34,7 +34,7 @@ export default function HomeScreen() {
       letterSpacing: 2,
     },
     barcodeContainer: {
-      flex: 1,
+      height: 160,
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
@@ -55,8 +55,8 @@ export default function HomeScreen() {
       paddingHorizontal: 24,
     },
     animation: {
-      width: 350,
-      height: 350,
+      flex: 1,
+      width: "100%",
       alignSelf: "center",
     },
   });
