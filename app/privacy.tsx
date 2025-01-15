@@ -18,7 +18,7 @@ export default function PrivacyPolicyScreen() {
           <Text style={styles.text}>
             {/* Replace this with your actual privacy policy text */}
             {
-`Datenschutzerklärung von Marcel Bartecki Apps
+`Datenschutzerklärung
 Diese Anwendung erhebt personenbezogene Daten von ihren Nutzern.
 
 
