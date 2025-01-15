@@ -151,7 +151,7 @@ export default function SearchScreen() {
           headerLeft: () => (
             <View style={styles.titleContainer}>
               <TouchableOpacity onPress={() => router.back()}>
-                <View style={{ marginHorizontal: 8 }}>
+                <View style={{ margin: 8 }}>
                   <ThemedIcon name="arrow-left" size={24} type="fontawesome" />
                 </View>
               </TouchableOpacity>
