@@ -32,7 +32,6 @@ export default function SearchScreen() {
   const [scanResult, setScanResult] = useState<string>("unknown");
   const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
-  const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
@@ -152,7 +151,9 @@ export default function SearchScreen() {
           headerLeft: () => (
             <View style={styles.titleContainer}>
               <TouchableOpacity onPress={() => router.back()}>
-                <ThemedIcon name="arrow-left" size={18} type="fontawesome" />
+                <View style={{ marginHorizontal: 8 }}>
+                  <ThemedIcon name="arrow-left" size={24} type="fontawesome" />
+                </View>
               </TouchableOpacity>
               <ThemedText
                 type="subtitle"
