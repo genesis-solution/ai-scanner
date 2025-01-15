@@ -18,7 +18,6 @@ const BigButton = ({
       elevation: 8,
       backgroundColor: useThemeColor({}, "button"),
       height: "100%",
-      width: "100%",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
@@ -27,12 +26,9 @@ const BigButton = ({
       paddingHorizontal: 12,
     },
     appButtonText: {
-      flex: 1,
       fontSize: 24,
       color: useThemeColor({}, "buttonText"),
       fontWeight: "bold",
-      alignSelf: "center",
-      textAlign: "center",
       textTransform: "uppercase",
       ellipsizeMode: "tail", // Add ellipsis at the end if overflow
     },

@@ -43,7 +43,6 @@ export default function HomeScreen() {
     },
     scanBtnContainer: {
       height: 80,
-      width: "60%",
       justifyContent: "center",
       alignItems: "center",
     },
