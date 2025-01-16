@@ -10,32 +10,10 @@ type IScreenResultProps = {
 
 const ScanResultShow = ({ scanResult, manualInput }: IScreenResultProps) => {
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      flexDirection: "column",
-      justifyContent: "space-between",
-      gap: 16,
-      paddingHorizontal: 8,
-    },
     animation: {
-      width: 300,
-      height: 300,
+      width: 200,
+      height: 200,
       alignSelf: "center",
-    },
-    inputContainer: {
-      width: "100%",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      gap: 4,
-      paddingHorizontal: 12,
-    },
-    manualInput: {
-      flex: 1,
-      height: 40,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
     },
   });
 

@@ -4,9 +4,10 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
-  KeyboardAvoidingView,
   Platform,
+  KeyboardAvoidingView,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSelector } from "react-redux";
 import { router, Stack } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -109,11 +110,9 @@ export default function SearchScreen() {
       paddingHorizontal: 10,
     },
     resultContainer: {
-      marginBottom: 168,
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      gap: 48,
     },
     scanBtnContainer: {
       justifyContent: "center",
@@ -131,8 +130,8 @@ export default function SearchScreen() {
       position: "absolute",
     },
     animation: {
-      width: 300,
-      height: 300,
+      width: 200,
+      height: 200,
       alignSelf: "center",
     },
     splashIcon: {
@@ -143,39 +142,43 @@ export default function SearchScreen() {
   });
 
   return (
-    <Fragment>
-      <Stack.Screen
-        options={{
-          headerShown: true,
-          headerTransparent: true,
-          headerLeft: () => (
-            <View style={styles.titleContainer}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <View style={{ margin: 8 }}>
-                  <ThemedIcon name="arrow-left" size={24} type="fontawesome" />
-                </View>
-              </TouchableOpacity>
-              <ThemedText
-                type="subtitle"
-                style={{
-                  flex: 1,
-                  letterSpacing: 2,
-                  marginLeft: 16,
-                  alignSelf: "center",
-                }}
-              >
-                {t("search")}
-              </ThemedText>
-            </View>
-          ),
-          headerTitle: "",
-        }}
-      />
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <Fragment>
+        <Stack.Screen
+          options={{
+            headerShown: true,
+            headerTransparent: true,
+            headerLeft: () => (
+              <View style={styles.titleContainer}>
+                <TouchableOpacity onPress={() => router.back()}>
+                  <View style={{ margin: 8 }}>
+                    <ThemedIcon
+                      name="arrow-left"
+                      size={24}
+                      type="fontawesome"
+                    />
+                  </View>
+                </TouchableOpacity>
+                <ThemedText
+                  type="subtitle"
+                  style={{
+                    flex: 1,
+                    letterSpacing: 2,
+                    marginLeft: 16,
+                    alignSelf: "center",
+                  }}
+                >
+                  {t("search")}
+                </ThemedText>
+              </View>
+            ),
+            headerTitle: "",
+          }}
+        />
+        <View style={styles.container}>
           <View style={styles.searchBarContainer}>
             <ThemedTextInputIcon
               value={manualInput}
@@ -204,8 +207,8 @@ export default function SearchScreen() {
               <ScanResultShow scanResult={scanResult} manualInput={false} />
             )}
           </View>
-        </SafeAreaView>
-      </KeyboardAvoidingView>
-    </Fragment>
+        </View>
+      </Fragment>
+    </KeyboardAvoidingView>
   );
 }
