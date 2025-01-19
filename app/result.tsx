@@ -141,23 +141,7 @@ export default function ResultScreen() {
         options={{
           headerShown: true,
           headerTransparent: true,
-          headerLeft: () => (
-            <View style={styles.titleContainer}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <ThemedIcon name="arrow-left" size={18} type="fontawesome" />
-              </TouchableOpacity>
-              <ThemedText
-                type="subtitle"
-                style={{
-                  letterSpacing: 2,
-                  marginLeft: 16,
-                }}
-              >
-                {t("foodBugScanner")}
-              </ThemedText>
-            </View>
-          ),
-          headerTitle: "",
+          headerTitle: t("foodBugScanner"),
         }}
       />
       <SafeAreaView style={styles.container}>

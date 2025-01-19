@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Alert, Linking, SafeAreaView, StyleSheet, View } from "react-native";
 import { Camera } from "expo-camera";
 import { router, usePathname } from "expo-router";
@@ -11,7 +11,6 @@ import { useTranslation } from "react-i18next";
 
 export default function ScanScreen() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
-  const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
   const pathname = usePathname();
