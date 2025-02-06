@@ -4,9 +4,8 @@ import LottieView from "lottie-react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import BigButton from "@/components/BigButton";
 import { router } from "expo-router";
-import ManualInput from "@/components/ManualInput";
 import { useTranslation } from "react-i18next";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -80,12 +79,23 @@ export default function HomeScreen() {
             onPress={() => {
               router.replace("/scan");
             }}
-            icon={<Ionicons name="scan" size={48} color="white" />}
+            icon={<Ionicons name="scan" size={40} color="white" />}
           />
         </View>
       </View>
-      <View style={styles.manualInputContainer}>
-        <ManualInput />
+      <View style={styles.barcodeContainer}>
+        <ThemedText type="defaultSemiBold" style={{ letterSpacing: 1.5 }}>
+          {t("Or Take a Picture of food ingredients")}
+        </ThemedText>
+        <View style={styles.scanBtnContainer}>
+          <BigButton
+            title={t("Take a Picture")}
+            onPress={() => {
+              router.replace("/ocr");
+            }}
+            icon={<Entypo name="camera" size={40} color="white" />}
+          />
+        </View>
       </View>
     </SafeAreaView>
   );

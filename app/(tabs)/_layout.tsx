@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import React from "react";
 import {
-  Linking,
   Platform,
   Share,
   StyleSheet,
@@ -17,7 +16,6 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import InlineAd from "@/components/InlineAd";
 import { Entypo } from "@expo/vector-icons";
-import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
 
 export default function TabLayout() {
@@ -97,6 +95,15 @@ export default function TabLayout() {
               title: t("scan"),
               tabBarIcon: ({ color }) => (
                 <IconSymbol size={28} name="scanner.fill" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
+            name="ocr"
+            options={{
+              title: t("OCR"),
+              tabBarIcon: ({ color }) => (
+                <Entypo name="camera" size={28} color={color} />
               ),
             }}
           />

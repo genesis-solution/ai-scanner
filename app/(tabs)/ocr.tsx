@@ -3,13 +3,12 @@ import { SafeAreaView, StyleSheet, View } from "react-native";
 import { router, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
-import ManualInput from "@/components/ManualInput";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useTranslation } from "react-i18next";
 import useCameraPermission from "@/hooks/useCameraPermission";
 
-export default function ScanScreen() {
+export default function OCRScreen() {
   const { hasPermission, checkCameraPermission } = useCameraPermission();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
@@ -17,27 +16,11 @@ export default function ScanScreen() {
 
   useLayoutEffect(() => {
     console.log(pathname);
-    if (pathname !== "/scan") return;
+
+    if (pathname !== "/ocr") return;
+
     checkCameraPermission();
   }, [pathname, checkCameraPermission]);
-
-  const handleBarcodeScanned = async ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
-    try {
-      router.push(`/result?type=${type}&data=${data}`);
-    } catch (error) {
-      scanLogger.error(
-        `Barcode Scan Error: ${
-          (error as Error).message || "An unexpected error"
-        }`
-      );
-    }
-  };
 
   if (hasPermission === null) {
     return <ThemedText>{t("requestingCameraPermission")}</ThemedText>;
@@ -45,6 +28,10 @@ export default function ScanScreen() {
   if (hasPermission === false) {
     return <ThemedText>{t("noCameraAccess")}</ThemedText>;
   }
+
+  const handleOCRScanned = () => {
+    scanLogger.log("OCR scanned");
+  };
 
   const styles = StyleSheet.create({
     image: {
@@ -73,6 +60,7 @@ export default function ScanScreen() {
       justifyContent: "center",
       alignItems: "center",
       gap: 12,
+      marginBottom: 8,
     },
     cameraContainer: {
       position: "absolute",
@@ -120,11 +108,8 @@ export default function ScanScreen() {
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
-          <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
+          <CameraScanner type="ocr" handleOCRScanned={handleOCRScanned} />
         </View>
-      </View>
-      <View style={styles.scanBtnContainer}>
-        <ManualInput />
       </View>
     </SafeAreaView>
   );

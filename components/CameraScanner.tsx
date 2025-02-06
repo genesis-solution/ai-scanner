@@ -5,16 +5,20 @@ import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
 
 type ICameraScannerProps = {
-  handleBarcodeScanned: ({
+  handleBarcodeScanned?: ({
     type,
     data,
   }: {
     type: string;
     data: string;
   }) => void;
+  type?: "barcode" | "ocr";
+  handleOCRScanned?: () => void;
 };
 
 export default function CameraScanner({
+  type = "barcode",
+  handleOCRScanned,
   handleBarcodeScanned,
 }: ICameraScannerProps) {
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
@@ -42,6 +46,28 @@ export default function CameraScanner({
       paddingHorizontal: 20,
       paddingVertical: 10,
       zIndex: 5,
+    },
+    panelBottom: {
+      position: "absolute",
+      bottom: 0,
+      height: 100,
+      left: 0,
+      right: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.4)",
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      gap: 20,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      zIndex: 5,
+    },
+    buttonShoot: {
+      alignItems: "center",
+    },
+    shootImage: {
+      width: 80,
+      height: 80,
     },
     buttonFocus: {
       alignItems: "center",
@@ -134,20 +160,38 @@ export default function CameraScanner({
           </TouchableOpacity>
         </View>
 
+        <View style={styles.panelBottom}>
+          <TouchableOpacity
+            style={styles.buttonShoot}
+            onPress={handleOCRScanned}
+          >
+            <Image
+              style={styles.shootImage}
+              source={require("../assets/images/trigger-icon.png")}
+            />
+          </TouchableOpacity>
+        </View>
+
         <CameraView
-          onBarcodeScanned={handleBarcodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: [
-              "ean13",
-              "ean8",
-              "upc_e",
-              "code39",
-              "code93",
-              "itf14",
-              "code128",
-              "upc_a",
-            ],
-          }}
+          onBarcodeScanned={
+            type === "barcode" ? handleBarcodeScanned : undefined
+          }
+          barcodeScannerSettings={
+            type === "barcode"
+              ? {
+                  barcodeTypes: [
+                    "ean13",
+                    "ean8",
+                    "upc_e",
+                    "code39",
+                    "code93",
+                    "itf14",
+                    "code128",
+                    "upc_a",
+                  ],
+                }
+              : undefined
+          }
           facing={facingMode}
           autofocus="on"
           flash={flashMode}
