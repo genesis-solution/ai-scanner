@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { View, Button, StyleSheet, Alert } from "react-native";
+import { View, Button, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { useTranslation } from "react-i18next";

@@ -3,8 +3,6 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { setLanguage, setTheme } from "@/store/slices/settingsSlice";
 import { Picker } from "@react-native-picker/picker";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedPicker } from "@/components/ThemedPicker";
