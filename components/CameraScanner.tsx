@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CameraType, CameraView, FlashMode } from "expo-camera";
+import { CameraType, CameraView, CameraViewRef, FlashMode } from "expo-camera";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
@@ -14,12 +14,14 @@ type ICameraScannerProps = {
   }) => void;
   type?: "barcode" | "ocr";
   handleOCRScanned?: () => void;
+  cameraRef: React.RefObject<CameraView>;
 };
 
 export default function CameraScanner({
   type = "barcode",
   handleOCRScanned,
   handleBarcodeScanned,
+  cameraRef,
 }: ICameraScannerProps) {
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [facingMode, setFacingMode] = useState<CameraType>("back");
@@ -160,19 +162,22 @@ export default function CameraScanner({
           </TouchableOpacity>
         </View>
 
-        <View style={styles.panelBottom}>
-          <TouchableOpacity
-            style={styles.buttonShoot}
-            onPress={handleOCRScanned}
-          >
-            <Image
-              style={styles.shootImage}
-              source={require("../assets/images/trigger-icon.png")}
-            />
-          </TouchableOpacity>
-        </View>
+        {type === "ocr" && (
+          <View style={styles.panelBottom}>
+            <TouchableOpacity
+              style={styles.buttonShoot}
+              onPress={handleOCRScanned}
+            >
+              <Image
+                style={styles.shootImage}
+                source={require("../assets/images/trigger-icon.png")}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
 
         <CameraView
+          ref={cameraRef}
           onBarcodeScanned={
             type === "barcode" ? handleBarcodeScanned : undefined
           }

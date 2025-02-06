@@ -1,4 +1,4 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { router, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -7,12 +7,17 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useTranslation } from "react-i18next";
 import useCameraPermission from "@/hooks/useCameraPermission";
+import { usePostOCRMutation } from "@/store/services/api";
+import { CameraView, CameraViewRef } from "expo-camera";
+import { showAlert } from "@/utils/scanAlert";
 
 export default function OCRScreen() {
   const { hasPermission, checkCameraPermission } = useCameraPermission();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
   const pathname = usePathname();
+  const cameraRef = useRef<CameraView | null>(null);
+  const [postOCR] = usePostOCRMutation();
 
   useLayoutEffect(() => {
     console.log(pathname);
@@ -29,8 +34,54 @@ export default function OCRScreen() {
     return <ThemedText>{t("noCameraAccess")}</ThemedText>;
   }
 
-  const handleOCRScanned = () => {
-    scanLogger.log("OCR scanned");
+  const handleOCRScanned = async () => {
+    try {
+      if (cameraRef.current) {
+        const options = { quality: 0.5, base64: true };
+        const photo = await cameraRef.current.takePictureAsync(options);
+        scanLogger.log("Photo taken:", photo);
+        if (!photo) return;
+
+        const formData = new FormData();
+        formData.append("apikey", "K83477011988957");
+
+        const response = await fetch(photo.uri);
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64data = reader.result;
+          formData.append("base64Image", base64data as string);
+          // scanLogger.log("call api - post-OCR:", formData);
+
+          postOCR(formData)
+            .unwrap()
+            .then((result) => {
+              scanLogger.log("OCR result:", result);
+            })
+            .catch((error) => {
+              scanLogger.error(
+                `Error: `,
+                (error as Error).message || error.error || JSON.stringify(error)
+              );
+              showAlert(
+                `Photo Upload Error: ${
+                  (error as Error).message ||
+                  error.error ||
+                  JSON.stringify(error)
+                }`,
+                "error"
+              );
+            });
+        };
+        // scanLogger.log("call api - post-OCR:", formData);
+
+        // const result = await postOCR(formData).unwrap();
+        // scanLogger.log("OCR result:", result);
+      }
+    } catch (error) {
+      scanLogger.error(`Error: `, (error as Error).message || error);
+    }
   };
 
   const styles = StyleSheet.create({
@@ -108,7 +159,11 @@ export default function OCRScreen() {
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
-          <CameraScanner type="ocr" handleOCRScanned={handleOCRScanned} />
+          <CameraScanner
+            type="ocr"
+            handleOCRScanned={handleOCRScanned}
+            cameraRef={cameraRef}
+          />
         </View>
       </View>
     </SafeAreaView>
