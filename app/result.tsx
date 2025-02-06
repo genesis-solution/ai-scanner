@@ -1,18 +1,20 @@
 import { useEffect, useState, Fragment, useCallback } from "react";
-import { SafeAreaView, StyleSheet, View, TouchableOpacity } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
-import { ThemedText } from "@/components/ThemedText";
 import BigButton from "@/components/BigButton";
 import ScanResultShow from "@/components/ScanResultShow";
-import { useGetParseBarcodeMutation } from "@/store/services/api";
+import {
+  useGetParseBarcodeMutation,
+  usePostOCRMutation,
+} from "@/store/services/api";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
-import { ThemedIcon } from "@/components/ThemedIcon";
+import { showAlert } from "@/utils/scanAlert";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -21,14 +23,14 @@ const FINAL = "final";
 export default function ResultScreen() {
   const [status, setStatus] = useState<string>(PARSING);
   const [scanResult, setScanResult] = useState<string>("unknown");
-  const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
-  const borderColor = useThemeColor({}, "text");
   const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
   const { type, data } = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, "background");
+
+  const [postOCR] = usePostOCRMutation();
 
   useEffect(() => {
     if (!type || !data) {
@@ -38,47 +40,92 @@ export default function ResultScreen() {
       router.back();
     }
     scanLogger.log(`Navigated to result screen: ${type} - ${data}`);
-  }, []);
-
-  const handleCheckKeywords = useCallback(() => {
-    setStatus(CHECKING_KEYWORDS);
-    const hasKeyword = keywords.some((keyword) =>
-      JSON.stringify(productInfo).includes(keyword.name)
-    );
-
-    if (hasKeyword) {
-      scanLogger.log(`This product includes a keyword`);
-      setScanResult("red");
-    } else {
-      setScanResult("green");
-    }
-    setStatus(FINAL);
-  }, []);
+  });
 
   useEffect(() => {
+    const handleCheckKeywords = (productInfo: any) => {
+      setStatus(CHECKING_KEYWORDS);
+      const hasKeyword = keywords.some((keyword) =>
+        JSON.stringify(productInfo).includes(keyword.name)
+      );
+
+      if (hasKeyword) {
+        scanLogger.log(`This product includes a keyword`);
+        setScanResult("red");
+      } else {
+        setScanResult("green");
+      }
+      setStatus(FINAL);
+    };
+
     const parseCode = async () => {
       try {
-        const parsedContent = await getParseBarcode(data).unwrap();
-        scanLogger.log(`Parsed Content Status: `, parsedContent.status);
-        if (parsedContent?.status) {
-          setProductInfo(parsedContent?.product);
-          handleCheckKeywords();
+        if (type === "ocr") {
+          const formData = new FormData();
+          formData.append("apikey", "K83477011988957");
+
+          const response = await fetch(data as string);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            const base64data = reader.result;
+            formData.append("base64Image", base64data as string);
+
+            postOCR(formData)
+              .unwrap()
+              .then((result) => {
+                scanLogger.log("OCR result:", result);
+                if (result?.ParsedResults?.length) {
+                  const allParsedText = result.ParsedResults.map(
+                    (result: any) => result.ParsedText
+                  ).join(" ");
+                  handleCheckKeywords(allParsedText);
+                } else {
+                  setScanResult("unknown");
+                  setStatus(FINAL);
+                }
+              })
+              .catch((error) => {
+                scanLogger.error(
+                  `Error: `,
+                  (error as Error).message ||
+                    error.error ||
+                    JSON.stringify(error)
+                );
+                throw new Error(
+                  `Photo Upload Error: ${
+                    (error as Error).message ||
+                    error.error ||
+                    JSON.stringify(error)
+                  }`
+                );
+              });
+          };
         } else {
-          setScanResult("unknown");
-          setStatus(FINAL);
+          const parsedContent = await getParseBarcode(data).unwrap();
+          scanLogger.log(`Parsed Content Status: `, parsedContent.status);
+          if (parsedContent?.status) {
+            handleCheckKeywords(parsedContent?.product);
+          } else {
+            setScanResult("unknown");
+            setStatus(FINAL);
+          }
         }
       } catch (error) {
         scanLogger.error(
-          `Parsing Barcode Error: ${
-            (error as Error).message || "An unexpected error"
-          }`
+          `Parsing Error: ${(error as Error).message || "An unexpected error"}`
+        );
+        showAlert(
+          `Parsing Error: ${(error as Error).message || "An unexpected error"}`,
+          "error"
         );
         setScanResult("parse-error");
         setStatus(FINAL);
       }
     };
     parseCode();
-  }, []);
+  }, [data, getParseBarcode, keywords, postOCR, type]);
 
   const styles = StyleSheet.create({
     image: {
@@ -153,14 +200,23 @@ export default function ResultScreen() {
               style={styles.animation}
             />
           )}
-          {status === FINAL && <ScanResultShow scanResult={scanResult} />}
+          {status === FINAL && (
+            <ScanResultShow
+              manualInput={type !== "ocr"}
+              scanResult={scanResult}
+            />
+          )}
         </View>
         <View style={styles.scanBtnContainer}>
           {status === FINAL && (
             <BigButton
               title={t("scanAgain")}
               onPress={() => {
-                router.replace("/(tabs)/scan");
+                if (type === "ocr") {
+                  router.replace("/(tabs)/ocr");
+                } else {
+                  router.replace("/(tabs)/scan");
+                }
               }}
               icon={<FontAwesome name="repeat" size={48} color="white" />}
             />

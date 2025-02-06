@@ -29,7 +29,7 @@ export default function ScanScreen() {
     data: string;
   }) => {
     try {
-      router.push(`/result?type=${type}&data=${data}`);
+      router.replace(`/result?type=${type}&data=${data}`);
     } catch (error) {
       scanLogger.error(
         `Barcode Scan Error: ${

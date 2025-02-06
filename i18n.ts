@@ -71,6 +71,9 @@ const resources = {
         answer2:
           "You can change the language in the settings under the General section.",
       },
+      "Or Take a Picture of food ingredients":
+        "Or Take a Picture of food ingredients",
+      "Take a Picture": "Take a Picture",
     },
   },
   de: {
@@ -142,6 +145,9 @@ const resources = {
         answer2:
           "Sie können die Sprache in den Einstellungen im Abschnitt Allgemein ändern.",
       },
+      "Or Take a Picture of food ingredients":
+        "Oder ein Bild von den Lebensmittelzutaten machen",
+      "Take a Picture": "Ein Bild machen",
     },
   },
   es: {
@@ -213,6 +219,9 @@ const resources = {
         answer2:
           "Puede cambiar el idioma en la configuración en la sección General.",
       },
+      "Or Take a Picture of food ingredients":
+        "O tomar una foto de los ingredientes de los alimentos",
+      "Take a Picture": "Tomar una foto",
     },
   },
   fr: {
@@ -284,6 +293,9 @@ const resources = {
         answer2:
           "Vous pouvez changer la langue dans les paramètres sous la section Général.",
       },
+      "Or Take a Picture of food ingredients":
+        "Ou prenez une photo des ingrédients alimentaires",
+      "Take a Picture": "Prendre une photo",
     },
   },
   zh: {
@@ -353,6 +365,8 @@ const resources = {
         question2: "我如何更改语言?",
         answer2: "您可以在常规部分的设置中更改语言。",
       },
+      "Or Take a Picture of food ingredients": "或拍摄食品成分的照片",
+      "Take a Picture": "拍照",
     },
   },
   ar: {
@@ -423,6 +437,8 @@ const resources = {
         question2: "كيف أغير اللغة؟",
         answer2: "يمكنك تغيير اللغة في الإعدادات ضمن القسم العام.",
       },
+      "Or Take a Picture of food ingredients": "أو التقاط صورة لمكونات الطعام",
+      "Take a Picture": "التقاط صورة",
     },
   },
   hi: {
@@ -493,6 +509,8 @@ const resources = {
         question2: "मैं भाषा कैसे बदलूं?",
         answer2: "आप सामान्य अनुभाग के तहत सेटिंग्स में भाषा बदल सकते हैं।",
       },
+      "Or Take a Picture of food ingredients": "या खाद्य सामग्री की तस्वीर लें",
+      "Take a Picture": "तस्वीर लें",
     },
   },
   pt: {
@@ -563,6 +581,9 @@ const resources = {
         question2: "Como eu mudo o idioma?",
         answer2: "Você pode mudar o idioma nas configurações na seção Geral.",
       },
+      "Or Take a Picture of food ingredients":
+        "Ou tire uma foto dos ingredientes alimentares",
+      "Take a Picture": "Tirar uma foto",
     },
   },
   ru: {
@@ -633,6 +654,9 @@ const resources = {
         question2: "Как изменить язык?",
         answer2: "Вы можете изменить язык в настройках в разделе Общие.",
       },
+      "Or Take a Picture of food ingredients":
+        "Или сделайте фото ингредиентов пищи",
+      "Take a Picture": "Сделать фото",
     },
   },
   ja: {
@@ -700,6 +724,8 @@ const resources = {
         question2: "言語を変更するにはどうすればよいですか？",
         answer2: "一般セクションの設定で言語を変更できます。",
       },
+      "Or Take a Picture of food ingredients": "または食品の成分の写真を撮る",
+      "Take a Picture": "写真を撮る",
     },
   },
   it: {
@@ -769,6 +795,9 @@ const resources = {
         answer2:
           "Puoi cambiare la lingua nelle impostazioni nella sezione Generale.",
       },
+      "Or Take a Picture of food ingredients":
+        "Oppure scatta una foto degli ingredienti alimentari",
+      "Take a Picture": "Scatta una foto",
     },
   },
 };

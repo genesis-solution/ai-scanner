@@ -14,7 +14,7 @@ type ICameraScannerProps = {
   }) => void;
   type?: "barcode" | "ocr";
   handleOCRScanned?: () => void;
-  cameraRef: React.RefObject<CameraView>;
+  cameraRef?: React.RefObject<CameraView>;
 };
 
 export default function CameraScanner({
