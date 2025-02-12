@@ -33,7 +33,7 @@ export default function HomeScreen() {
       letterSpacing: 2,
     },
     barcodeContainer: {
-      height: 160,
+      minHeight: 160,
       flexDirection: "column",
       justifyContent: "center",
       alignItems: "center",
@@ -41,7 +41,6 @@ export default function HomeScreen() {
       padding: 0,
     },
     scanBtnContainer: {
-      height: 80,
       justifyContent: "center",
       alignItems: "center",
     },
@@ -84,7 +83,10 @@ export default function HomeScreen() {
         </View>
       </View>
       <View style={styles.barcodeContainer}>
-        <ThemedText type="defaultSemiBold" style={{ letterSpacing: 1.5 }}>
+        <ThemedText
+          type="defaultSemiBold"
+          style={{ letterSpacing: 1.5, textAlign: "center" }}
+        >
           {t("Or Take a Picture of food ingredients")}
         </ThemedText>
         <View style={styles.scanBtnContainer}>

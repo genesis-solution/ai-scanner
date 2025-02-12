@@ -17,27 +17,27 @@ const BigButton = ({
     appButtonContainer: {
       elevation: 8,
       backgroundColor: useThemeColor({}, "button"),
-      height: "100%",
+      width: "75%",
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
+      gap: 8,
       borderRadius: 10,
       paddingVertical: 10,
       paddingHorizontal: 12,
     },
     appButtonText: {
+      flex: 1,
+      textAlign: "center",
       fontSize: 24,
       color: useThemeColor({}, "buttonText"),
       fontWeight: "bold",
       textTransform: "uppercase",
-      ellipsizeMode: "tail", // Add ellipsis at the end if overflow
     },
     appButtonDisabled: {
       backgroundColor: "#000",
     },
-    iconContainer: {
-      marginRight: 8, // Add some space between the icon and the text
-    },
+    iconContainer: {},
   });
 
   return (
@@ -47,9 +47,7 @@ const BigButton = ({
       disabled={disabled}
     >
       <View style={styles.iconContainer}>{icon}</View>
-      <Text style={styles.appButtonText} numberOfLines={1} ellipsizeMode="tail">
-        {title}
-      </Text>
+      <Text style={styles.appButtonText}>{title}</Text>
     </TouchableOpacity>
   );
 };
