@@ -101,7 +101,7 @@ export default function TabLayout() {
           <Tabs.Screen
             name="ocr"
             options={{
-              title: t("OCR"),
+              title: t("cam"),
               tabBarIcon: ({ color }) => (
                 <Entypo name="camera" size={28} color={color} />
               ),

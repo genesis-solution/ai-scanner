@@ -74,6 +74,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Or Take a Picture of food ingredients",
       "Take a Picture": "Take a Picture",
+      cam: "Cam",
+      share: "Share",
     },
   },
   de: {
@@ -148,6 +150,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Oder ein Bild von den Lebensmittelzutaten machen",
       "Take a Picture": "Ein Bild machen",
+      cam: "Kamera",
+      share: "Teilen",
     },
   },
   es: {
@@ -222,6 +226,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "O tomar una foto de los ingredientes de los alimentos",
       "Take a Picture": "Tomar una foto",
+      cam: "Cámara",
+      share: "Compartir",
     },
   },
   fr: {
@@ -296,6 +302,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Ou prenez une photo des ingrédients alimentaires",
       "Take a Picture": "Prendre une photo",
+      cam: "Cam",
+      share: "Partager",
     },
   },
   zh: {
@@ -367,6 +375,8 @@ const resources = {
       },
       "Or Take a Picture of food ingredients": "或拍摄食品成分的照片",
       "Take a Picture": "拍照",
+      cam: "相机",
+      share: "分享",
     },
   },
   ar: {
@@ -439,6 +449,8 @@ const resources = {
       },
       "Or Take a Picture of food ingredients": "أو التقاط صورة لمكونات الطعام",
       "Take a Picture": "التقاط صورة",
+      cam: "كاميرا",
+      share: "مشاركة",
     },
   },
   hi: {
@@ -511,6 +523,8 @@ const resources = {
       },
       "Or Take a Picture of food ingredients": "या खाद्य सामग्री की तस्वीर लें",
       "Take a Picture": "तस्वीर लें",
+      cam: "कैमरा",
+      share: "शेयर करें",
     },
   },
   pt: {
@@ -584,6 +598,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Ou tire uma foto dos ingredientes alimentares",
       "Take a Picture": "Tirar uma foto",
+      cam: "Cam",
+      share: "Compartilhar",
     },
   },
   ru: {
@@ -657,6 +673,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Или сделайте фото ингредиентов пищи",
       "Take a Picture": "Сделать фото",
+      cam: "Камера",
+      share: "Поделиться",
     },
   },
   ja: {
@@ -726,6 +744,8 @@ const resources = {
       },
       "Or Take a Picture of food ingredients": "または食品の成分の写真を撮る",
       "Take a Picture": "写真を撮る",
+      cam: "カメラ",
+      share: "共有",
     },
   },
   it: {
@@ -798,6 +818,8 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Oppure scatta una foto degli ingredienti alimentari",
       "Take a Picture": "Scatta una foto",
+      cam: "Fotocamera",
+      share: "Condividi",
     },
   },
 };

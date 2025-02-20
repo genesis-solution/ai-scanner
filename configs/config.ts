@@ -12,7 +12,7 @@ export const appConfig = {
   colorCyan: "#007bff",
   colorSnow: "#ffffff",
   appName: "Food Scanner",
-  baseURL: "https://www.google.com",
+  baseURL: "http://3.13.205.17",
   /**
    * @param isEmulatorMode
    * @desc primary flag for Dev and Testing

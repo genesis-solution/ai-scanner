@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import scanLogger from "../../utils/scanLogger";
+import { appConfig } from "@/configs/config";
 
 export const api = createApi({
   reducerPath: "api",
@@ -22,7 +23,7 @@ export const api = createApi({
       query: (_) => {
         scanLogger.log("call api - get-all-keywords:");
         return {
-          url: `http://18.227.81.189:3000/api/keywords`,
+          url: `${appConfig.baseURL}/api/keywords`,
           method: "GET",
         };
       },
