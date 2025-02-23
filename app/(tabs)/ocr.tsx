@@ -34,7 +34,7 @@ export default function OCRScreen() {
   const handleOCRScanned = async () => {
     try {
       if (cameraRef.current) {
-        const options = { opacity: 0.5, base64: true };
+        const options = { opacity: 0.5, base64: true, shutterSound: false };
         const photo = await cameraRef.current.takePictureAsync(options);
         if (!photo) return;
         router.push(`/result?type=ocr&data=${photo.uri}`);

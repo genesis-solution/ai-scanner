@@ -210,7 +210,7 @@ export default function ResultScreen() {
         <View style={styles.scanBtnContainer}>
           {status === FINAL && (
             <BigButton
-              title={t("scanAgain")}
+              title={t(type === "ocr" ? "Take a Picture" : "scanAgain")}
               onPress={() => {
                 if (type === "ocr") {
                   router.replace("/(tabs)/ocr");

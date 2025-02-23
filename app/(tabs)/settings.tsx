@@ -176,7 +176,9 @@ export default function SettingsScreen() {
         })}
 
         {renderOptionRow("lock-outline", t("privacyPolicy"), () => {
-          router.push("/privacy");
+          Linking.openURL(
+            "https://www.iubenda.com/privacy-policy/78299843/full-legal"
+          );
         })}
 
         {renderOptionRow("info", `${t("version")}: 2.0.0`, () => {})}
