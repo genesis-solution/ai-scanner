@@ -7,12 +7,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
 import "react-native-reanimated";
 
 import { setColorScheme, useColorScheme } from "@/hooks/useColorScheme";
-import { Provider, useSelector } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "@/store/store";
 import Toast from "react-native-toast-message";
@@ -21,6 +21,8 @@ import { useKeywords } from "@/hooks/useKeywords";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
 import MobileAds from "react-native-google-mobile-ads";
+import GDPRConsentDialog from "@/components/GDPRConsentDialog";
+import { giveConsent } from "@/store/slices/gdprSlice";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -33,6 +35,17 @@ function App() {
   const [keywordsLoaded] = useKeywords();
   const { i18n } = useTranslation();
   const { language, theme } = useSelector((state: any) => state.settings);
+  const dispatch = useDispatch();
+  const consentGiven = useSelector((state: any) => state.gdpr.consentGiven);
+
+  const handleConsent = () => {
+    dispatch(giveConsent());
+    // Store user's consent choice
+  };
+
+  const handleManageOptions = () => {
+    // Navigate to manage options screen or log the action
+  };
 
   useEffect(() => {
     if (language) {
@@ -82,6 +95,11 @@ function App() {
       </Stack>
       <StatusBar style="auto" />
       <Toast config={toastConfig} />
+      <GDPRConsentDialog
+        visible={!consentGiven}
+        onConsent={handleConsent}
+        onManageOptions={handleManageOptions}
+      />
     </ThemeProvider>
   );
 }
