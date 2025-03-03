@@ -6,8 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Image,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 const GDPRConsentDialog = ({
   visible,
@@ -25,20 +26,32 @@ const GDPRConsentDialog = ({
       <View style={styles.overlay}>
         <View style={styles.dialog}>
           <View style={styles.header}>
-            <Ionicons name="bug" size={24} color="black" />
-            <Text style={styles.appName}>InsektenScanner</Text>
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={styles.logo}
+            />
           </View>
           <Text style={styles.heading}>
-            InsektenScanner asks for your consent to use your personal data to:
+            Food Bug Scanner asks for your consent to use your personal data to:
           </Text>
           <ScrollView style={styles.content}>
-            <Text style={styles.bulletPoint}>
-              • Personalized advertising and content, advertising and content
-              measurement, audience research, and services development.
-            </Text>
-            <Text style={styles.bulletPoint}>
-              • Store and/or access information on a device.
-            </Text>
+            <View style={styles.bulletContainer}>
+              <View style={styles.bulletIcon}>
+                <Ionicons name="person" size={20} color="#7fc7f5" />
+              </View>
+              <Text style={styles.bulletPoint}>
+                Personalized advertising and content, advertising and content
+                measurement, audience research, and services development.
+              </Text>
+            </View>
+            <View style={styles.bulletContainer}>
+              <View style={styles.bulletIcon}>
+                <MaterialIcons name="devices" size={20} color="#7fc7f5" />
+              </View>
+              <Text style={styles.bulletPoint}>
+                Store and/or access information on a device.
+              </Text>
+            </View>
             <TouchableOpacity
               onPress={() => setShowMore(!showMore)}
               style={styles.learnMore}
@@ -46,8 +59,8 @@ const GDPRConsentDialog = ({
               <Text style={styles.learnMoreText}>Learn more</Text>
               <Ionicons
                 name={showMore ? "chevron-up" : "chevron-down"}
-                size={16}
-                color="blue"
+                size={12}
+                color="#3b3f42"
               />
             </TouchableOpacity>
             {showMore && (
@@ -90,26 +103,49 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    flexDirection: "row",
+    flexDirection: "column",
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 10,
   },
+  logo: {
+    width: 72,
+    height: 72,
+  },
   appName: {
-    fontSize: 18,
+    fontSize: 24,
     fontWeight: "bold",
     marginLeft: 10,
   },
   heading: {
-    fontSize: 16,
+    fontSize: 20,
     textAlign: "center",
     marginBottom: 10,
   },
   content: {
+    width: "100%",
     marginBottom: 10,
   },
-  bulletPoint: {
-    fontSize: 14,
+  bulletContainer: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 5,
+  },
+  bulletIcon: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 32,
+    height: 32,
+    backgroundColor: "#c9eaff",
+    borderRadius: 32,
+    marginHorizontal: 15,
+  },
+  bulletPoint: {
+    fontSize: 12,
+    flex: 1,
   },
   learnMore: {
     flexDirection: "row",
@@ -117,7 +153,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   learnMoreText: {
-    color: "blue",
+    fontSize: 12,
+    color: "#3b3f42",
     marginRight: 5,
   },
   moreInfo: {

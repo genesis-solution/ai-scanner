@@ -7,12 +7,11 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect, useState } from "react";
-import { requestTrackingPermissionsAsync } from "expo-tracking-transparency";
+import { useEffect, useRef } from "react";
 import "react-native-reanimated";
 
 import { setColorScheme, useColorScheme } from "@/hooks/useColorScheme";
-import { Provider, useDispatch, useSelector } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistor, store } from "@/store/store";
 import Toast from "react-native-toast-message";
@@ -20,9 +19,7 @@ import { toastConfig } from "@/configs/toastConfig";
 import { useKeywords } from "@/hooks/useKeywords";
 import "@/i18n";
 import { useTranslation } from "react-i18next";
-import MobileAds from "react-native-google-mobile-ads";
-import GDPRConsentDialog from "@/components/GDPRConsentDialog";
-import { giveConsent } from "@/store/slices/gdprSlice";
+import MobileAds, { AdsConsent } from "react-native-google-mobile-ads";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,17 +32,6 @@ function App() {
   const [keywordsLoaded] = useKeywords();
   const { i18n } = useTranslation();
   const { language, theme } = useSelector((state: any) => state.settings);
-  const dispatch = useDispatch();
-  const consentGiven = useSelector((state: any) => state.gdpr.consentGiven);
-
-  const handleConsent = () => {
-    dispatch(giveConsent());
-    // Store user's consent choice
-  };
-
-  const handleManageOptions = () => {
-    // Navigate to manage options screen or log the action
-  };
 
   useEffect(() => {
     if (language) {
@@ -63,20 +49,34 @@ function App() {
     }
   }, [fontLoaded, keywordsLoaded]);
 
-  // Initialize Google Mobile Ads SDK
-  useEffect(() => {
-    (async () => {
-      // Google AdMob will show any messages here that you just set up on the AdMob Privacy & Messaging page
-      const { status: trackingStatus } =
-        await requestTrackingPermissionsAsync();
-      if (trackingStatus !== "granted") {
-        // Do something here such as turn off Sentry tracking, store in context/redux to allow for personalized ads, etc.
-      }
+  const isMobileAdsStartCalledRef = useRef(false);
 
-      // Initialize the ads
-      await MobileAds().initialize();
-    })();
+  useEffect(() => {
+    // Request consent information and load/present a consent form if necessary.
+    AdsConsent.gatherConsent()
+      .then(startGoogleMobileAdsSDK)
+      .catch((error) => console.error("Consent gathering failed:", error));
   }, []);
+
+  async function startGoogleMobileAdsSDK() {
+    const { canRequestAds } = await AdsConsent.getConsentInfo();
+    if (!canRequestAds || isMobileAdsStartCalledRef.current) {
+      return;
+    }
+
+    isMobileAdsStartCalledRef.current = true;
+
+    // (Optional, iOS) Handle Apple's App Tracking Transparency manually.
+    const gdprApplies = await AdsConsent.getGdprApplies();
+    const hasConsentForPurposeOne =
+      gdprApplies && (await AdsConsent.getPurposeConsents()).startsWith("1");
+    if (!gdprApplies || hasConsentForPurposeOne) {
+      // Request ATT...
+    }
+
+    // Initialize the Google Mobile Ads SDK.
+    await MobileAds().initialize();
+  }
 
   if (!fontLoaded || !keywordsLoaded) {
     return null;
@@ -95,11 +95,6 @@ function App() {
       </Stack>
       <StatusBar style="auto" />
       <Toast config={toastConfig} />
-      <GDPRConsentDialog
-        visible={!consentGiven}
-        onConsent={handleConsent}
-        onManageOptions={handleManageOptions}
-      />
     </ThemeProvider>
   );
 }
