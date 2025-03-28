@@ -29,4 +29,10 @@ export const themes = {
     text: "rgb(51, 51, 51)",
     buttonText: "rgb(255, 255, 255)",
   },
+  warmAmber: {
+    background: "rgb(255, 248, 225)",
+    button: "rgb(255, 152, 0)",
+    text: "rgb(33, 33, 33)",
+    buttonText: "rgb(255, 255, 255)",
+  },
 };

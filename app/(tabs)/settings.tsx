@@ -148,6 +148,7 @@ export default function SettingsScreen() {
             <Picker.Item label={t("lightBlue")} value="lightBlue" />
             <Picker.Item label={t("pastelGreen")} value="pastelGreen" />
             <Picker.Item label={t("softBlue")} value="softBlue" />
+            <Picker.Item label={t("warmAmber")} value="warmAmber" />
           </ThemedPicker>
         </View>
       </View>

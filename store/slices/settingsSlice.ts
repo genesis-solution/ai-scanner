@@ -19,7 +19,8 @@ interface SettingsState {
     | "lightGrayishBlue"
     | "lightBlue"
     | "pastelGreen"
-    | "softBlue";
+    | "softBlue"
+    | "warmAmber";
 }
 
 const initialState: SettingsState = {

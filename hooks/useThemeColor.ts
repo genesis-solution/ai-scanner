@@ -13,6 +13,7 @@ export function useThemeColor(
     lightBlue?: string;
     pastelGreen?: string;
     softBlue?: string;
+    warmAmber?: string;
   },
   colorName: keyof typeof themes.white
 ) {
