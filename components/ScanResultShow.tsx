@@ -1,9 +1,7 @@
 import { Fragment } from "react";
 import LottieView from "lottie-react-native";
-import { StyleSheet, View, ScrollView, StyleProp, ViewStyle, TextStyle } from "react-native";
+import { StyleSheet } from "react-native";
 import ManualInput from "./ManualInput";
-import { ThemedText } from "./ThemedText";
-import { useSelector } from "react-redux";
 
 type IScreenResultProps = {
   scanResult: string;
@@ -12,9 +10,6 @@ type IScreenResultProps = {
 };
 
 const ScanResultShow = ({ scanResult, manualInput, productInfo }: IScreenResultProps) => {
-  // Get keywords from Redux store
-  const keywords = useSelector((state: any) => state.scan.keywords);
-
   const styles = StyleSheet.create({
     animation: {
       width: 200,
@@ -50,42 +45,6 @@ const ScanResultShow = ({ scanResult, manualInput, productInfo }: IScreenResultP
 
   return (
     <Fragment>
-      <View style={styles.infoContainer}>
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
-          showsVerticalScrollIndicator={true}
-        >
-          <ThemedText style={styles.infoText}>
-            {productInfo || (scanResult === "green" ? "This product is safe!" : 
-              scanResult === "red" ? "This product contains keywords you're avoiding!" :
-              scanResult === "unknown" ? "Unknown product. Try scanning again or enter manually." :
-              "Error parsing the scan. Try scanning again or enter manually.")}
-          </ThemedText>
-        </ScrollView>
-      </View>
-      
-      <View style={styles.keywordsContainer}>
-        <ScrollView
-          style={styles.scrollView}
-          showsVerticalScrollIndicator={true}
-        >
-          <ThemedText style={styles.keywordHeader}>
-            Keywords Loaded: {keywords.length}
-          </ThemedText>
-          
-          {keywords.map((keyword: any, index: number) => (
-            <ThemedText key={index}>
-              {keyword.name}
-            </ThemedText>
-          ))}
-          
-          {keywords.length === 0 && (
-            <ThemedText>No keywords configured</ThemedText>
-          )}
-        </ScrollView>
-      </View>
-      
       {scanResult === "green" && (
         <LottieView
           source={require("@/assets/animations/green-tick.json")}
