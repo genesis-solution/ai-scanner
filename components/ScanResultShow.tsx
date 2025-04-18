@@ -1,24 +1,53 @@
 import { Fragment } from "react";
 import LottieView from "lottie-react-native";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import ManualInput from "./ManualInput";
+import { ThemedText } from "./ThemedText";
 
 type IScreenResultProps = {
   scanResult: string;
   manualInput?: boolean;
+  productInfo?: string;
 };
 
-const ScanResultShow = ({ scanResult, manualInput }: IScreenResultProps) => {
+const ScanResultShow = ({ scanResult, manualInput, productInfo }: IScreenResultProps) => {
   const styles = StyleSheet.create({
     animation: {
       width: 200,
       height: 200,
       alignSelf: "center",
     },
+    infoContainer: {
+      height: 150,
+      width: '100%',
+      padding: 10,
+      marginBottom: 10,
+    },
+    scrollView: {
+      flex: 1,
+      width: '100%',
+    },
+    infoText: {
+      textAlign: 'center',
+    }
   });
 
   return (
     <Fragment>
+      <View style={styles.infoContainer}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+          showsVerticalScrollIndicator={true}
+        >
+          <ThemedText style={styles.infoText}>
+            {productInfo || (scanResult === "green" ? "This product is safe!" : 
+              scanResult === "red" ? "This product contains keywords you're avoiding!" :
+              scanResult === "unknown" ? "Unknown product. Try scanning again or enter manually." :
+              "Error parsing the scan. Try scanning again or enter manually.")}
+          </ThemedText>
+        </ScrollView>
+      </View>
       {scanResult === "green" && (
         <LottieView
           source={require("@/assets/animations/green-tick.json")}

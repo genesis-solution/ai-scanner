@@ -23,6 +23,7 @@ const FINAL = "final";
 export default function ResultScreen() {
   const [status, setStatus] = useState<string>(PARSING);
   const [scanResult, setScanResult] = useState<string>("unknown");
+  const [productInfo, setProductInfo] = useState<string>("");
   const [getParseBarcode] = useGetParseBarcodeMutation();
   const { t } = useTranslation();
 
@@ -43,10 +44,26 @@ export default function ResultScreen() {
   });
 
   useEffect(() => {
-    const handleCheckKeywords = (productInfo: any) => {
+    const handleCheckKeywords = (productInfoData: any) => {
       setStatus(CHECKING_KEYWORDS);
+      // Extract product info text for display
+      if (typeof productInfoData === 'object') {
+        try {
+          // For barcode product info
+          if (productInfoData.product_name) {
+            setProductInfo(`Product: ${productInfoData.product_name}\n${productInfoData.ingredients_text || ''}`);
+          } else {
+            setProductInfo(JSON.stringify(productInfoData).substring(0, 300));
+          }
+        } catch (e) {
+          setProductInfo(String(productInfoData).substring(0, 300));
+        }
+      } else {
+        setProductInfo(String(productInfoData).substring(0, 300));
+      }
+      
       const hasKeyword = keywords.some((keyword) =>
-        JSON.stringify(productInfo).toLowerCase().includes(keyword.name.toLowerCase())
+        JSON.stringify(productInfoData).toLowerCase().includes(keyword.name.toLowerCase())
       );
 
       if (hasKeyword) {
@@ -80,6 +97,7 @@ export default function ResultScreen() {
                   const allParsedText = result.ParsedResults.map(
                     (result: any) => result.ParsedText
                   ).join(" ");
+                  setProductInfo(allParsedText.substring(0, 300));
                   handleCheckKeywords(allParsedText);
                 } else {
                   setScanResult("unknown");
@@ -204,6 +222,7 @@ export default function ResultScreen() {
             <ScanResultShow
               manualInput={type !== "ocr"}
               scanResult={scanResult}
+              productInfo={productInfo}
             />
           )}
         </View>
