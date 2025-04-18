@@ -46,7 +46,7 @@ export default function ResultScreen() {
     const handleCheckKeywords = (productInfo: any) => {
       setStatus(CHECKING_KEYWORDS);
       const hasKeyword = keywords.some((keyword) =>
-        JSON.stringify(productInfo).includes(keyword.name)
+        JSON.stringify(productInfo).toLowerCase().includes(keyword.name.toLowerCase())
       );
 
       if (hasKeyword) {
