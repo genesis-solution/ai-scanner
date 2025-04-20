@@ -95,7 +95,7 @@ const ScanResultShow = ({
                 <ThemedText>No keywords configured</ThemedText>
               )}
             </ScrollView>
-          </View>{" "}
+          </View>
         </>
       )}
 

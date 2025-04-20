@@ -1,5 +1,5 @@
-import { useLayoutEffect, useRef } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { useLayoutEffect, useRef, useState } from "react";
+import { SafeAreaView, StyleSheet, View, ActivityIndicator } from "react-native";
 import { router, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
@@ -8,6 +8,7 @@ import { useThemeColor } from "@/hooks/useThemeColor";
 import { useTranslation } from "react-i18next";
 import useCameraPermission from "@/hooks/useCameraPermission";
 import { CameraView } from "expo-camera";
+import { showAlert } from "@/utils/scanAlert";
 
 export default function OCRScreen() {
   const { hasPermission, checkCameraPermission } = useCameraPermission();
@@ -15,6 +16,7 @@ export default function OCRScreen() {
   const backgroundColor = useThemeColor({}, "background");
   const pathname = usePathname();
   const cameraRef = useRef<CameraView | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useLayoutEffect(() => {
     console.log(pathname);
@@ -34,13 +36,38 @@ export default function OCRScreen() {
   const handleOCRScanned = async () => {
     try {
       if (cameraRef.current) {
-        const options = { opacity: 0.5, base64: true, shutterSound: false };
+        setIsProcessing(true);
+        
+        // Optimize photo options for OCR compatibility across devices
+        const options = { 
+          quality: 0.85, // Higher quality for better OCR
+          base64: true,  // Always request base64
+          exif: false,   // No need for EXIF data
+          skipProcessing: true, // Skip unnecessary processing
+          shutterSound: false 
+        };
+        
+        scanLogger.log("Taking picture for OCR processing...");
         const photo = await cameraRef.current.takePictureAsync(options);
-        if (!photo) return;
-        router.push(`/result?type=ocr&data=${photo.uri}`);
+        
+        if (!photo || !photo.uri) {
+          scanLogger.error("Failed to capture photo: No image data returned");
+          showAlert(t("Failed to capture image. Please try again."), "error");
+          setIsProcessing(false);
+          return;
+        }
+        
+        scanLogger.log(`Photo captured successfully. Size: ${photo.width}x${photo.height}`);
+        
+        setIsProcessing(false);
+
+        // Navigate with URI and include dimensions for debugging
+        router.push(`/result?type=ocr&data=${encodeURIComponent(photo.uri)}&width=${photo.width}&height=${photo.height}`);
       }
     } catch (error) {
-      scanLogger.error(`Error: `, (error as Error).message || error);
+      scanLogger.error(`OCR Camera Error: ${(error as Error).message || JSON.stringify(error)}`);
+      showAlert(t("Error capturing image. Please try again."), "error");
+      setIsProcessing(false);
     }
   };
 
@@ -86,6 +113,13 @@ export default function OCRScreen() {
       height: 128,
       marginBottom: 8,
     },
+    processingOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      zIndex: 10
+    },
     reactLogo: {
       height: 178,
       width: 290,
@@ -125,6 +159,15 @@ export default function OCRScreen() {
             cameraRef={cameraRef}
           />
         </View>
+        
+        {isProcessing && (
+          <View style={styles.processingOverlay}>
+            <ActivityIndicator size="large" color="#FFFFFF" />
+            <ThemedText style={{color: '#FFFFFF', marginTop: 10}}>
+              {t("Processing image...")}
+            </ThemedText>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

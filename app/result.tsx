@@ -15,6 +15,7 @@ import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
 import { showAlert } from "@/utils/scanAlert";
+import { getImageInfo, imageToBase64 } from "@/utils/imageUtils";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -78,48 +79,90 @@ export default function ResultScreen() {
     const parseCode = async () => {
       try {
         if (type === "ocr") {
-          const formData = new FormData();
-          formData.append("apikey", "K83477011988957");
-
-          const response = await fetch(data as string);
-          const blob = await response.blob();
-          const reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = () => {
-            const base64data = reader.result;
-            formData.append("base64Image", base64data as string);
-
-            postOCR(formData)
+          try {
+            scanLogger.log(`Processing OCR image from URI: ${data}`);
+            
+            // Check image file first
+            const imgInfo = await getImageInfo(data as string);
+            scanLogger.log(`Image exists: ${imgInfo.exists}, Size: ${imgInfo.size} bytes`);
+            
+            if (imgInfo.size < 1000) {
+              throw new Error("Image file too small or corrupted");
+            }
+            
+            if (imgInfo.size > 1000000) {
+              throw new Error("Image file too large");
+            }
+            
+            // Create form data for OCR API
+            const formData = new FormData();
+            formData.append("apikey", "K83477011988957");
+            
+            // Convert image directly to base64 using our utility
+            const base64data = await imageToBase64(data as string);
+            scanLogger.log("Image converted to base64 successfully");
+            
+            // Configure the OCR request with optimal settings
+            formData.append("base64Image", base64data);
+            formData.append("OCREngine", "2"); // More advanced OCR engine
+            formData.append("scale", "true"); // Enable scaling for better results
+            formData.append("detectOrientation", "true");
+            formData.append("isTable", "false");
+            formData.append("filetype", "jpg"); // Explicitly tell the API the file type
+            
+            // Log request and set timeout
+            scanLogger.log("Sending OCR request to API...");
+            const ocrStartTime = Date.now();
+            
+            const ocrResult = await postOCR(formData)
               .unwrap()
-              .then((result) => {
-                scanLogger.log("OCR result:", result);
-                if (result?.ParsedResults?.length) {
-                  const allParsedText = result.ParsedResults.map(
-                    (result: any) => result.ParsedText
-                  ).join(" ");
-                  setProductInfo(allParsedText.substring(0, 300));
-                  handleCheckKeywords(allParsedText);
-                } else {
-                  setScanResult("unknown");
-                  setStatus(FINAL);
-                }
-              })
-              .catch((error) => {
+              .catch(error => {
                 scanLogger.error(
-                  `Error: `,
-                  (error as Error).message ||
-                    error.error ||
-                    JSON.stringify(error)
+                  `OCR API Error: ${(error as Error).message || error.error || JSON.stringify(error)}`
                 );
-                throw new Error(
-                  `Photo Upload Error: ${
-                    (error as Error).message ||
-                    error.error ||
-                    JSON.stringify(error)
-                  }`
-                );
+                throw new Error(`OCR Service Error: ${(error as Error).message || error.error || "Unknown error"}`);
               });
-          };
+            
+            const processingTime = Date.now() - ocrStartTime;
+            scanLogger.log(`OCR API response received in ${processingTime}ms`);
+            
+            if (!ocrResult) {
+              throw new Error("No response from OCR service");
+            }
+            
+            scanLogger.log("OCR result:", JSON.stringify(ocrResult).substring(0, 500) + "...");
+            
+            if (ocrResult?.ParsedResults?.length) {
+              const allParsedText = ocrResult.ParsedResults.map(
+                (result: any) => result.ParsedText
+              ).join(" ");
+              
+              if (!allParsedText || allParsedText.trim().length === 0) {
+                scanLogger.log("OCR returned empty text");
+                setScanResult("unknown");
+                setStatus(FINAL);
+                return;
+              }
+              
+              scanLogger.log(`OCR extracted text: ${allParsedText.substring(0, 100)}...`);
+              setProductInfo(allParsedText.substring(0, 300));
+              handleCheckKeywords(allParsedText);
+            } else {
+              scanLogger.log("OCR returned no parsed results");
+              setScanResult("unknown");
+              setStatus(FINAL);
+            }
+          } catch (error) {
+            scanLogger.error(
+              `OCR Processing Error: ${(error as Error).message || JSON.stringify(error)}`
+            );
+            showAlert(
+              `OCR Error: ${(error as Error).message || "Failed to process image"}`,
+              "error"
+            );
+            setScanResult("parse-error");
+            setStatus(FINAL);
+          }
         } else {
           const parsedContent = await getParseBarcode(data).unwrap();
           scanLogger.log(`Parsed Content Status: `, parsedContent.status);
