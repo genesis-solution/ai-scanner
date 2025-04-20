@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useSelector } from "react-redux";
@@ -22,14 +22,13 @@ export default function SearchScreen() {
 
   const [status, setStatus] = useState<string | null>(null);
   const [scanResult, setScanResult] = useState<string>("unknown");
-  const [productInfo, setProductInfo] = useState<any>({});
   const [getParseBarcode] = useGetParseBarcodeMutation();
   const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
   const backgroundColor = useThemeColor({}, "background");
 
-  const handleCheckKeywords = () => {
+  const handleCheckKeywords = (productInfo: any) => {
     setStatus(CHECKING_KEYWORDS);
     const hasKeyword = keywords.some((keyword) =>
       JSON.stringify(productInfo).includes(keyword.name)
@@ -50,8 +49,7 @@ export default function SearchScreen() {
       const parsedContent = await getParseBarcode(manualInput).unwrap();
       scanLogger.log(`Parsed Content Status: `, parsedContent.status);
       if (parsedContent?.status) {
-        setProductInfo(parsedContent?.product);
-        handleCheckKeywords();
+        handleCheckKeywords(parsedContent?.product);
       } else {
         setScanResult("unknown");
         setStatus(FINAL);
@@ -66,6 +64,11 @@ export default function SearchScreen() {
       setStatus(FINAL);
     }
   };
+
+  // useEffect(() => {
+  //   if (productInfo.length) {
+  //   }
+  // }, [productInfo]);
 
   const styles = StyleSheet.create({
     container: {

@@ -1,7 +1,10 @@
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import LottieView from "lottie-react-native";
-import { StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import ManualInput from "./ManualInput";
+import { ThemedText } from "./ThemedText";
+import { useSelector } from "react-redux";
+import { appConfig } from "@/configs/config";
 
 type IScreenResultProps = {
   scanResult: string;
@@ -9,7 +12,14 @@ type IScreenResultProps = {
   productInfo?: string;
 };
 
-const ScanResultShow = ({ scanResult, manualInput, productInfo }: IScreenResultProps) => {
+const ScanResultShow = ({
+  scanResult,
+  manualInput,
+  productInfo,
+}: IScreenResultProps) => {
+  // Get keywords from Redux store
+  const keywords = useSelector((state: any) => state.scan.keywords);
+
   const styles = StyleSheet.create({
     animation: {
       width: 200,
@@ -18,33 +28,77 @@ const ScanResultShow = ({ scanResult, manualInput, productInfo }: IScreenResultP
     },
     infoContainer: {
       height: 100,
-      width: '100%',
+      width: "100%",
       padding: 10,
       marginBottom: 10,
       borderBottomWidth: 0.5,
-      borderBottomColor: '#ccc',
+      borderBottomColor: "#ccc",
     },
     keywordsContainer: {
       height: 100,
-      width: '100%',
+      width: "100%",
       padding: 10,
       marginBottom: 10,
     },
     scrollView: {
       flex: 1,
-      width: '100%',
+      width: "100%",
     },
     infoText: {
-      textAlign: 'center',
+      textAlign: "center",
     },
     keywordHeader: {
-      fontWeight: 'bold',
+      fontWeight: "bold",
       marginBottom: 5,
-    }
+    },
   });
 
   return (
     <Fragment>
+      {appConfig.isEmulatorMode && (
+        <>
+          <View style={styles.infoContainer}>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+              showsVerticalScrollIndicator={true}
+            >
+              <ThemedText style={styles.infoText}>
+                {productInfo ||
+                  (scanResult === "green"
+                    ? "This product is safe!"
+                    : scanResult === "red"
+                    ? "This product contains keywords you're avoiding!"
+                    : scanResult === "unknown"
+                    ? "Unknown product. Try scanning again or enter manually."
+                    : "Error parsing the scan. Try scanning again or enter manually.")}
+              </ThemedText>
+            </ScrollView>
+          </View>
+          <View style={styles.keywordsContainer}>
+            <ScrollView
+              style={styles.scrollView}
+              showsVerticalScrollIndicator={true}
+            >
+              <ThemedText style={styles.keywordHeader}>
+                Keywords Loaded: {keywords.length}
+              </ThemedText>
+
+              {keywords.map((keyword: any, index: number) => (
+                <ThemedText key={index}>{keyword.name}</ThemedText>
+              ))}
+
+              {keywords.length === 0 && (
+                <ThemedText>No keywords configured</ThemedText>
+              )}
+            </ScrollView>
+          </View>{" "}
+        </>
+      )}
+
       {scanResult === "green" && (
         <LottieView
           source={require("@/assets/animations/green-tick.json")}
