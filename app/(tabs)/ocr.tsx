@@ -62,7 +62,7 @@ export default function OCRScreen() {
         setIsProcessing(false);
 
         // Navigate with URI and include dimensions for debugging
-        router.push(`/result?type=ocr&data=${encodeURIComponent(photo.uri)}&width=${photo.width}&height=${photo.height}`);
+        router.push(`/result?type=ocr&data=${encodeURIComponent(photo.uri)}`);
       }
     } catch (error) {
       scanLogger.error(`OCR Camera Error: ${(error as Error).message || JSON.stringify(error)}`);

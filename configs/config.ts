@@ -17,5 +17,5 @@ export const appConfig = {
    * @param isEmulatorMode
    * @desc primary flag for Dev and Testing
    */
-  isEmulatorMode: false,
+  isEmulatorMode: true,
 };

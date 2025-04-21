@@ -100,7 +100,7 @@ export default function ResultScreen() {
             
             // Convert image directly to base64 using our utility
             const base64data = await imageToBase64(data as string);
-            scanLogger.log("Image converted to base64 successfully");
+            scanLogger.log("Image converted to base64 successfully: ", base64data.toString().substring(0, 100) + "...");
             
             // Configure the OCR request with optimal settings
             formData.append("base64Image", base64data);
@@ -139,6 +139,7 @@ export default function ResultScreen() {
               
               if (!allParsedText || allParsedText.trim().length === 0) {
                 scanLogger.log("OCR returned empty text");
+                showAlert("OCR returned empty text", "error");
                 setScanResult("unknown");
                 setStatus(FINAL);
                 return;
@@ -149,6 +150,7 @@ export default function ResultScreen() {
               handleCheckKeywords(allParsedText);
             } else {
               scanLogger.log("OCR returned no parsed results");
+              showAlert("OCR returned no parsed results", "error");
               setScanResult("unknown");
               setStatus(FINAL);
             }
