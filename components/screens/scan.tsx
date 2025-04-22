@@ -1,25 +1,15 @@
-import { useLayoutEffect } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
-import { router, usePathname } from "expo-router";
+import { router } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
 import ManualInput from "@/components/ManualInput";
 import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useTranslation } from "react-i18next";
-import useCameraPermission from "@/hooks/useCameraPermission";
 
 export default function ScanScreen() {
-  const { hasPermission, checkCameraPermission } = useCameraPermission();
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
-  const pathname = usePathname();
-
-  useLayoutEffect(() => {
-    console.log(pathname);
-    if (pathname !== "/scan") return;
-    checkCameraPermission();
-  }, [pathname, checkCameraPermission]);
 
   const handleBarcodeScanned = async ({
     type,
@@ -38,13 +28,6 @@ export default function ScanScreen() {
       );
     }
   };
-
-  if (hasPermission === null) {
-    return <ThemedText>{t("requestingCameraPermission")}</ThemedText>;
-  }
-  if (hasPermission === false) {
-    return <ThemedText>{t("noCameraAccess")}</ThemedText>;
-  }
 
   const styles = StyleSheet.create({
     image: {

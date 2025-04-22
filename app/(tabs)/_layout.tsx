@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import React from "react";
 import {
   Platform,
@@ -96,6 +96,14 @@ export default function TabLayout() {
               tabBarIcon: ({ color }) => (
                 <IconSymbol size={28} name="scanner.fill" color={color} />
               ),
+              tabBarButton: (props) => (
+                <TouchableOpacity
+                  {...(props as TouchableOpacityProps)}
+                  onPress={() => {
+                    router.replace("/unified?mode=scan");
+                  }}
+                />
+              ),
             }}
           />
           <Tabs.Screen
@@ -104,6 +112,14 @@ export default function TabLayout() {
               title: t("cam"),
               tabBarIcon: ({ color }) => (
                 <Entypo name="camera" size={28} color={color} />
+              ),
+              tabBarButton: (props) => (
+                <TouchableOpacity
+                  {...(props as TouchableOpacityProps)}
+                  onPress={() => {
+                    router.replace("/unified?mode=ocr");
+                  }}
+                />
               ),
             }}
           />
