@@ -27,6 +27,7 @@ export default function ResultScreen() {
   const [status, setStatus] = useState<string>(PARSING);
   const [scanResult, setScanResult] = useState<string>("unknown");
   const [productInfo, setProductInfo] = useState<string>("");
+  const [imageSize, setImageSize] = useState<number>(0);
   const [getParseBarcode] = useGetParseBarcodeMutation();
   const { t } = useTranslation();
 
@@ -50,11 +51,15 @@ export default function ResultScreen() {
     const handleCheckKeywords = (productInfoData: any) => {
       setStatus(CHECKING_KEYWORDS);
       // Extract product info text for display
-      if (typeof productInfoData === 'object') {
+      if (typeof productInfoData === "object") {
         try {
           // For barcode product info
           if (productInfoData.product_name) {
-            setProductInfo(`Product: ${productInfoData.product_name}\n${productInfoData.ingredients_text || ''}`);
+            setProductInfo(
+              `Product: ${productInfoData.product_name}\n${
+                productInfoData.ingredients_text || ""
+              }`
+            );
           } else {
             setProductInfo(JSON.stringify(productInfoData).substring(0, 300));
           }
@@ -64,9 +69,11 @@ export default function ResultScreen() {
       } else {
         setProductInfo(String(productInfoData).substring(0, 300));
       }
-      
+
       const hasKeyword = keywords.some((keyword) =>
-        JSON.stringify(productInfoData).toLowerCase().includes(keyword.name.toLowerCase())
+        JSON.stringify(productInfoData)
+          .toLowerCase()
+          .includes(keyword.name.toLowerCase())
       );
 
       if (hasKeyword) {
@@ -83,34 +90,38 @@ export default function ResultScreen() {
         if (type === "ocr") {
           try {
             scanLogger.log(`Processing OCR image from URI: ${data}`);
-            
+
             // Check image file first
             const imgInfo = await getImageInfo(data as string);
-            scanLogger.log(`Image exists: ${imgInfo.exists}, Size: ${imgInfo.size} bytes`);
-            
+            scanLogger.log(
+              `Image exists: ${imgInfo.exists}, Size: ${imgInfo.size} bytes`
+            );
+
+            setImageSize(imgInfo.size);
+
             if (imgInfo.size < 1000) {
               throw new Error("Image file too small or corrupted");
             }
-            
+
             if (imgInfo.size > 1000000) {
               throw new Error("Image file too large");
             }
-            
+
             // Create form data for OCR API
             const formData = new FormData();
             formData.append("apikey", "K83477011988957");
-            
+
             // Instead of converting to base64, create a file object for direct upload
-            const uriParts = (data as string).split('.');
+            const uriParts = (data as string).split(".");
             const fileType = uriParts[uriParts.length - 1];
-            
+
             // Create file object for FormData
             const fileToUpload = {
               uri: data as string,
               name: `image.${fileType}`,
-              type: `image/${fileType}`
+              type: `image/${fileType}`,
             };
-            
+
             // Append file instead of base64Image
             // @ts-ignore - React Native's FormData implementation accepts file objects
             formData.append("file", fileToUpload);
@@ -118,34 +129,45 @@ export default function ResultScreen() {
             formData.append("scale", "true"); // Enable scaling for better results
             formData.append("detectOrientation", "true");
             formData.append("isTable", "false");
-            
+
             // Log request and set timeout
             scanLogger.log("Sending OCR request with file upload...");
             const ocrStartTime = Date.now();
-            
+
             const ocrResult = await postOCR(formData)
               .unwrap()
-              .catch(error => {
+              .catch((error) => {
                 scanLogger.error(
-                  `OCR API Error: ${(error as Error).message || error.error || JSON.stringify(error)}`
+                  `OCR API Error: ${
+                    (error as Error).message ||
+                    error.error ||
+                    JSON.stringify(error)
+                  }`
                 );
-                throw new Error(`OCR Service Error: ${(error as Error).message || error.error || "Unknown error"}`);
+                throw new Error(
+                  `OCR Service Error: ${
+                    (error as Error).message || error.error || "Unknown error"
+                  }`
+                );
               });
-            
+
             const processingTime = Date.now() - ocrStartTime;
             scanLogger.log(`OCR API response received in ${processingTime}ms`);
-            
+
             if (!ocrResult) {
               throw new Error("No response from OCR service");
             }
-            
-            scanLogger.log("OCR result:", JSON.stringify(ocrResult).substring(0, 500) + "...");
-            
+
+            scanLogger.log(
+              "OCR result:",
+              JSON.stringify(ocrResult).substring(0, 500) + "..."
+            );
+
             if (ocrResult?.ParsedResults?.length) {
               const allParsedText = ocrResult.ParsedResults.map(
                 (result: any) => result.ParsedText
               ).join(" ");
-              
+
               if (!allParsedText || allParsedText.trim().length === 0) {
                 scanLogger.log("OCR returned empty text");
                 showAlert("OCR returned empty text", "error");
@@ -153,7 +175,7 @@ export default function ResultScreen() {
                 setStatus(FINAL);
                 return;
               }
-              
+
               scanLogger.log(`OCR extracted text: ${allParsedText}`);
               setProductInfo(allParsedText);
               handleCheckKeywords(allParsedText);
@@ -165,10 +187,14 @@ export default function ResultScreen() {
             }
           } catch (error) {
             scanLogger.error(
-              `OCR Processing Error: ${(error as Error).message || JSON.stringify(error)}`
+              `OCR Processing Error: ${
+                (error as Error).message || JSON.stringify(error)
+              }`
             );
             showAlert(
-              `OCR Error: ${(error as Error).message || "Failed to process image"}`,
+              `OCR Error: ${
+                (error as Error).message || "Failed to process image"
+              }`,
               "error"
             );
             setScanResult("parse-error");
@@ -253,30 +279,34 @@ export default function ResultScreen() {
       alignSelf: "center",
     },
     capturedImageContainer: {
-      width: '90%',
+      width: "90%",
       height: 200,
       borderRadius: 8,
-      overflow: 'hidden',
+      overflow: "hidden",
       marginBottom: 16,
       borderWidth: 1,
-      borderColor: '#ccc',
-      position: 'relative',
+      borderColor: "#ccc",
+      position: "relative",
     },
     capturedImage: {
-      width: '100%',
-      height: '100%',
+      width: "100%",
+      height: "100%",
     },
     imageLabel: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
+      backgroundColor: "rgba(0,0,0,0.5)",
       padding: 8,
     },
     imageLabelText: {
-      color: '#FFFFFF',
-      textAlign: 'center',
+      color: "#FFFFFF",
+      textAlign: "center",
+    },
+    imageSizeText: {
+      color: "#000000",
+      textAlign: "center",
     },
   });
 
@@ -304,12 +334,17 @@ export default function ResultScreen() {
             <>
               {appConfig.isEmulatorMode && type === "ocr" && data && (
                 <View style={styles.capturedImageContainer}>
-                  <Image 
-                    source={{ uri: data as string }} 
+                  <Image
+                    source={{ uri: data as string }}
                     style={styles.capturedImage}
                     resizeMode="contain"
                   />
                 </View>
+              )}
+              {appConfig.isEmulatorMode && type === "ocr" && (
+                <ThemedText style={styles.imageSizeText}>
+                  {`Image size: ${imageSize} bytes`}
+                </ThemedText>
               )}
               <ScanResultShow
                 manualInput={type !== "ocr"}
