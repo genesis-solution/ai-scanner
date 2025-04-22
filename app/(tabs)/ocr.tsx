@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { SafeAreaView, StyleSheet, View, ActivityIndicator } from "react-native";
 import { router, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import useCameraPermission from "@/hooks/useCameraPermission";
 import { CameraView } from "expo-camera";
 import { showAlert } from "@/utils/scanAlert";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function OCRScreen() {
   const { hasPermission, checkCameraPermission } = useCameraPermission();
@@ -17,6 +18,7 @@ export default function OCRScreen() {
   const pathname = usePathname();
   const cameraRef = useRef<CameraView | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
 
   useLayoutEffect(() => {
     console.log(pathname);
@@ -25,6 +27,21 @@ export default function OCRScreen() {
 
     checkCameraPermission();
   }, [pathname, checkCameraPermission]);
+  
+  // Use useFocusEffect to handle camera activation/deactivation when tab focus changes
+  useFocusEffect(
+    useCallback(() => {
+      // When screen comes into focus
+      console.log("OCR screen is focused");
+      setIsCameraActive(true);
+      
+      // Return cleanup function that runs when screen loses focus
+      return () => {
+        console.log("OCR screen lost focus");
+        setIsCameraActive(false);
+      };
+    }, [])
+  );
 
   if (hasPermission === null) {
     return <ThemedText>{t("requestingCameraPermission")}</ThemedText>;
@@ -153,11 +170,13 @@ export default function OCRScreen() {
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
-          <CameraScanner
-            type="ocr"
-            handleOCRScanned={handleOCRScanned}
-            cameraRef={cameraRef}
-          />
+          {isCameraActive && (
+            <CameraScanner
+              type="ocr"
+              handleOCRScanned={handleOCRScanned}
+              cameraRef={cameraRef}
+            />
+          )}
         </View>
         
         {isProcessing && (
