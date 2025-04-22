@@ -18,7 +18,6 @@ export default function ScanScreen() {
   const [isCameraActive, setIsCameraActive] = useState(false);
 
   useLayoutEffect(() => {
-    console.log(pathname);
     if (pathname !== "/scan") return;
     checkCameraPermission();
   }, [pathname, checkCameraPermission]);

@@ -21,8 +21,6 @@ export default function OCRScreen() {
   const [isCameraActive, setIsCameraActive] = useState(false);
 
   useLayoutEffect(() => {
-    console.log(pathname);
-
     if (pathname !== "/ocr") return;
 
     checkCameraPermission();
@@ -58,7 +56,7 @@ export default function OCRScreen() {
         // Optimize photo options for OCR compatibility across devices
         const options = { 
           quality: 0.85, // Higher quality for better OCR
-          base64: true,  // Always request base64
+          base64: false,  // We'll use file parameter instead of base64
           exif: false,   // No need for EXIF data
           skipProcessing: true, // Skip unnecessary processing
           shutterSound: false 

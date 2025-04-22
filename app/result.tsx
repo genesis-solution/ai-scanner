@@ -1,5 +1,5 @@
-import { useEffect, useState, Fragment } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import React, { useEffect, useState, Fragment } from "react";
+import { SafeAreaView, StyleSheet, View, Image } from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -16,6 +16,8 @@ import { useTranslation } from "react-i18next";
 import { FontAwesome } from "@expo/vector-icons";
 import { showAlert } from "@/utils/scanAlert";
 import { getImageInfo, imageToBase64 } from "@/utils/imageUtils";
+import { ThemedText } from "@/components/ThemedText";
+import { appConfig } from "@/configs/config";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -98,20 +100,27 @@ export default function ResultScreen() {
             const formData = new FormData();
             formData.append("apikey", "K83477011988957");
             
-            // Convert image directly to base64 using our utility
-            const base64data = await imageToBase64(data as string);
-            scanLogger.log("Image converted to base64 successfully: ", base64data.toString().substring(0, 100) + "...");
+            // Instead of converting to base64, create a file object for direct upload
+            const uriParts = (data as string).split('.');
+            const fileType = uriParts[uriParts.length - 1];
             
-            // Configure the OCR request with optimal settings
-            formData.append("base64Image", base64data);
+            // Create file object for FormData
+            const fileToUpload = {
+              uri: data as string,
+              name: `image.${fileType}`,
+              type: `image/${fileType}`
+            };
+            
+            // Append file instead of base64Image
+            // @ts-ignore - React Native's FormData implementation accepts file objects
+            formData.append("file", fileToUpload);
             formData.append("OCREngine", "2"); // More advanced OCR engine
             formData.append("scale", "true"); // Enable scaling for better results
             formData.append("detectOrientation", "true");
             formData.append("isTable", "false");
-            formData.append("filetype", "jpg"); // Explicitly tell the API the file type
             
             // Log request and set timeout
-            scanLogger.log("Sending OCR request to API...");
+            scanLogger.log("Sending OCR request with file upload...");
             const ocrStartTime = Date.now();
             
             const ocrResult = await postOCR(formData)
@@ -145,8 +154,8 @@ export default function ResultScreen() {
                 return;
               }
               
-              scanLogger.log(`OCR extracted text: ${allParsedText.substring(0, 100)}...`);
-              setProductInfo(allParsedText.substring(0, 300));
+              scanLogger.log(`OCR extracted text: ${allParsedText}`);
+              setProductInfo(allParsedText);
               handleCheckKeywords(allParsedText);
             } else {
               scanLogger.log("OCR returned no parsed results");
@@ -243,6 +252,32 @@ export default function ResultScreen() {
       height: 200,
       alignSelf: "center",
     },
+    capturedImageContainer: {
+      width: '90%',
+      height: 200,
+      borderRadius: 8,
+      overflow: 'hidden',
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      position: 'relative',
+    },
+    capturedImage: {
+      width: '100%',
+      height: '100%',
+    },
+    imageLabel: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      padding: 8,
+    },
+    imageLabelText: {
+      color: '#FFFFFF',
+      textAlign: 'center',
+    },
   });
 
   return (
@@ -257,18 +292,31 @@ export default function ResultScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.resultContainer}>
           {status === PARSING && (
-            <LottieView
-              source={require("@/assets/animations/parsing.json")}
-              autoPlay
-              style={styles.animation}
-            />
+            <>
+              <LottieView
+                source={require("@/assets/animations/parsing.json")}
+                autoPlay
+                style={styles.animation}
+              />
+            </>
           )}
           {status === FINAL && (
-            <ScanResultShow
-              manualInput={type !== "ocr"}
-              scanResult={scanResult}
-              productInfo={productInfo}
-            />
+            <>
+              {appConfig.isEmulatorMode && type === "ocr" && data && (
+                <View style={styles.capturedImageContainer}>
+                  <Image 
+                    source={{ uri: data as string }} 
+                    style={styles.capturedImage}
+                    resizeMode="contain"
+                  />
+                </View>
+              )}
+              <ScanResultShow
+                manualInput={type !== "ocr"}
+                scanResult={scanResult}
+                productInfo={productInfo}
+              />
+            </>
           )}
         </View>
         <View style={styles.scanBtnContainer}>
