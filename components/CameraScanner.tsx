@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { CameraType, CameraView, CameraViewRef, FlashMode } from "expo-camera";
+import { useEffect, useState } from "react";
+import { CameraType, CameraView, FlashMode } from "expo-camera";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import scanLogger from "@/utils/scanLogger";
 import { showAlert } from "@/utils/scanAlert";
@@ -25,6 +25,25 @@ export default function CameraScanner({
 }: ICameraScannerProps) {
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [facingMode, setFacingMode] = useState<CameraType>("back");
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Setup and cleanup effect
+  useEffect(() => {
+    // Initialize camera when component mounts
+    const timer = setInterval(() => {
+      setIsInitialized(true);
+    }, 1000);
+    scanLogger.log(`Initializing ${type} camera...`);
+
+    // Clean up when component unmounts
+    return () => {
+      scanLogger.log(`Cleaning up ${type} camera resources...`);
+
+      // Reset any camera state if needed
+      setIsInitialized(false);
+      clearInterval(timer);
+    };
+  }, [type]);
 
   const styles = StyleSheet.create({
     container: {
@@ -101,6 +120,10 @@ export default function CameraScanner({
       zIndex: 1,
     },
   });
+
+  if (!isInitialized) {
+    return null;
+  }
 
   const toggleFlash = () => {
     try {

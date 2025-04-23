@@ -91,7 +91,7 @@ export default function ResultScreen() {
             }
             
             if (imgInfo.size > 1000000) {
-              throw new Error("Image file too large");
+              throw new Error("Image file too large. You can only upload images up to 1MB.");
             }
             
             // Create form data for OCR API

@@ -1,6 +1,6 @@
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useCallback, useState } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
-import { router, usePathname } from "expo-router";
+import { router, usePathname, useFocusEffect } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
 import ManualInput from "@/components/ManualInput";
@@ -14,12 +14,27 @@ export default function ScanScreen() {
   const { t } = useTranslation();
   const backgroundColor = useThemeColor({}, "background");
   const pathname = usePathname();
+  const [isCameraActive, setIsCameraActive] = useState(false);
 
   useLayoutEffect(() => {
-    console.log(pathname);
     if (pathname !== "/scan") return;
     checkCameraPermission();
   }, [pathname, checkCameraPermission]);
+
+  // Use useFocusEffect to handle camera activation/deactivation when tab focus changes
+  useFocusEffect(
+    useCallback(() => {
+      // When screen comes into focus
+      console.log("Scan screen is focused");
+      setIsCameraActive(true);
+
+      // Return cleanup function that runs when screen loses focus
+      return () => {
+        console.log("Scan screen lost focus");
+        setIsCameraActive(false);
+      };
+    }, [])
+  );
 
   const handleBarcodeScanned = async ({
     type,
@@ -120,7 +135,9 @@ export default function ScanScreen() {
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
-          <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
+          {isCameraActive && (
+            <CameraScanner handleBarcodeScanned={handleBarcodeScanned} />
+          )}
         </View>
       </View>
       <View style={styles.scanBtnContainer}>

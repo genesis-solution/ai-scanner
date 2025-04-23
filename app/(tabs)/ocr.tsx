@@ -1,6 +1,11 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import { SafeAreaView, StyleSheet, View, ActivityIndicator } from "react-native";
-import { router, usePathname } from "expo-router";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import { router, useFocusEffect, usePathname } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import CameraScanner from "@/components/CameraScanner";
 import scanLogger from "@/utils/scanLogger";
@@ -17,14 +22,28 @@ export default function OCRScreen() {
   const pathname = usePathname();
   const cameraRef = useRef<CameraView | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
 
   useLayoutEffect(() => {
-    console.log(pathname);
-
     if (pathname !== "/ocr") return;
 
     checkCameraPermission();
   }, [pathname, checkCameraPermission]);
+
+  // Use useFocusEffect to handle camera activation/deactivation when tab focus changes
+  useFocusEffect(
+    useCallback(() => {
+      // When screen comes into focus
+      console.log("OCR screen is focused");
+      setIsCameraActive(true);
+
+      // Return cleanup function that runs when screen loses focus
+      return () => {
+        console.log("OCR screen lost focus");
+        setIsCameraActive(false);
+      };
+    }, [])
+  );
 
   if (hasPermission === null) {
     return <ThemedText>{t("requestingCameraPermission")}</ThemedText>;
@@ -37,35 +56,43 @@ export default function OCRScreen() {
     try {
       if (cameraRef.current) {
         setIsProcessing(true);
-        
+
         // Optimize photo options for OCR compatibility across devices
-        const options = { 
+        const options = {
           quality: 0.85, // Higher quality for better OCR
-          base64: true,  // Always request base64
-          exif: false,   // No need for EXIF data
+          base64: true, // Always request base64
+          exif: false, // No need for EXIF data
           skipProcessing: true, // Skip unnecessary processing
-          shutterSound: false 
+          shutterSound: false,
         };
-        
+
         scanLogger.log("Taking picture for OCR processing...");
         const photo = await cameraRef.current.takePictureAsync(options);
-        
+
         if (!photo || !photo.uri) {
           scanLogger.error("Failed to capture photo: No image data returned");
           showAlert(t("Failed to capture image. Please try again."), "error");
           setIsProcessing(false);
           return;
         }
-        
-        scanLogger.log(`Photo captured successfully. Size: ${photo.width}x${photo.height}`);
-        
+
+        scanLogger.log(
+          `Photo captured successfully. Size: ${photo.width}x${photo.height}`
+        );
+
         setIsProcessing(false);
 
         // Navigate with URI and include dimensions for debugging
-        router.push(`/result?type=ocr&data=${encodeURIComponent(photo.uri)}&width=${photo.width}&height=${photo.height}`);
+        router.push(
+          `/result?type=ocr&data=${encodeURIComponent(photo.uri)}&width=${
+            photo.width
+          }&height=${photo.height}`
+        );
       }
     } catch (error) {
-      scanLogger.error(`OCR Camera Error: ${(error as Error).message || JSON.stringify(error)}`);
+      scanLogger.error(
+        `OCR Camera Error: ${(error as Error).message || JSON.stringify(error)}`
+      );
       showAlert(t("Error capturing image. Please try again."), "error");
       setIsProcessing(false);
     }
@@ -115,10 +142,10 @@ export default function OCRScreen() {
     },
     processingOverlay: {
       ...StyleSheet.absoluteFillObject,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      zIndex: 10
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0,0,0,0.5)",
+      zIndex: 10,
     },
     reactLogo: {
       height: 178,
@@ -153,17 +180,19 @@ export default function OCRScreen() {
       </View>
       <View style={styles.barcodeContainer}>
         <View style={styles.cameraContainer}>
-          <CameraScanner
-            type="ocr"
-            handleOCRScanned={handleOCRScanned}
-            cameraRef={cameraRef}
-          />
+          {isCameraActive && (
+            <CameraScanner
+              type="ocr"
+              handleOCRScanned={handleOCRScanned}
+              cameraRef={cameraRef}
+            />
+          )}
         </View>
-        
+
         {isProcessing && (
           <View style={styles.processingOverlay}>
             <ActivityIndicator size="large" color="#FFFFFF" />
-            <ThemedText style={{color: '#FFFFFF', marginTop: 10}}>
+            <ThemedText style={{ color: "#FFFFFF", marginTop: 10 }}>
               {t("Processing image...")}
             </ThemedText>
           </View>
