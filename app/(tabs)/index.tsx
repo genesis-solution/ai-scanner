@@ -32,6 +32,18 @@ export default function HomeScreen() {
       alignSelf: "center",
       letterSpacing: 2,
     },
+    subTitleContainer: {
+      paddingTop: 12,
+      paddingHorizontal: 12,
+      marginHorizontal: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      alignSelf: "center",
+      textAlign: "center",
+      fontWeight: "semibold",
+      fontSize: 14,
+      letterSpacing: 1.5,
+    },
     barcodeContainer: {
       minHeight: 160,
       flexDirection: "column",
@@ -62,6 +74,9 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <ThemedText type="subtitle" style={styles.titleContainer}>
         {t("foodBugScanner")}
+      </ThemedText>
+      <ThemedText type="subtitle" style={styles.subTitleContainer}>
+        {t("connectToTheInternetToUseTheApp")}
       </ThemedText>
       <LottieView
         source={require("@/assets/animations/barcode.json")}
