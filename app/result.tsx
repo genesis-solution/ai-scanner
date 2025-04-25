@@ -1,5 +1,11 @@
-import { useEffect, useState, Fragment } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import React, { useEffect, useState, Fragment } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  View,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import { useSelector } from "react-redux";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native";
@@ -13,9 +19,11 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Entypo } from "@expo/vector-icons";
 import { showAlert } from "@/utils/scanAlert";
 import { getImageInfo, imageToBase64 } from "@/utils/imageUtils";
+import { ThemedText } from "@/components/ThemedText";
+import { Share } from "react-native";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -25,11 +33,14 @@ export default function ResultScreen() {
   const [status, setStatus] = useState<string>(PARSING);
   const [scanResult, setScanResult] = useState<string>("unknown");
   const [productInfo, setProductInfo] = useState<string>("");
+  const [productName, setProductName] = useState<string>("");
+  const [barcodeType, setBarcodeType] = useState<string>("EAN");
+  const [barcodeData, setBarcodeData] = useState<string>("");
   const [getParseBarcode] = useGetParseBarcodeMutation();
   const { t } = useTranslation();
 
   const keywords: IKeyword[] = useSelector((state: any) => state.scan.keywords);
-  const { type, data } = useLocalSearchParams();
+  const { type, data, barcodeType: barcodeTypeParam } = useLocalSearchParams();
   const backgroundColor = useThemeColor({}, "background");
 
   const [postOCR] = usePostOCRMutation();
@@ -42,19 +53,72 @@ export default function ResultScreen() {
       router.back();
     }
     scanLogger.log(`Navigated to result screen: ${type} - ${data}`);
+
+    // Set barcode type from URL params if available
+    if (barcodeTypeParam) {
+      setBarcodeType(barcodeTypeParam as string);
+    }
   });
+
+  const onShare = async () => {
+    try {
+      let message = `Food Bug Scanner Result\n`;
+      if (productName) {
+        message += `Product: ${productName}\n`;
+      }
+      if (barcodeData) {
+        message += `${barcodeType}: ${barcodeData}\n`;
+      }
+      message += `Result: ${
+        scanResult === "green"
+          ? "No bugs found"
+          : scanResult === "red"
+          ? "Bugs found"
+          : "Unknown product"
+      }\n`;
+      message += `Source: Open Food Facts`;
+
+      const result = await Share.share({
+        message: message,
+      });
+    } catch (error: any) {
+      scanLogger.error(`Share error: ${error.message}`);
+      showAlert(error.message, "error");
+    }
+  };
 
   useEffect(() => {
     const handleCheckKeywords = (productInfoData: any) => {
       setStatus(CHECKING_KEYWORDS);
       // Extract product info text for display
-      if (typeof productInfoData === 'object') {
+      if (typeof productInfoData === "object") {
         try {
           // For barcode product info
           if (productInfoData.product_name) {
-            setProductInfo(`Product: ${productInfoData.product_name}\n${productInfoData.ingredients_text || ''}`);
+            setProductName(productInfoData.product_name);
+            setProductInfo(
+              `Product: ${productInfoData.product_name}\n${
+                productInfoData.ingredients_text || ""
+              }`
+            );
           } else {
             setProductInfo(JSON.stringify(productInfoData).substring(0, 300));
+          }
+
+          // Set barcode data
+          if (type === "barcode" && data) {
+            setBarcodeData(data as string);
+            // Try to determine barcode type based on length
+            const code = data as string;
+            if (code.length === 13) {
+              setBarcodeType("EAN-13");
+            } else if (code.length === 8) {
+              setBarcodeType("EAN-8");
+            } else if (code.length === 12) {
+              setBarcodeType("UPC-A");
+            } else if (code.length === 14) {
+              setBarcodeType("ITF-14");
+            }
           }
         } catch (e) {
           setProductInfo(String(productInfoData).substring(0, 300));
@@ -62,9 +126,11 @@ export default function ResultScreen() {
       } else {
         setProductInfo(String(productInfoData).substring(0, 300));
       }
-      
+
       const hasKeyword = keywords.some((keyword) =>
-        JSON.stringify(productInfoData).toLowerCase().includes(keyword.name.toLowerCase())
+        JSON.stringify(productInfoData)
+          .toLowerCase()
+          .includes(keyword.name.toLowerCase())
       );
 
       if (hasKeyword) {
@@ -81,27 +147,31 @@ export default function ResultScreen() {
         if (type === "ocr") {
           try {
             scanLogger.log(`Processing OCR image from URI: ${data}`);
-            
+
             // Check image file first
             const imgInfo = await getImageInfo(data as string);
-            scanLogger.log(`Image exists: ${imgInfo.exists}, Size: ${imgInfo.size} bytes`);
-            
+            scanLogger.log(
+              `Image exists: ${imgInfo.exists}, Size: ${imgInfo.size} bytes`
+            );
+
             if (imgInfo.size < 1000) {
               throw new Error("Image file too small or corrupted");
             }
-            
+
             if (imgInfo.size > 1000000) {
-              throw new Error("Image file too large. You can only upload images up to 1MB.");
+              throw new Error(
+                "Image file too large. You can only upload images up to 1MB."
+              );
             }
-            
+
             // Create form data for OCR API
             const formData = new FormData();
             formData.append("apikey", "K83477011988957");
-            
+
             // Convert image directly to base64 using our utility
             const base64data = await imageToBase64(data as string);
             scanLogger.log("Image converted to base64 successfully");
-            
+
             // Configure the OCR request with optimal settings
             formData.append("base64Image", base64data);
             formData.append("OCREngine", "2"); // More advanced OCR engine
@@ -109,64 +179,102 @@ export default function ResultScreen() {
             formData.append("detectOrientation", "true");
             formData.append("isTable", "false");
             formData.append("filetype", "jpg"); // Explicitly tell the API the file type
-            
+
             // Log request and set timeout
             scanLogger.log("Sending OCR request to API...");
             const ocrStartTime = Date.now();
-            
+
             const ocrResult = await postOCR(formData)
               .unwrap()
-              .catch(error => {
+              .catch((error) => {
                 scanLogger.error(
-                  `OCR API Error: ${(error as Error).message || error.error || JSON.stringify(error)}`
+                  `OCR API Error: ${
+                    (error as Error).message ||
+                    error.error ||
+                    JSON.stringify(error)
+                  }`
                 );
-                throw new Error(`OCR Service Error: ${(error as Error).message || error.error || "Unknown error"}`);
+                throw new Error(
+                  `OCR Service Error: ${
+                    (error as Error).message || error.error || "Unknown error"
+                  }`
+                );
               });
-            
+
             const processingTime = Date.now() - ocrStartTime;
             scanLogger.log(`OCR API response received in ${processingTime}ms`);
-            
+
             if (!ocrResult) {
               throw new Error("No response from OCR service");
             }
-            
-            scanLogger.log("OCR result:", JSON.stringify(ocrResult).substring(0, 500) + "...");
-            
+
+            scanLogger.log(
+              "OCR result:",
+              JSON.stringify(ocrResult).substring(0, 500) + "..."
+            );
+
             if (ocrResult?.ParsedResults?.length) {
               const allParsedText = ocrResult.ParsedResults.map(
                 (result: any) => result.ParsedText
               ).join(" ");
-              
+
               if (!allParsedText || allParsedText.trim().length === 0) {
                 scanLogger.log("OCR returned empty text");
+                showAlert("OCR returned empty text", "error");
                 setScanResult("unknown");
                 setStatus(FINAL);
                 return;
               }
-              
-              scanLogger.log(`OCR extracted text: ${allParsedText.substring(0, 100)}...`);
+
+              scanLogger.log(
+                `OCR extracted text: ${allParsedText.substring(0, 100)}...`
+              );
               setProductInfo(allParsedText.substring(0, 300));
               handleCheckKeywords(allParsedText);
             } else {
               scanLogger.log("OCR returned no parsed results");
+              showAlert("OCR returned no parsed results", "error");
               setScanResult("unknown");
               setStatus(FINAL);
             }
           } catch (error) {
             scanLogger.error(
-              `OCR Processing Error: ${(error as Error).message || JSON.stringify(error)}`
+              `OCR Processing Error: ${
+                (error as Error).message || JSON.stringify(error)
+              }`
             );
             showAlert(
-              `OCR Error: ${(error as Error).message || "Failed to process image"}`,
+              `OCR Error: ${
+                (error as Error).message || "Failed to process image"
+              }`,
               "error"
             );
             setScanResult("parse-error");
             setStatus(FINAL);
           }
         } else {
+          // Set barcode data immediately
+          if (data) {
+            setBarcodeData(data as string);
+            // Try to determine barcode type based on length
+            const code = data as string;
+            if (code.length === 13) {
+              setBarcodeType("EAN-13");
+            } else if (code.length === 8) {
+              setBarcodeType("EAN-8");
+            } else if (code.length === 12) {
+              setBarcodeType("UPC-A");
+            } else if (code.length === 14) {
+              setBarcodeType("ITF-14");
+            }
+          }
+
           const parsedContent = await getParseBarcode(data).unwrap();
           scanLogger.log(`Parsed Content Status: `, parsedContent.status);
           if (parsedContent?.status) {
+            if (parsedContent?.product?.product_name) {
+              setProductName(parsedContent.product.product_name);
+            }
             handleCheckKeywords(parsedContent?.product);
           } else {
             setScanResult("unknown");
@@ -224,6 +332,12 @@ export default function ResultScreen() {
       paddingHorizontal: 8,
       marginBottom: 8,
     },
+    headerRightContainer: {
+      marginRight: 16,
+    },
+    shareButton: {
+      padding: 8,
+    },
     reactLogo: {
       height: 178,
       width: 290,
@@ -241,7 +355,20 @@ export default function ResultScreen() {
       height: 200,
       alignSelf: "center",
     },
+    sourceContainer: {
+      marginTop: 16,
+      alignSelf: "center",
+    },
+    sourceText: {
+      fontSize: 14,
+      fontWeight: "semibold",
+      textAlign: "center",
+      letterSpacing: 1.5,
+    },
   });
+
+  // Get the text color for the header icons
+  const textColor = useThemeColor({}, "text");
 
   return (
     <Fragment>
@@ -249,7 +376,14 @@ export default function ResultScreen() {
         options={{
           headerShown: true,
           headerTransparent: true,
-          headerTitle: t("foodBugScanner"),
+          headerTitle: t("result"),
+          headerRight: () => (
+            <View style={styles.headerRightContainer}>
+              <TouchableOpacity onPress={onShare} style={styles.shareButton}>
+                <Entypo name="share" size={24} color={textColor} />
+              </TouchableOpacity>
+            </View>
+          ),
         }}
       />
       <SafeAreaView style={styles.container}>
@@ -266,22 +400,33 @@ export default function ResultScreen() {
               manualInput={type !== "ocr"}
               scanResult={scanResult}
               productInfo={productInfo}
+              productName={productName}
+              barcodeType={barcodeType}
+              barcodeData={barcodeData}
             />
           )}
         </View>
         <View style={styles.scanBtnContainer}>
           {status === FINAL && (
-            <BigButton
-              title={t(type === "ocr" ? "Take a Picture" : "scanAgain")}
-              onPress={() => {
-                if (type === "ocr") {
-                  router.replace("/(tabs)/ocr");
-                } else {
-                  router.replace("/(tabs)/scan");
-                }
-              }}
-              icon={<FontAwesome name="repeat" size={48} color="white" />}
-            />
+            <>
+              <BigButton
+                title={t(type === "ocr" ? "Take a Picture" : "scanAgain")}
+                onPress={() => {
+                  if (type === "ocr") {
+                    router.replace("/(tabs)/ocr");
+                  } else {
+                    router.replace("/(tabs)/scan");
+                  }
+                }}
+                icon={<FontAwesome name="repeat" size={48} color="white" />}
+              />
+              {/* Source Information */}
+              <View style={styles.sourceContainer}>
+                <ThemedText style={styles.sourceText}>
+                  Source: Open Food Facts
+                </ThemedText>
+              </View>
+            </>
           )}
         </View>
       </SafeAreaView>

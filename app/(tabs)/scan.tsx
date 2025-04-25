@@ -44,7 +44,38 @@ export default function ScanScreen() {
     data: string;
   }) => {
     try {
-      router.replace(`/result?type=${type}&data=${data}`);
+      // Map the barcode type to a more user-friendly format
+      let barcodeFormat = "Barcode";
+      switch (type.toLowerCase()) {
+        case "ean13":
+          barcodeFormat = "EAN-13";
+          break;
+        case "ean8":
+          barcodeFormat = "EAN-8";
+          break;
+        case "upc_a":
+          barcodeFormat = "UPC-A";
+          break;
+        case "upc_e":
+          barcodeFormat = "UPC-E";
+          break;
+        case "code39":
+          barcodeFormat = "Code 39";
+          break;
+        case "code93":
+          barcodeFormat = "Code 93";
+          break;
+        case "code128":
+          barcodeFormat = "Code 128";
+          break;
+        case "itf14":
+          barcodeFormat = "ITF-14";
+          break;
+        default:
+          barcodeFormat = type;
+      }
+      
+      router.replace(`/result?type=barcode&data=${data}&barcodeType=${barcodeFormat}`);
     } catch (error) {
       scanLogger.error(
         `Barcode Scan Error: ${
