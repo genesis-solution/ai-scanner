@@ -45,7 +45,7 @@ export default function ScanScreen() {
   }) => {
     try {
       // Map the barcode type to a more user-friendly format
-      let barcodeFormat = "Barcode";
+      let barcodeFormat = t("barcode");
       switch (type.toLowerCase()) {
         case "ean13":
           barcodeFormat = "EAN-13";
@@ -60,13 +60,13 @@ export default function ScanScreen() {
           barcodeFormat = "UPC-E";
           break;
         case "code39":
-          barcodeFormat = "Code 39";
+          barcodeFormat = t("code39");
           break;
         case "code93":
-          barcodeFormat = "Code 93";
+          barcodeFormat = t("code93");
           break;
         case "code128":
-          barcodeFormat = "Code 128";
+          barcodeFormat = t("code128");
           break;
         case "itf14":
           barcodeFormat = "ITF-14";
@@ -79,7 +79,7 @@ export default function ScanScreen() {
     } catch (error) {
       scanLogger.error(
         `Barcode Scan Error: ${
-          (error as Error).message || "An unexpected error"
+          (error as Error).message || t("unexpectedError")
         }`
       );
     }

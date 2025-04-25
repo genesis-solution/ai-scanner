@@ -163,10 +163,10 @@ const ScanResultShow = ({
           <View style={styles.productNameContainer}>
             <ThemedText style={styles.productName}>
               {scanResult === "unknown"
-                ? "Product"
+                ? t("product")
                 : productName ||
                   (productInfo && productInfo.split("\n")[0]) ||
-                  "Product"}
+                  t("product")}
             </ThemedText>
           </View>
 
@@ -222,12 +222,12 @@ const ScanResultShow = ({
           <View style={styles.resultTitleContainer}>
             <ThemedText style={styles.resultTitle}>
               {scanResult === "green"
-                ? "No insects found"
+                ? t("noInsectsFound")
                 : scanResult === "red"
-                ? "Bugs Found"
+                ? t("bugsFound")
                 : scanResult === "unknown"
-                ? "Unknown"
-                : "Error"}
+                ? t("unknown")
+                : t("error")}
             </ThemedText>
           </View>
 
@@ -236,11 +236,7 @@ const ScanResultShow = ({
             <View style={styles.infoContainer}>
               <ScrollView style={styles.scrollView}>
                 <ThemedText style={styles.infoText}>
-                  This result is based on the Open Food Facts database, which
-                  includes over 3 million products. Everyone has the opportunity
-                  to add and edit entries. If you believe the result is
-                  incorrect, you can correct it there. Click on the EAN above to
-                  go directly to the entry on Open Food Facts.
+                  {t("safeProductDescription")}
                 </ThemedText>
               </ScrollView>
             </View>
@@ -264,9 +260,7 @@ const ScanResultShow = ({
             <View style={styles.infoContainer}>
               <ScrollView style={styles.scrollView}>
                 <ThemedText style={styles.infoText}>
-                  This product is not yet recorded in the database. You can add
-                  it to the Open Food Facts database by clicking on the EAN
-                  above.
+                  {t("unknownProductDescription")}
                 </ThemedText>
               </ScrollView>
             </View>
@@ -276,7 +270,7 @@ const ScanResultShow = ({
             <View style={styles.infoContainer}>
               <ScrollView style={styles.scrollView}>
                 <ThemedText style={styles.infoText}>
-                  Error parsing the scan. Try scanning again or enter manually.
+                  {t("parseErrorDescription")}
                 </ThemedText>
               </ScrollView>
             </View>
@@ -288,7 +282,7 @@ const ScanResultShow = ({
       {appConfig.isEmulatorMode && (
         <View style={{ marginTop: 20 }}>
           <ThemedText style={{ fontSize: 12, color: "#999" }}>
-            Debug Info (Emulator only)
+            {t("debugInfoEmulatorOnly")}
           </ThemedText>
           <View
             style={{
@@ -299,7 +293,7 @@ const ScanResultShow = ({
             }}
           >
             <ThemedText style={{ fontSize: 10 }}>
-              Keywords Loaded: {keywords.length}
+              {t("keywordsLoaded")}: {keywords.length}
             </ThemedText>
             <ScrollView style={{ maxHeight: 80 }}>
               {keywords.map((keyword: any, index: number) => (

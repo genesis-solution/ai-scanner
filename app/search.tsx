@@ -36,15 +36,15 @@ export default function SearchScreen() {
     try {
       if (status !== FINAL) return;
       
-      let message = `Food Bug Scanner Result\n`;
+      let message = `${t("foodBugScanner")} ${t("result")}\n`;
       if (productName) {
-        message += `Product: ${productName}\n`;
+        message += `${t("product")}: ${productName}\n`;
       }
       if (manualInput) {
         message += `${barcodeType}: ${manualInput}\n`;
       }
-      message += `Result: ${scanResult === 'green' ? 'No bugs found' : scanResult === 'red' ? 'Bugs found' : 'Unknown product'}\n`;
-      message += `Source: Open Food Facts`;
+      message += `${t("result")}: ${scanResult === 'green' ? t("noInsectsFound") : scanResult === 'red' ? t("bugsFound") : t("unknownProduct")}\n`;
+      message += `${t("source")}: ${t("openFoodFacts")}`;
 
       const result = await Share.share({
         message: message,
@@ -90,7 +90,7 @@ export default function SearchScreen() {
   const parseCode = async () => {
     try {
       if (!manualInput || manualInput.trim().length === 0) {
-        showAlert("Please enter a valid barcode", "error");
+        showAlert(t("pleaseEnterValidBarcode"), "error");
         return;
       }
       
@@ -107,7 +107,7 @@ export default function SearchScreen() {
       } else if (code.length === 14) {
         setBarcodeType('ITF-14');
       } else {
-        setBarcodeType('Barcode');
+        setBarcodeType(t("barcode"));
       }
       
       const parsedContent = await getParseBarcode(manualInput).unwrap();
@@ -124,7 +124,7 @@ export default function SearchScreen() {
     } catch (error) {
       scanLogger.error(
         `Parsing Barcode Error: ${
-          (error as Error).message || "An unexpected error"
+          (error as Error).message || t("unexpectedError")
         }`
       );
       setScanResult("parse-error");

@@ -62,21 +62,21 @@ export default function ResultScreen() {
 
   const onShare = async () => {
     try {
-      let message = `Food Bug Scanner Result\n`;
+      let message = `${t("foodBugScanner")} ${t("result")}\n`;
       if (productName) {
-        message += `Product: ${productName}\n`;
+        message += `${t("product")}: ${productName}\n`;
       }
       if (barcodeData) {
         message += `${barcodeType}: ${barcodeData}\n`;
       }
-      message += `Result: ${
+      message += `${t("result")}: ${
         scanResult === "green"
-          ? "No bugs found"
+          ? t("noInsectsFound")
           : scanResult === "red"
-          ? "Bugs found"
-          : "Unknown product"
+          ? t("bugsFound")
+          : t("unknownProduct")
       }\n`;
-      message += `Source: Open Food Facts`;
+      message += `${t("source")}: ${t("openFoodFacts")}`;
 
       const result = await Share.share({
         message: message,
@@ -155,13 +155,11 @@ export default function ResultScreen() {
             );
 
             if (imgInfo.size < 1000) {
-              throw new Error("Image file too small or corrupted");
+              throw new Error(t("imageFileTooSmall"));
             }
 
             if (imgInfo.size > 1000000) {
-              throw new Error(
-                "Image file too large. You can only upload images up to 1MB."
-              );
+              throw new Error(t("imageFileTooLarge"));
             }
 
             // Create form data for OCR API
@@ -205,7 +203,7 @@ export default function ResultScreen() {
             scanLogger.log(`OCR API response received in ${processingTime}ms`);
 
             if (!ocrResult) {
-              throw new Error("No response from OCR service");
+              throw new Error(t("noResponseFromOCRService"));
             }
 
             scanLogger.log(
@@ -220,7 +218,7 @@ export default function ResultScreen() {
 
               if (!allParsedText || allParsedText.trim().length === 0) {
                 scanLogger.log("OCR returned empty text");
-                showAlert("OCR returned empty text", "error");
+                showAlert(t("ocrReturnedEmptyText"), "error");
                 setScanResult("unknown");
                 setStatus(FINAL);
                 return;
@@ -233,7 +231,7 @@ export default function ResultScreen() {
               handleCheckKeywords(allParsedText);
             } else {
               scanLogger.log("OCR returned no parsed results");
-              showAlert("OCR returned no parsed results", "error");
+              showAlert(t("ocrReturnedNoParsedResults"), "error");
               setScanResult("unknown");
               setStatus(FINAL);
             }
@@ -244,8 +242,8 @@ export default function ResultScreen() {
               }`
             );
             showAlert(
-              `OCR Error: ${
-                (error as Error).message || "Failed to process image"
+              `${t("ocrError")}: ${
+                (error as Error).message || t("failedToProcessImage")
               }`,
               "error"
             );
@@ -283,10 +281,10 @@ export default function ResultScreen() {
         }
       } catch (error) {
         scanLogger.error(
-          `Parsing Error: ${(error as Error).message || "An unexpected error"}`
+          `Parsing Error: ${(error as Error).message || t("unexpectedError")}`
         );
         showAlert(
-          `Parsing Error: ${(error as Error).message || "An unexpected error"}`,
+          `${t("parsingError")}: ${(error as Error).message || t("unexpectedError")}`,
           "error"
         );
         setScanResult("parse-error");
@@ -294,7 +292,7 @@ export default function ResultScreen() {
       }
     };
     parseCode();
-  }, [data, getParseBarcode, keywords, postOCR, type]);
+  }, [data, getParseBarcode, keywords, postOCR, type, t]);
 
   const styles = StyleSheet.create({
     image: {
@@ -423,7 +421,7 @@ export default function ResultScreen() {
               {/* Source Information */}
               <View style={styles.sourceContainer}>
                 <ThemedText style={styles.sourceText}>
-                  Source: Open Food Facts
+                  {t("source")}: {t("openFoodFacts")}
                 </ThemedText>
               </View>
             </>
