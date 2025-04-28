@@ -18,6 +18,30 @@ import InlineAd from "@/components/InlineAd";
 import { Entypo } from "@expo/vector-icons";
 import { showAlert } from "@/utils/scanAlert";
 
+export const onShare = async () => {
+  const shareText =
+    "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
+
+  try {
+    const result = await Share.share({
+      message: shareText,
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // shared with activity type of result.activityType
+        showAlert(`Successfully shared via ${result.activityType}`, "success");
+      } else {
+        // shared
+        // showAlert(`Successfully shared`, "success");
+      }
+    } else if (result.action === Share.dismissedAction) {
+      // dismissed
+    }
+  } catch (error: any) {
+    showAlert(error.message, "error");
+  }
+};
+
 export default function TabLayout() {
   const { t } = useTranslation();
   const styles = StyleSheet.create({
@@ -32,33 +56,6 @@ export default function TabLayout() {
       height: 60,
     },
   });
-
-  const shareText =
-    "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
-
-  const onShare = async () => {
-    try {
-      const result = await Share.share({
-        message: shareText,
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-          showAlert(
-            `Successfully shared via ${result.activityType}`,
-            "success"
-          );
-        } else {
-          // shared
-          // showAlert(`Successfully shared`, "success");
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error: any) {
-      showAlert(error.message, "error");
-    }
-  };
 
   return (
     <View style={styles.container}>

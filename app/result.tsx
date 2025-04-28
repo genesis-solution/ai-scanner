@@ -19,11 +19,12 @@ import scanLogger from "@/utils/scanLogger";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { IKeyword } from "@/constants/types";
 import { useTranslation } from "react-i18next";
-import { FontAwesome, Entypo } from "@expo/vector-icons";
+import { FontAwesome, Entypo, AntDesign } from "@expo/vector-icons";
 import { showAlert } from "@/utils/scanAlert";
 import { getImageInfo, imageToBase64 } from "@/utils/imageUtils";
 import { ThemedText } from "@/components/ThemedText";
 import { Share } from "react-native";
+import { onShare } from "./(tabs)/_layout";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -60,33 +61,6 @@ export default function ResultScreen() {
     }
   });
 
-  const onShare = async () => {
-    try {
-      let message = `${t("foodBugScanner")} ${t("result")}\n`;
-      if (productName) {
-        message += `${t("product")}: ${productName}\n`;
-      }
-      if (barcodeData) {
-        message += `${barcodeType}: ${barcodeData}\n`;
-      }
-      message += `${t("result")}: ${
-        scanResult === "green"
-          ? t("noInsectsFound")
-          : scanResult === "red"
-          ? t("bugsFound")
-          : t("unknownProduct")
-      }\n`;
-      message += `${t("source")}: ${t("openFoodFacts")}`;
-
-      const result = await Share.share({
-        message: message,
-      });
-    } catch (error: any) {
-      scanLogger.error(`Share error: ${error.message}`);
-      showAlert(error.message, "error");
-    }
-  };
-
   useEffect(() => {
     const handleCheckKeywords = (productInfoData: any) => {
       setStatus(CHECKING_KEYWORDS);
@@ -96,13 +70,9 @@ export default function ResultScreen() {
           // For barcode product info
           if (productInfoData.product_name) {
             setProductName(productInfoData.product_name);
-            setProductInfo(
-              `Product: ${productInfoData.product_name}\n${
-                productInfoData.ingredients_text || ""
-              }`
-            );
+            setProductInfo(JSON.stringify(productInfoData));
           } else {
-            setProductInfo(JSON.stringify(productInfoData).substring(0, 300));
+            setProductName(t("product"));
           }
 
           // Set barcode data
@@ -121,10 +91,10 @@ export default function ResultScreen() {
             }
           }
         } catch (e) {
-          setProductInfo(String(productInfoData).substring(0, 300));
+          setProductInfo(productInfoData.toString());
         }
       } else {
-        setProductInfo(String(productInfoData).substring(0, 300));
+        setProductInfo(productInfoData.toString());
       }
 
       const hasKeyword = keywords.some((keyword) =>
@@ -284,7 +254,9 @@ export default function ResultScreen() {
           `Parsing Error: ${(error as Error).message || t("unexpectedError")}`
         );
         showAlert(
-          `${t("parsingError")}: ${(error as Error).message || t("unexpectedError")}`,
+          `${t("parsingError")}: ${
+            (error as Error).message || t("unexpectedError")
+          }`,
           "error"
         );
         setScanResult("parse-error");
@@ -363,6 +335,12 @@ export default function ResultScreen() {
       textAlign: "center",
       letterSpacing: 1.5,
     },
+    headerLeftContainer: {
+      marginLeft: 0,
+    },
+    backButton: {
+      padding: 8,
+    },
   });
 
   // Get the text color for the header icons
@@ -374,7 +352,23 @@ export default function ResultScreen() {
         options={{
           headerShown: true,
           headerTransparent: true,
-          headerTitle: t("result"),
+          headerTitle: "",
+          headerLeft: () => (
+            <View style={styles.headerLeftContainer}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (type === "ocr") {
+                    router.replace("/(tabs)/ocr");
+                  } else {
+                    router.replace("/(tabs)/scan");
+                  }
+                }}
+                style={styles.backButton}
+              >
+                <AntDesign name="arrowleft" size={24} color={textColor} />
+              </TouchableOpacity>
+            </View>
+          ),
           headerRight: () => (
             <View style={styles.headerRightContainer}>
               <TouchableOpacity onPress={onShare} style={styles.shareButton}>

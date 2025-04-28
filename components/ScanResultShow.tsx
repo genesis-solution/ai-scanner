@@ -162,11 +162,7 @@ const ScanResultShow = ({
           {/* Product Name */}
           <View style={styles.productNameContainer}>
             <ThemedText style={styles.productName}>
-              {scanResult === "unknown"
-                ? t("product")
-                : productName ||
-                  (productInfo && productInfo.split("\n")[0]) ||
-                  t("product")}
+              {scanResult === "unknown" ? t("product") : productName}
             </ThemedText>
           </View>
 

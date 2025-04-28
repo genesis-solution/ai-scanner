@@ -1,36 +1,52 @@
 import scanLogger from "@/utils/scanLogger";
 import { Camera } from "expo-camera";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Alert, Linking } from "react-native";
 
 export default function useCameraPermission() {
   const [hasPermission, setHasPermission] = useState<null | boolean>(null);
+  const isRequestingPermission = useRef(false);
 
   const checkCameraPermission = async () => {
-    const { status, canAskAgain, granted } =
-      await Camera.getCameraPermissionsAsync();
-    scanLogger.log(`camera permission: ${status} ${canAskAgain} ${granted}`);
-    setHasPermission(granted);
+    // Prevent multiple simultaneous permission requests
+    if (isRequestingPermission.current) {
+      scanLogger.log(
+        "Permission check already in progress, skipping duplicate request"
+      );
+      return;
+    }
 
-    if (status === "granted") {
-      // Permission granted, proceed with scanning
-      scanLogger.log("Camera permission granted.");
-    } else if (
-      status === "undetermined" ||
-      (status === "denied" && canAskAgain)
-    ) {
-      // Permission denied, but can re-prompt
-      setHasPermission(null);
-      const { status: newStatus, granted: newGranted } =
-        await Camera.requestCameraPermissionsAsync();
-      setHasPermission(newGranted);
-      if (newStatus !== "granted") {
-        showPermissionDeniedAlert();
+    try {
+      isRequestingPermission.current = true;
+
+      const { status, canAskAgain, granted } =
+        await Camera.getCameraPermissionsAsync();
+      scanLogger.log(`camera permission: ${status} ${canAskAgain} ${granted}`);
+      setHasPermission(granted);
+
+      if (status === "granted") {
+        // Permission granted, proceed with scanning
+        scanLogger.log("Camera permission granted.");
+      } else if (
+        status === "undetermined" ||
+        (status === "denied" && canAskAgain)
+      ) {
+        // Permission denied, but can re-prompt
+        setHasPermission(null);
+        const { status: newStatus, granted: newGranted } =
+          await Camera.requestCameraPermissionsAsync();
+        setHasPermission(newGranted);
+        if (newStatus !== "granted") {
+          showPermissionDeniedAlert();
+        }
+      } else {
+        // Permission permanently denied or canAskAgain is false
+        showSettingsAlert();
       }
-    } else {
-      // Permission permanently denied or canAskAgain is false
-      showSettingsAlert();
+    } finally {
+      // Reset flag when permission check is done
+      isRequestingPermission.current = false;
     }
   };
 

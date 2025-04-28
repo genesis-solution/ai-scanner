@@ -74,8 +74,10 @@ export default function ScanScreen() {
         default:
           barcodeFormat = type;
       }
-      
-      router.replace(`/result?type=barcode&data=${data}&barcodeType=${barcodeFormat}`);
+
+      router.replace(
+        `/result?type=barcode&data=${data}&barcodeType=${barcodeFormat}`
+      );
     } catch (error) {
       scanLogger.error(
         `Barcode Scan Error: ${
