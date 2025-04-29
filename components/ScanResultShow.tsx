@@ -232,7 +232,7 @@ const ScanResultShow = ({
             <View style={styles.infoContainer}>
               <ScrollView style={styles.scrollView}>
                 <ThemedText style={styles.infoText}>
-                  {t("safeProductDescription")}
+                  {barcodeData ? t("safeProductDescription") : t("safeProductDescriptionOCR")}
                 </ThemedText>
               </ScrollView>
             </View>

@@ -13,6 +13,7 @@ import { useTranslation } from "react-i18next";
 import { AntDesign, FontAwesome, Entypo } from "@expo/vector-icons";
 import { ThemedTextInputIcon } from "@/components/ThemedTextInputIcon";
 import { showAlert } from "@/utils/scanAlert";
+import { onShare } from "./(tabs)/_layout";
 
 const PARSING = "parsing";
 const CHECKING_KEYWORDS = "checkingKeywords";
@@ -32,50 +33,31 @@ export default function SearchScreen() {
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
 
-  const onShare = async () => {
-    try {
-      if (status !== FINAL) return;
-      
-      let message = `${t("foodBugScanner")} ${t("result")}\n`;
-      if (productName) {
-        message += `${t("product")}: ${productName}\n`;
-      }
-      if (manualInput) {
-        message += `${barcodeType}: ${manualInput}\n`;
-      }
-      message += `${t("result")}: ${scanResult === 'green' ? t("noInsectsFound") : scanResult === 'red' ? t("bugsFound") : t("unknownProduct")}\n`;
-      message += `${t("source")}: ${t("openFoodFacts")}`;
-
-      const result = await Share.share({
-        message: message,
-      });
-    } catch (error: any) {
-      scanLogger.error(`Share error: ${error.message}`);
-      showAlert(error.message, "error");
-    }
-  };
-
   const handleCheckKeywords = (productInfoData: any) => {
     setStatus(CHECKING_KEYWORDS);
-    
-    if (typeof productInfoData === 'object') {
+    let infoText = "";
+
+    if (typeof productInfoData === "object") {
       try {
         // For barcode product info
         if (productInfoData.product_name) {
           setProductName(productInfoData.product_name);
-          setProductInfo(`Product: ${productInfoData.product_name}\n${productInfoData.ingredients_text || ''}`);
         } else {
-          setProductInfo(JSON.stringify(productInfoData).substring(0, 300));
+          setProductName(t("product"));
         }
+        infoText = `Product: ${productInfoData.product_name}\n${
+          productInfoData.ingredients_text || ""
+        }`;
       } catch (e) {
-        setProductInfo(String(productInfoData).substring(0, 300));
+        infoText = String(productInfoData);
       }
     } else {
-      setProductInfo(String(productInfoData).substring(0, 300));
+      infoText = String(productInfoData);
     }
 
+    setProductInfo(infoText);
     const hasKeyword = keywords.some((keyword) =>
-      JSON.stringify(productInfoData).toLowerCase().includes(keyword.name.toLowerCase())
+      infoText.toLowerCase().includes(keyword.name.toLowerCase())
     );
 
     if (hasKeyword) {
@@ -93,23 +75,23 @@ export default function SearchScreen() {
         showAlert(t("pleaseEnterValidBarcode"), "error");
         return;
       }
-      
+
       setStatus(PARSING);
-      
+
       // Set barcode type based on length
       const code = manualInput.trim();
       if (code.length === 13) {
-        setBarcodeType('EAN-13');
+        setBarcodeType("EAN-13");
       } else if (code.length === 8) {
-        setBarcodeType('EAN-8');
+        setBarcodeType("EAN-8");
       } else if (code.length === 12) {
-        setBarcodeType('UPC-A');
+        setBarcodeType("UPC-A");
       } else if (code.length === 14) {
-        setBarcodeType('ITF-14');
+        setBarcodeType("ITF-14");
       } else {
         setBarcodeType(t("barcode"));
       }
-      
+
       const parsedContent = await getParseBarcode(manualInput).unwrap();
       scanLogger.log(`Parsed Content Status: `, parsedContent.status);
       if (parsedContent?.status) {
@@ -218,9 +200,9 @@ export default function SearchScreen() {
               />
             )}
             {status === FINAL && (
-              <ScanResultShow 
-                scanResult={scanResult} 
-                manualInput={false} 
+              <ScanResultShow
+                scanResult={scanResult}
+                manualInput={false}
                 productInfo={productInfo}
                 productName={productName}
                 barcodeType={barcodeType}

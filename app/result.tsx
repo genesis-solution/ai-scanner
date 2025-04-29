@@ -356,13 +356,7 @@ export default function ResultScreen() {
           headerLeft: () => (
             <View style={styles.headerLeftContainer}>
               <TouchableOpacity
-                onPress={() => {
-                  if (type === "ocr") {
-                    router.replace("/(tabs)/ocr");
-                  } else {
-                    router.replace("/(tabs)/scan");
-                  }
-                }}
+                onPress={() => router.replace("/")}
                 style={styles.backButton}
               >
                 <AntDesign name="arrowleft" size={24} color={textColor} />

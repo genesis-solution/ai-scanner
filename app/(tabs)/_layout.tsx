@@ -20,7 +20,7 @@ import { showAlert } from "@/utils/scanAlert";
 
 export const onShare = async () => {
   const shareText =
-    "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=ch.simplevisor.app\nAppStore: https://apps.apple.com/us/app/simplevisor/id1510740672";
+    "Please tell your friends about our app.\nGoogle Play Store: https://play.google.com/store/apps/details?id=com.jrann.scanner";
 
   try {
     const result = await Share.share({

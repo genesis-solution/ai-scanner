@@ -48,7 +48,7 @@ const resources = {
       telegram: "Telegram",
       website: "Website",
       app: "App",
-      scanAFoodBarcode: "Scan a Food Barcode",
+      scanAFoodBarcode: "Scan a Product",
       search: "Search",
       q0: "Why is a product containing bugs shown as bug-free?",
       a0: "If a product is displayed as bug-free, there can be various reasons. It is possible that the product does not actually contain bugs as an ingredient. For certain products, there are different packages with different barcodes. For example, there are packs of Schokobons both with and without bugs. It is also possible that the product is not yet recorded in our database. In such cases, you can simply report the product in the app, and we will add it to our database. In the next update, there will be an additional scanning method where you can scan the ingredient list of the product. Our artificial intelligence will then be able to detect if bugs are included. This way, we achieve 100% certainty, and it works worldwide.",
@@ -74,9 +74,9 @@ const resources = {
           "You can change the language in the settings under the General section.",
       },
       "Or Take a Picture of food ingredients":
-        "Or Take a Picture of food ingredients",
+        "Or Take a Picture of Ingredients",
       "Take a Picture": "Take a Picture",
-      
+
       // New keys for result and search pages
       result: "Result",
       product: "Product",
@@ -86,7 +86,8 @@ const resources = {
       bugsFound: "Insects Found",
       unknownProduct: "Unknown product",
       imageFileTooSmall: "Image file too small or corrupted",
-      imageFileTooLarge: "Image file too large. You can only upload images up to 1MB.",
+      imageFileTooLarge:
+        "Image file too large. You can only upload images up to 1MB.",
       noResponseFromOCRService: "No response from OCR service",
       ocrReturnedEmptyText: "OCR returned empty text",
       ocrReturnedNoParsedResults: "OCR returned no parsed results",
@@ -103,9 +104,14 @@ const resources = {
       error: "Error",
       debugInfoEmulatorOnly: "Debug Info (Emulator only)",
       keywordsLoaded: "Keywords Loaded",
-      safeProductDescription: "Click on the EAN above to go directly to the entry on Open Food Facts.",
-      unknownProductDescription: "Please use the app's feature to take a picture of the food ingredients.",
-      parseErrorDescription: "Error parsing the scan. Try scanning again or enter manually.",
+      safeProductDescription:
+        "Click on the EAN above to go directly to the entry on Open Food Facts.",
+      safeProductDescriptionOCR:
+        "This result is based on the Open Food Facts database, which includes over 3 million products.",
+      unknownProductDescription:
+        "Please use the app's feature to take a picture of the food ingredients.",
+      parseErrorDescription:
+        "Error parsing the scan. Try scanning again or enter manually.",
       cam: "Camera",
       share: "Share",
       "Processing image...": "Processing image...",
@@ -137,7 +143,8 @@ const resources = {
       softBlue: "Weichblau",
       warmAmber: "Warmes Bernstein",
       foodBugScanner: "Lebensmittel-Scanner",
-      connectToTheInternetToUseTheApp: "Verbinden Sie sich mit dem Internet, um die App zu verwenden",
+      connectToTheInternetToUseTheApp:
+        "Verbinden Sie sich mit dem Internet, um die App zu verwenden",
       tapToScan: "Zum Scannen tippen",
       requestingCameraPermission: "Kameraberechtigung wird angefordert",
       noCameraAccess: "Kein Zugriff auf die Kamera",
@@ -157,7 +164,7 @@ const resources = {
       telegram: "Telegram",
       website: "Webseite",
       app: "App",
-      scanAFoodBarcode: "Einen Lebensmittel-Barcode scannen",
+      scanAFoodBarcode: "Produkt scannen",
       search: "Suche",
       q0: "Warum wird ein Produkt, das Insekten enthält, als insektenfrei angezeigt?",
       a0: "Wenn ein Produkt als insektenfrei angezeigt wird, kann dies verschiedene Gründe haben. Es ist möglich, dass das Produkt tatsächlich keine Insekten als Zutat enthält. Bei bestimmten Produkten gibt es unterschiedliche Verpackungen mit unterschiedlichen Barcodes. Zum Beispiel gibt es Packungen von Schokobons sowohl mit als auch ohne Insekten. Es ist auch möglich, dass das Produkt noch nicht in unserer Datenbank erfasst ist. In solchen Fällen können Sie das Produkt einfach in der App melden, und wir werden es in unsere Datenbank aufnehmen. Im nächsten Update wird es eine zusätzliche Scanfunktion geben, bei der Sie die Zutatenliste des Produkts scannen können. Unsere künstliche Intelligenz wird dann erkennen können, ob Insekten enthalten sind. Auf diese Weise erreichen wir 100%ige Sicherheit, und es funktioniert weltweit.",
@@ -183,9 +190,9 @@ const resources = {
           "Sie können die Sprache in den Einstellungen im Abschnitt Allgemein ändern.",
       },
       "Or Take a Picture of food ingredients":
-        "Oder ein Bild von den Lebensmittelzutaten machen",
+        "Oder ein Bild der Lebensmittelzutaten machen",
       "Take a Picture": "Ein Bild machen",
-      
+
       // New keys for result and search pages
       result: "Ergebnis",
       product: "Produkt",
@@ -195,10 +202,12 @@ const resources = {
       bugsFound: "Insekten gefunden",
       unknownProduct: "Unbekanntes Produkt",
       imageFileTooSmall: "Bilddatei zu klein oder beschädigt",
-      imageFileTooLarge: "Bilddatei zu groß. Sie können nur Bilder bis zu 1MB hochladen.",
+      imageFileTooLarge:
+        "Bilddatei zu groß. Sie können nur Bilder bis zu 1MB hochladen.",
       noResponseFromOCRService: "Keine Antwort vom OCR-Dienst",
       ocrReturnedEmptyText: "OCR hat leeren Text zurückgegeben",
-      ocrReturnedNoParsedResults: "OCR hat keine analysierten Ergebnisse zurückgegeben",
+      ocrReturnedNoParsedResults:
+        "OCR hat keine analysierten Ergebnisse zurückgegeben",
       ocrError: "OCR-Fehler",
       failedToProcessImage: "Fehler beim Verarbeiten des Bildes",
       parsingError: "Parsing-Fehler",
@@ -212,9 +221,14 @@ const resources = {
       error: "Fehler",
       debugInfoEmulatorOnly: "Debug-Info (nur Emulator)",
       keywordsLoaded: "Schlüsselwörter geladen",
-      safeProductDescription: "Klicken Sie auf die EAN oben, um direkt zum Eintrag auf Open Food Facts zu gelangen.",
-      unknownProductDescription: "Bitte verwenden Sie die App-Funktion, um ein Foto der Lebensmittelzutaten zu machen.",
-      parseErrorDescription: "Fehler beim Analysieren des Scans. Versuchen Sie erneut zu scannen oder geben Sie manuell ein.",
+      safeProductDescription:
+        "Klicken Sie auf die EAN oben, um direkt zum Eintrag auf Open Food Facts zu gelangen.",
+      safeProductDescriptionOCR:
+        "Dieses Ergebnis basiert auf der Open Food Facts-Datenbank, die über 3 Millionen Produkte enthält.",
+      unknownProductDescription:
+        "Bitte verwenden Sie die App-Funktion, um ein Foto der Lebensmittelzutaten zu machen.",
+      parseErrorDescription:
+        "Fehler beim Analysieren des Scans. Versuchen Sie erneut zu scannen oder geben Sie manuell ein.",
       cam: "Kamera",
       share: "Teilen",
       "Processing image...": "Bild wird verarbeitet...",
@@ -294,7 +308,7 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "O tomar una foto de los ingredientes de los alimentos",
       "Take a Picture": "Tomar una foto",
-      
+
       // New keys for result and search pages
       result: "Resultado",
       product: "Producto",
@@ -304,7 +318,8 @@ const resources = {
       bugsFound: "Insectos encontrados",
       unknownProduct: "Producto desconocido",
       imageFileTooSmall: "Archivo de imagen demasiado pequeño o dañado",
-      imageFileTooLarge: "Archivo de imagen demasiado grande. Solo puede cargar imágenes de hasta 1MB.",
+      imageFileTooLarge:
+        "Archivo de imagen demasiado grande. Solo puede cargar imágenes de hasta 1MB.",
       noResponseFromOCRService: "Sin respuesta del servicio OCR",
       ocrReturnedEmptyText: "OCR devolvió texto vacío",
       ocrReturnedNoParsedResults: "OCR n'a renvoyé aucun résultat analysé",
@@ -321,9 +336,14 @@ const resources = {
       error: "Error",
       debugInfoEmulatorOnly: "Información de depuración (solo emulador)",
       keywordsLoaded: "Palabras clave cargadas",
-      safeProductDescription: "Haga clic en el EAN de arriba para ir directamente a la entrada en Open Food Facts.",
-      unknownProductDescription: "Por favor, utiliza la función de la aplicación para tomar una foto de los ingredientes de los alimentos.",
-      parseErrorDescription: "Error al analizar el escaneo. Intente escanear nuevamente o ingrese manualmente.",
+      safeProductDescription:
+        "Haga clic en el EAN de arriba para ir directamente a la entrada en Open Food Facts.",
+      safeProductDescriptionOCR:
+        "Este resultado se basa en la base de datos de Open Food Facts, que incluye más de 3 millones de productos.",
+      unknownProductDescription:
+        "Por favor, utiliza la función de la aplicación para tomar una foto de los ingredientes de los alimentos.",
+      parseErrorDescription:
+        "Error al analizar el escaneo. Intente escanear nuevamente o ingrese manualmente.",
       cam: "Cámara",
       share: "Compartir",
       "Processing image...": "Procesando imagen...",
@@ -355,7 +375,8 @@ const resources = {
       softBlue: "Bleu Doux",
       warmAmber: "Ambre Chaud",
       foodBugScanner: "Scanner d'Aliments",
-      connectToTheInternetToUseTheApp: "Connectez-vous à Internet pour utiliser l'application",
+      connectToTheInternetToUseTheApp:
+        "Connectez-vous à Internet pour utiliser l'application",
       tapToScan: "Appuyez pour scanner",
       requestingCameraPermission: "Demande de permission de la caméra",
       noCameraAccess: "Pas d'accès à la caméra",
@@ -403,7 +424,7 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Ou prenez une photo des ingrédients alimentaires",
       "Take a Picture": "Prendre une photo",
-      
+
       // New keys for result and search pages
       result: "Résultat",
       product: "Produit",
@@ -413,7 +434,8 @@ const resources = {
       bugsFound: "Insectes trouvés",
       unknownProduct: "Produit inconnu",
       imageFileTooSmall: "Fichier image trop petit ou corrompu",
-      imageFileTooLarge: "Fichier image trop volumineux. Vous ne pouvez télécharger que des images jusqu'à 1 Mo.",
+      imageFileTooLarge:
+        "Fichier image trop volumineux. Vous ne pouvez télécharger que des images jusqu'à 1 Mo.",
       noResponseFromOCRService: "Aucune réponse du service OCR",
       ocrReturnedEmptyText: "OCR a renvoyé un texte vide",
       ocrReturnedNoParsedResults: "OCR n'a renvoyé aucun résultat analysé",
@@ -430,9 +452,14 @@ const resources = {
       error: "Erreur",
       debugInfoEmulatorOnly: "Info de débogage (émulateur uniquement)",
       keywordsLoaded: "Mots-clés chargés",
-      safeProductDescription: "Cliquez sur l'EAN ci-dessus pour accéder directement à l'entrée sur Open Food Facts.",
-      unknownProductDescription: "Veuillez utiliser la fonctionnalité de l'application pour prendre une photo des ingrédients alimentaires.",
-      parseErrorDescription: "Erreur d'analyse du scan. Essayez de scanner à nouveau ou entrez manuellement.",
+      safeProductDescription:
+        "Cliquez sur l'EAN ci-dessus pour accéder directement à l'entrée sur Open Food Facts.",
+      safeProductDescriptionOCR:
+        "Ce résultat est basé sur la base de données Open Food Facts, qui inclut plus de 3 millions de produits.",
+      unknownProductDescription:
+        "Veuillez utiliser la fonctionnalité de l'application pour prendre une photo des ingrédients alimentaires.",
+      parseErrorDescription:
+        "Erreur d'analyse du scan. Essayez de scanner à nouveau ou entrez manuellement.",
       cam: "Caméra",
       share: "Partager",
       "Processing image...": "Traitement de l'image...",
@@ -536,6 +563,8 @@ const resources = {
       debugInfoEmulatorOnly: "调试信息 (仅限模拟器)",
       keywordsLoaded: "关键词加载",
       safeProductDescription: "点击上面的EAN直接进入Open Food Facts上的条目。",
+      safeProductDescriptionOCR:
+        "这个结果基于Open Food Facts数据库，该数据库包含超过300万种产品。",
       unknownProductDescription: "请使用应用程序的功能拍摄食品成分的照片。",
       parseErrorDescription: "扫描解析错误。请重新扫描或手动输入。",
       cam: "相机",
@@ -641,9 +670,14 @@ const resources = {
       error: "خطأ",
       debugInfoEmulatorOnly: "معلومات التحقق (للمحاكاة)",
       keywordsLoaded: "تحميل الكلمات الرئيسية",
-      safeProductDescription: "اضغط على رمز EAN أعلاه للانتقال مباشرةً إلى الإدخال على موقع Open Food Facts.",
-      unknownProductDescription: "هذا المنتج غير مسجل بعد في قاعدة البيانات. يرجى استخدام ميزة التطبيق لالتقاط صورة لمكونات الطعام.",
-      parseErrorDescription: "خطأ في التحليل. يرجى إعادة المسح أو إدخال يدويًا.",
+      safeProductDescription:
+        "اضغط على رمز EAN أعلاه للانتقال مباشرةً إلى الإدخال على موقع Open Food Facts.",
+      safeProductDescriptionOCR:
+        "هذا النتيجة مستندة إلى قاعدة البيانات Open Food Facts، والتي تحتوي على أكثر من 3 ملايين منتج.",
+      unknownProductDescription:
+        "هذا المنتج غير مسجل بعد في قاعدة البيانات. يرجى استخدام ميزة التطبيق لالتقاط صورة لمكونات الطعام.",
+      parseErrorDescription:
+        "خطأ في التحليل. يرجى إعادة المسح أو إدخال يدويًا.",
       cam: "كاميرا",
       share: "مشاركة",
       "Processing image...": "يتم معالجة الصورة...",
@@ -675,7 +709,8 @@ const resources = {
       softBlue: "मुलायम नीला",
       warmAmber: "गर्म एम्बर",
       foodBugScanner: "फूड बग स्कैनर",
-      connectToTheInternetToUseTheApp: "इंटरनेट कनेक्ट करें और ऐप इस्तेमाल करें",
+      connectToTheInternetToUseTheApp:
+        "इंटरनेट कनेक्ट करें और ऐप इस्तेमाल करें",
       tapToScan: "स्कैन करने के लिए टैप करें",
       requestingCameraPermission: "कैमरा अनुमति का अनुरोध कर रहा है",
       noCameraAccess: "कैमरा तक पहुंच नहीं है",
@@ -747,9 +782,14 @@ const resources = {
       error: "त्रुटि",
       debugInfoEmulatorOnly: "मॉक के लिए डिबग जानकारी",
       keywordsLoaded: "कीवर्ड लोड हो गए",
-      safeProductDescription: "ऊपर दिए गए EAN पर क्लिक करें ताकि आप सीधे Open Food Facts पर प्रविष्टि पर जा सकें।",
-      unknownProductDescription: "यह उत्पाद अभी तक डेटाबेस में दर्ज नहीं है। कृपया ऐप की सुविधा का उपयोग करके खाद्य सामग्री की तस्वीर लें।",
-      parseErrorDescription: "पार्सिंग त्रुटि। कृपया फिर से स्कैन करें या आगे बढ़ें।",
+      safeProductDescription:
+        "ऊपर दिए गए EAN पर क्लिक करें ताकि आप सीधे Open Food Facts पर प्रविष्टि पर जा सकें।",
+      safeProductDescriptionOCR:
+        "यह परिणाम खाद्य सामग्री की तस्वीर पर आधारित है।",
+      unknownProductDescription:
+        "यह उत्पाद अभी तक डेटाबेस में दर्ज नहीं है। कृपया ऐप की सुविधा का उपयोग करके खाद्य सामग्री की तस्वीर लें।",
+      parseErrorDescription:
+        "पार्सिंग त्रुटि। कृपया फिर से स्कैन करें या आगे बढ़ें।",
       cam: "कैमरा",
       share: "साझा करें",
       "Processing image...": "छवि प्रसंस्करण में...",
@@ -781,7 +821,8 @@ const resources = {
       softBlue: "Azul Suave",
       warmAmber: "Âmbar Quente",
       foodBugScanner: "Scanner de Alimentos",
-      connectToTheInternetToUseTheApp: "Conecte-se à Internet para usar o aplicativo",
+      connectToTheInternetToUseTheApp:
+        "Conecte-se à Internet para usar o aplicativo",
       tapToScan: "Toque para escanear",
       requestingCameraPermission: "Solicitando permissão da câmera",
       noCameraAccess: "Sem acesso à câmera",
@@ -828,7 +869,7 @@ const resources = {
       "Or Take a Picture of food ingredients":
         "Ou tire uma foto dos ingredientes alimentares",
       "Take a Picture": "Tirar uma foto",
-      
+
       // New keys for result and search pages
       result: "Resultado",
       product: "Produto",
@@ -838,7 +879,8 @@ const resources = {
       bugsFound: "Insectos encontrados",
       unknownProduct: "Produto desconhecido",
       imageFileTooSmall: "Arquivo de imagem demasiado pequeno ou danificado",
-      imageFileTooLarge: "Arquivo de imagem demasiado grande. Você só pode carregar imagens até 1 MB.",
+      imageFileTooLarge:
+        "Arquivo de imagem demasiado grande. Você só pode carregar imagens até 1 MB.",
       noResponseFromOCRService: "Sem resposta do serviço OCR",
       ocrReturnedEmptyText: "OCR devolveu texto vazio",
       ocrReturnedNoParsedResults: "OCR não devolveu resultados analisados",
@@ -855,9 +897,14 @@ const resources = {
       error: "Erro",
       debugInfoEmulatorOnly: "Informações de depuração (apenas emulador)",
       keywordsLoaded: "Palavras-chave carregadas",
-      safeProductDescription: "Clique no EAN acima para ir diretamente para a entrada no Open Food Facts.",
-      unknownProductDescription: "Por favor, use o recurso do aplicativo para tirar uma foto dos ingredientes alimentares.",
-      parseErrorDescription: "Erro ao analisar o escaneamento. Tente escanear novamente ou insira manualmente.",
+      safeProductDescription:
+        "Clique no EAN acima para ir diretamente para a entrada no Open Food Facts.",
+      safeProductDescriptionOCR:
+        "Este resultado se basa en la base de datos de Open Food Facts, que incluye más de 3 millones de productos.",
+      unknownProductDescription:
+        "Por favor, use o recurso do aplicativo para tirar uma foto dos ingredientes alimentares.",
+      parseErrorDescription:
+        "Erro ao analisar o escaneamento. Tente escanear novamente ou insira manualmente.",
       cam: "Câmera",
       share: "Compartilhar",
       "Processing image...": "Processando imagem...",
@@ -889,7 +936,8 @@ const resources = {
       softBlue: "Мягкий голубой",
       warmAmber: "Теплый янтарь",
       foodBugScanner: "Сканер продуктов",
-      connectToTheInternetToUseTheApp: "Подключитесь к Интернету, чтобы использовать приложение",
+      connectToTheInternetToUseTheApp:
+        "Подключитесь к Интернету, чтобы использовать приложение",
       tapToScan: "Нажмите для сканирования",
       requestingCameraPermission: "Запрос разрешения на камеру",
       noCameraAccess: "Нет доступа к камере",
@@ -945,7 +993,8 @@ const resources = {
       bugsFound: "Найдены насекомые",
       unknownProduct: "Неизвестный продукт",
       imageFileTooSmall: "Слишком маленький файл изображения или поврежден",
-      imageFileTooLarge: "Слишком большой файл изображения. Вы можете загрузить только изображения размером до 1MB.",
+      imageFileTooLarge:
+        "Слишком большой файл изображения. Вы можете загрузить только изображения размером до 1MB.",
       noResponseFromOCRService: "Сервис OCR не вернул ответ",
       ocrReturnedEmptyText: "Сервис OCR вернул пустой текст",
       ocrReturnedNoParsedResults: "Сервис OCR не вернул результаты анализа",
@@ -962,9 +1011,14 @@ const resources = {
       error: "Ошибка",
       debugInfoEmulatorOnly: "Информация для отладки (только в эмуляторе)",
       keywordsLoaded: "Ключевые слова загружены",
-      safeProductDescription: "Нажмите на EAN выше, чтобы перейти на страницу продукта в Open Food Facts.",
-      unknownProductDescription: "Пожалуйста, используйте функцию приложения, чтобы сфотографировать ингредиенты продукта.",
-      parseErrorDescription: "Ошибка при анализе сканирования. Пожалуйста, попробуйте сканировать снова или вручную ввести.",
+      safeProductDescription:
+        "Нажмите на EAN выше, чтобы перейти на страницу продукта в Open Food Facts.",
+      safeProductDescriptionOCR:
+        "Этот результат основан на базе данных Open Food Facts, которая включает более 3 миллионов продуктов.",
+      unknownProductDescription:
+        "Пожалуйста, используйте функцию приложения, чтобы сфотографировать ингредиенты продукта.",
+      parseErrorDescription:
+        "Ошибка при анализе сканирования. Пожалуйста, попробуйте сканировать снова или вручную ввести.",
       cam: "Камера",
       share: "Поделиться",
       "Processing image...": "Обработка изображения...",
@@ -998,7 +1052,8 @@ const resources = {
       dark: "ダーク",
       light: "ライト",
       foodBugScanner: "フードバグスキャナー",
-      connectToTheInternetToUseTheApp: "インターネットに接続してアプリを使用する",
+      connectToTheInternetToUseTheApp:
+        "インターネットに接続してアプリを使用する",
       tapToScan: "タップしてスキャン",
       requestingCameraPermission: "カメラの許可をリクエストしています",
       noCameraAccess: "カメラにアクセスできません",
@@ -1044,7 +1099,7 @@ const resources = {
       },
       "Or Take a Picture of food ingredients": "または食品の成分の写真を撮る",
       "Take a Picture": "写真を撮る",
-      
+
       result: "結果",
       product: "製品",
       source: "ソース",
@@ -1053,7 +1108,8 @@ const resources = {
       bugsFound: "虫が見つかりました",
       unknownProduct: "不明な製品",
       imageFileTooSmall: "画像が小さすぎるか破損しています",
-      imageFileTooLarge: "画像が大きすぎます。1MB以下の画像のみをアップロードできます。",
+      imageFileTooLarge:
+        "画像が大きすぎます。1MB以下の画像のみをアップロードできます。",
       noResponseFromOCRService: "OCRサービスからの応答がありません",
       ocrReturnedEmptyText: "OCRが空のテキストを返しました",
       ocrReturnedNoParsedResults: "OCRが解析結果を返しませんでした",
@@ -1070,8 +1126,12 @@ const resources = {
       error: "エラー",
       debugInfoEmulatorOnly: "モックのデバッグ情報",
       keywordsLoaded: "キーワードが読み込まれました",
-      safeProductDescription: "上のEANをクリックすると、Open Food Factsの該当エントリに直接移動できます。",
-      unknownProductDescription: "アプリの機能を使用して、食品の成分の写真を撮ってください。",
+      safeProductDescription:
+        "上のEANをクリックすると、Open Food Factsの該当エントリに直接移動できます。",
+      safeProductDescriptionOCR:
+        "この結果はOpen Food Factsデータベースに基づいています。",
+      unknownProductDescription:
+        "アプリの機能を使用して、食品の成分の写真を撮ってください。",
       parseErrorDescription: "スキャン解析エラー。再スキャンしてください。",
       cam: "カメラ",
       share: "共有",
@@ -1164,10 +1224,12 @@ const resources = {
       bugsFound: "Insetti trovati",
       unknownProduct: "Prodotto sconosciuto",
       imageFileTooSmall: "Immagine troppo piccola o danneggiata",
-      imageFileTooLarge: "Immagine troppo grande. Puoi caricare solo immagini di dimensioni inferiori a 1MB.",
+      imageFileTooLarge:
+        "Immagine troppo grande. Puoi caricare solo immagini di dimensioni inferiori a 1MB.",
       noResponseFromOCRService: "Nessuna risposta dal servizio OCR",
       ocrReturnedEmptyText: "Il servizio OCR ha restituito testo vuoto",
-      ocrReturnedNoParsedResults: "Il servizio OCR non ha restituito risultati analizzati",
+      ocrReturnedNoParsedResults:
+        "Il servizio OCR non ha restituito risultati analizzati",
       ocrError: "Errore OCR",
       failedToProcessImage: "Immagine non elaborata",
       parsingError: "Errore di analisi",
@@ -1181,9 +1243,14 @@ const resources = {
       error: "Errore",
       debugInfoEmulatorOnly: "Informazioni di debug (solo per emulatore)",
       keywordsLoaded: "Parole chiave caricate",
-      safeProductDescription: "Clicca sul codice EAN sopra per accedere alla pagina del prodotto di Open Food Facts.",
-      unknownProductDescription: "Utilizza la funzione dell'app per scattare una foto degli ingredienti del cibo.",
-      parseErrorDescription: "Errore di analisi dello scansione. Per favore, scansiona di nuovo o inserisci manualmente.",
+      safeProductDescription:
+        "Clicca sul codice EAN sopra per accedere alla pagina del prodotto di Open Food Facts.",
+      safeProductDescriptionOCR:
+        "Questo risultato è basato sul database Open Food Facts, che include oltre 3 milioni di prodotti.",
+      unknownProductDescription:
+        "Utilizza la funzione dell'app per scattare una foto degli ingredienti del cibo.",
+      parseErrorDescription:
+        "Errore di analisi dello scansione. Per favore, scansiona di nuovo o inserisci manualmente.",
       cam: "Fotocamera",
       share: "Condividi",
       "Processing image...": "Elaborazione dell'immagine...",
