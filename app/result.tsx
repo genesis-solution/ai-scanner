@@ -64,16 +64,20 @@ export default function ResultScreen() {
   useEffect(() => {
     const handleCheckKeywords = (productInfoData: any) => {
       setStatus(CHECKING_KEYWORDS);
+      let infoText = "";
       // Extract product info text for display
       if (typeof productInfoData === "object") {
         try {
           // For barcode product info
+          // For barcode product info
           if (productInfoData.product_name) {
             setProductName(productInfoData.product_name);
-            setProductInfo(JSON.stringify(productInfoData));
           } else {
             setProductName(t("product"));
           }
+          infoText = `Product: ${productInfoData.product_name}\n${
+            productInfoData.ingredients_text || ""
+          }`;
 
           // Set barcode data
           if (type === "barcode" && data) {
@@ -91,16 +95,15 @@ export default function ResultScreen() {
             }
           }
         } catch (e) {
-          setProductInfo(productInfoData.toString());
+          infoText = String(productInfoData);
         }
       } else {
-        setProductInfo(productInfoData.toString());
+        infoText = String(productInfoData);
       }
 
+      setProductInfo(infoText);
       const hasKeyword = keywords.some((keyword) =>
-        JSON.stringify(productInfoData)
-          .toLowerCase()
-          .includes(keyword.name.toLowerCase())
+        infoText.toLowerCase().includes(keyword.name.toLowerCase())
       );
 
       if (hasKeyword) {
@@ -353,23 +356,6 @@ export default function ResultScreen() {
           headerShown: true,
           headerTransparent: true,
           headerTitle: "",
-          headerLeft: () => (
-            <View style={styles.headerLeftContainer}>
-              <TouchableOpacity
-                onPress={() => router.replace("/")}
-                style={styles.backButton}
-              >
-                <AntDesign name="arrowleft" size={24} color={textColor} />
-              </TouchableOpacity>
-            </View>
-          ),
-          headerRight: () => (
-            <View style={styles.headerRightContainer}>
-              <TouchableOpacity onPress={onShare} style={styles.shareButton}>
-                <Entypo name="share" size={24} color={textColor} />
-              </TouchableOpacity>
-            </View>
-          ),
         }}
       />
       <SafeAreaView style={styles.container}>

@@ -165,13 +165,6 @@ export default function SearchScreen() {
             headerShown: true,
             headerTransparent: true,
             headerTitle: t("search"),
-            headerRight: () => (
-              <View style={styles.headerRightContainer}>
-                <TouchableOpacity onPress={onShare} style={styles.shareButton}>
-                  <Entypo name="share" size={24} color={textColor} />
-                </TouchableOpacity>
-              </View>
-            ),
           }}
         />
         <View style={styles.container}>
