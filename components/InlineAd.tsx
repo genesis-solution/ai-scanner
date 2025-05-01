@@ -7,7 +7,7 @@ import {
 } from "react-native-google-mobile-ads";
 
 const iosAdmobBanner = "ca-app-pub-3940256099942544/9214589741";
-const androidAdmobBanner = "ca-app-pub-3940256099942544/9214589741";
+const androidAdmobBanner = "ca-app-pub-2547223915125279/4964499133";
 const productionID =
   Platform.OS === "android" ? androidAdmobBanner : iosAdmobBanner;
 
